@@ -9,8 +9,6 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.HashMap;
-
 import static me.bencex100.rivalsenvoy.listeners.CollectionListener.cratesSpawned;
 import static me.bencex100.rivalsenvoy.listeners.FallingBlockListener.fallingBlocks;
 import static me.bencex100.rivalsenvoy.utils.EnvoyHandler.crates;

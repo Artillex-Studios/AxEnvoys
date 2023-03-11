@@ -1,7 +1,6 @@
 package me.bencex100.rivalsenvoy.listeners;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
-import me.bencex100.rivalsenvoy.RivalsEnvoy;
 import me.bencex100.rivalsenvoy.config.Config;
 import me.bencex100.rivalsenvoy.utils.Crate;
 import me.bencex100.rivalsenvoy.utils.EnvoyHandler;

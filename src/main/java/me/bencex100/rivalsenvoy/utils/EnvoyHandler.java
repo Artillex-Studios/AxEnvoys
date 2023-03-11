@@ -1,17 +1,11 @@
 package me.bencex100.rivalsenvoy.utils;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
-import me.bencex100.rivalsenvoy.RivalsEnvoy;
 import me.bencex100.rivalsenvoy.config.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static me.bencex100.rivalsenvoy.utils.Utils.topBlock;
