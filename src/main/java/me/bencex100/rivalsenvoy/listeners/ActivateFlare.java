@@ -22,25 +22,26 @@ public class ActivateFlare implements Listener {
     private void onPlayerRightClick(PlayerInteractEvent e) {
         if (e.getAction().isRightClick()) {
             if (e.getHand() == EquipmentSlot.HAND) {
-                if (e.getItem() != null) {
-                    if (MiniMessage.miniMessage().serialize(e.getItem().getItemMeta().displayName()).equals(config.getString("flare.name"))) {
+                if (e.getItem() == null) return;
+                if (e.getItem().getItemMeta() == null) return;
+                if (e.getItem().getItemMeta().displayName() == null) return;
+                if (MiniMessage.miniMessage().serialize(e.getItem().getItemMeta().displayName()).equals(config.getString("flare.name"))) {
 
-                        if (cd.containsKey(e.getPlayer())) {
-                            if (System.currentTimeMillis() - cd.get(e.getPlayer()) < config.getLong("flare-cooldown-in-seconds") * 1000) {
-                                e.getPlayer().sendRichMessage(config.getString("prefix") + messages.getString("error.flare-cooldown").replace("%time%", Utils.fancyTime(config.getLong("flare-cooldown-in-seconds") * 1000 - System.currentTimeMillis() + cd.get(e.getPlayer()))));
-                                return;
-                            }
+                    if (cd.containsKey(e.getPlayer())) {
+                        if (System.currentTimeMillis() - cd.get(e.getPlayer()) < config.getLong("flare-cooldown-in-seconds") * 1000) {
+                            e.getPlayer().sendRichMessage(config.getString("prefix") + messages.getString("error.flare-cooldown").replace("%time%", Utils.fancyTime(config.getLong("flare-cooldown-in-seconds") * 1000 - System.currentTimeMillis() + cd.get(e.getPlayer()))));
+                            return;
                         }
-                        cd.put(e.getPlayer(), System.currentTimeMillis());
-                        int val = e.getPlayer().getInventory().getItemInMainHand().getAmount() - 1;
-                        if (e.getPlayer().getInventory().getItemInMainHand().getAmount() - 1 > 0) {
-                            e.getPlayer().getInventory().getItemInMainHand().setAmount(val);
-                        } else {
-                            e.getPlayer().getInventory().getItemInMainHand().setAmount(0);
-                        }
-                        RivalsEnvoy.getEvh().startEnvoy();
-                        e.getPlayer().sendRichMessage(messages.getString("success.started"));
                     }
+                    cd.put(e.getPlayer(), System.currentTimeMillis());
+                    int val = e.getPlayer().getInventory().getItemInMainHand().getAmount() - 1;
+                    if (e.getPlayer().getInventory().getItemInMainHand().getAmount() - 1 > 0) {
+                        e.getPlayer().getInventory().getItemInMainHand().setAmount(val);
+                    } else {
+                        e.getPlayer().getInventory().getItemInMainHand().setAmount(0);
+                    }
+                    RivalsEnvoy.getEvh().startEnvoy();
+                    e.getPlayer().sendRichMessage(messages.getString("success.started"));
                 }
             }
         }

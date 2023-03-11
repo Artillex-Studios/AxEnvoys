@@ -7,6 +7,7 @@ import me.bencex100.rivalsenvoy.utils.EnvoyHandler;
 import me.bencex100.rivalsenvoy.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -24,28 +25,32 @@ public class CollectionListener implements Listener {
     @EventHandler
     public void onCollect(PlayerInteractEvent e) {
         if (e.getClickedBlock() == null) return;
+        if (e.getClickedBlock().getType() == Material.AIR) return;
 
-        for (Map.Entry<Location, Crate> entry : EnvoyHandler.crates.entrySet()) {
+        if (EnvoyHandler.crates.size() > 0) {
+            for (Map.Entry<Location, Crate> entry : EnvoyHandler.crates.entrySet()) {
 
-            if (e.getClickedBlock().getLocation().equals(entry.getKey())) {
-                if (cd.containsKey(e.getPlayer())) {
-                    if (System.currentTimeMillis() - cd.get(e.getPlayer()) < config.getLong("collect-cooldown-in-seconds") * 1000) {
-                        e.getPlayer().sendRichMessage(config.getString("prefix") + messages.getString("error.cooldown-message").replace("%time%", Utils.fancyTime(config.getLong("collect-cooldown-in-seconds") * 1000 - System.currentTimeMillis() + cd.get(e.getPlayer()))));
-                        return;
+                if (e.getClickedBlock().getLocation().equals(entry.getKey())) {
+                    e.setCancelled(true);
+                    if (cd.containsKey(e.getPlayer())) {
+                        if (System.currentTimeMillis() - cd.get(e.getPlayer()) < config.getLong("collect-cooldown-in-seconds") * 1000) {
+                            e.getPlayer().sendRichMessage(config.getString("prefix") + messages.getString("error.cooldown-message").replace("%time%", Utils.fancyTime(config.getLong("collect-cooldown-in-seconds") * 1000 - System.currentTimeMillis() + cd.get(e.getPlayer()))));
+                            return;
+                        }
                     }
-                }
-                cd.put(e.getPlayer(), System.currentTimeMillis());
-                --cratesSpawned;
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.sendRichMessage(config.getString("prefix") + messages.getString("broadcast.found").replace("%amount%", Integer.toString(cratesSpawned)).replace("%player%", e.getPlayer().getName()));
-                }
-                if (cratesSpawned == 0) {
+                    cd.put(e.getPlayer(), System.currentTimeMillis());
+                    --cratesSpawned;
                     for (Player p : Bukkit.getOnlinePlayers()) {
-                        p.sendRichMessage(config.getString("prefix") + messages.getString("broadcast.ended"));
+                        p.sendRichMessage(config.getString("prefix") + messages.getString("broadcast.found").replace("%amount%", Integer.toString(cratesSpawned)).replace("%player%", e.getPlayer().getName()));
                     }
+                    if (cratesSpawned == 0) {
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.sendRichMessage(config.getString("prefix") + messages.getString("broadcast.ended"));
+                        }
+                    }
+                    entry.getValue().collectCrate(e.getPlayer());
+                    return;
                 }
-                entry.getValue().collectCrate(e.getPlayer());
-                return;
             }
         }
     }
