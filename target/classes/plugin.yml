@@ -1,0 +1,13 @@
+name: RivalsEnvoy
+version: '1.0'
+main: me.bencex100.rivalsenvoy.RivalsEnvoy
+api-version: 1.19
+softdepend: [ PlaceholderAPI, DecentHolograms ]
+
+permissions:
+  rivalsenvoy.reload:
+    description: Reloads the plugin.
+    default: op
+  rivalsenvoy.admin:
+    description: Admin permissions.
+    default: op
