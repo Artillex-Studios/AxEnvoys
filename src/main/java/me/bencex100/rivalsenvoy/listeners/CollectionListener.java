@@ -24,6 +24,7 @@ public class CollectionListener implements Listener {
 
     @EventHandler
     public void onCollect(PlayerInteractEvent e) {
+        try {
         if (e.getClickedBlock() == null) return;
         if (e.getClickedBlock().getType() == Material.AIR) return;
 
@@ -53,5 +54,7 @@ public class CollectionListener implements Listener {
                 }
             }
         }
+
+        } catch (Exception ignored) {}
     }
 }
