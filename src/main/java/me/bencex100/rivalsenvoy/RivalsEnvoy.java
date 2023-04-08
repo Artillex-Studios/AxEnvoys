@@ -7,6 +7,7 @@ import me.bencex100.rivalsenvoy.config.Config;
 import me.bencex100.rivalsenvoy.listeners.ActivateFlare;
 import me.bencex100.rivalsenvoy.listeners.CollectionListener;
 import me.bencex100.rivalsenvoy.listeners.FallingBlockListener;
+import me.bencex100.rivalsenvoy.listeners.BlockPhysicsListener;
 import me.bencex100.rivalsenvoy.utils.EnvoyHandler;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,6 +29,7 @@ public final class RivalsEnvoy extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new CollectionListener(), this);
         getServer().getPluginManager().registerEvents(new FallingBlockListener(), this);
         getServer().getPluginManager().registerEvents(new ActivateFlare(), this);
+        getServer().getPluginManager().registerEvents(new BlockPhysicsListener(), this);
         evh = new EnvoyHandler();
 
     }

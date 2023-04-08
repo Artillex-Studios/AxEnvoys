@@ -18,8 +18,18 @@ public class EnvoyHandler {
     static boolean bcd = false;
     public static HashMap<Location, Crate> crates = new HashMap<>();
     Long cd;
+    static Location center = null;
+
+    public static boolean isActive() {
+        return active;
+    }
+
+    public static Location getCenter() {
+        return center;
+    }
 
     public void startEnvoy() {
+        center = Utils.deserializeLocation(data, "data.center").getBlock().getLocation();
         if (cd != null) {
             if (System.currentTimeMillis() - cd < 1500) {
                 return;
@@ -35,7 +45,7 @@ public class EnvoyHandler {
             map.put(j.toString(), config.getDouble("crates." + j + ".spawn-chance"));
         }
         for (int i = 0; i < config.getInt("random-locations.crates-amount"); i++) {
-            Location loc = Utils.deserializeLocation(data, "data.center").getBlock().getLocation();
+            Location loc = center.clone();
             int tries = 300 + config.getInt("random-locations.crates-amount") * 10;
             do {
                 loc.setX(Double.parseDouble(String.valueOf(Math.round(loc.getX()) + ThreadLocalRandom.current().nextInt(config.getInt("random-locations.distance") * - 1, config.getInt("random-locations.distance")))));
