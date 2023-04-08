@@ -3,6 +3,7 @@ package me.bencex100.rivalsenvoy.utils;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
+import me.bencex100.rivalsenvoy.RivalsEnvoy;
 import me.bencex100.rivalsenvoy.config.Config;
 import me.bencex100.rivalsenvoy.listeners.FallingBlockListener;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -16,6 +17,7 @@ import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
 import java.awt.*;
@@ -87,14 +89,15 @@ public class Crate {
 
             if (config.getBoolean("crates." + type + ".firework.enabled")) {
                 String hex = config.getString("crates." + type + ".firework.firework-color");
-                Location loc2 = loc;
-                loc2.add(0, 0.5, 0);
+                Location loc2 = loc.clone();
+                loc2.add(0.5, 0.5, 0.5);
                 Firework fw = (Firework) loc.getWorld().spawnEntity(loc2, EntityType.FIREWORK);
                 FireworkMeta meta = fw.getFireworkMeta();
                 Color color = new java.awt.Color(Integer.valueOf(hex.substring(1, 3), 16), Integer.valueOf(hex.substring(3, 5), 16), Integer.valueOf(hex.substring(5, 7), 16));
                 meta.addEffect(FireworkEffect.builder().withColor(org.bukkit.Color.fromRGB(color.getRed(), color.getGreen(), color.getBlue())).build());
                 meta.setPower(0);
                 fw.setFireworkMeta(meta);
+                fw.setMetadata("RIVALSENVOY", new FixedMetadataValue(RivalsEnvoy.getInstance(), true));
                 fw.detonate();
             }
         }
