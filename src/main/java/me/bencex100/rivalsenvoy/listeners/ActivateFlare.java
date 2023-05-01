@@ -34,18 +34,14 @@ public class ActivateFlare implements Listener {
         PersistentDataContainer container = meta.getPersistentDataContainer();
         NamespacedKey key = new NamespacedKey(RivalsEnvoy.getInstance(), "RIVALSENVOY");
 
-        boolean isFlare = false;
-        if (MiniMessage.miniMessage().serialize(e.getItem().getItemMeta().displayName()).equals(config.getString("flare.name")))
-            isFlare = true;
+        boolean isFlare = MiniMessage.miniMessage().serialize(e.getItem().getItemMeta().displayName()).equals(config.getString("flare.name"));
         if (container.has(key, PersistentDataType.STRING) && container.get(key, PersistentDataType.STRING).equals("flare"))
             isFlare = true;
         if (!isFlare) return;
 
-        if (cd.containsKey(e.getPlayer())) {
-            if (System.currentTimeMillis() - cd.get(e.getPlayer()) < config.getLong("flare-cooldown-in-seconds") * 1000) {
-                e.getPlayer().sendRichMessage(config.getString("prefix") + messages.getString("error.flare-cooldown").replace("%time%", Utils.fancyTime(config.getLong("flare-cooldown-in-seconds") * 1000 - System.currentTimeMillis() + cd.get(e.getPlayer()))));
-                return;
-            }
+        if (cd.containsKey(e.getPlayer()) && System.currentTimeMillis() - cd.get(e.getPlayer()) < config.getLong("flare-cooldown-in-seconds") * 1000) {
+            e.getPlayer().sendRichMessage(config.getString("prefix") + messages.getString("error.flare-cooldown").replace("%time%", Utils.fancyTime(config.getLong("flare-cooldown-in-seconds") * 1000 - System.currentTimeMillis() + cd.get(e.getPlayer()))));
+            return;
         }
         cd.put(e.getPlayer(), System.currentTimeMillis());
         e.getPlayer().getInventory().getItemInMainHand().setAmount(e.getPlayer().getInventory().getItemInMainHand().getAmount() - 1);
