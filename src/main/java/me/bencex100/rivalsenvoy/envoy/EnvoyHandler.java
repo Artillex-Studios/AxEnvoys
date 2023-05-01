@@ -1,24 +1,23 @@
-package me.bencex100.rivalsenvoy.utils;
+package me.bencex100.rivalsenvoy.envoy;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import me.bencex100.rivalsenvoy.config.Config;
+import me.bencex100.rivalsenvoy.envoy.Crate;
+import me.bencex100.rivalsenvoy.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static me.bencex100.rivalsenvoy.utils.Utils.topBlock;
 
 public class EnvoyHandler {
+    public static HashMap<Location, Crate> crates = new HashMap<>();
+    static boolean active = false;
+    public static boolean bcd = false;
+    static Location center = null;
     private final YamlDocument config = Config.getCnf("config");
     private final YamlDocument data = Config.getCnf("data");
-    private final YamlDocument messages = Config.getCnf("messages");
-    static boolean active = false;
-    static boolean bcd = false;
-    public static HashMap<Location, Crate> crates = new HashMap<>();
     Long cd;
-    static Location center = null;
 
     public static boolean isActive() {
         return active;
@@ -44,19 +43,22 @@ public class EnvoyHandler {
         for (Object j : config.getSection("crates").getKeys()) {
             map.put(j.toString(), config.getDouble("crates." + j + ".spawn-chance"));
         }
+        final ArrayList<Location> locations = new ArrayList<>();
         for (int i = 0; i < config.getInt("random-locations.crates-amount"); i++) {
-            Location loc = center.clone();
+            Location loc;
             int tries = 300 + config.getInt("random-locations.crates-amount") * 10;
             do {
-                loc.setX(Double.parseDouble(String.valueOf(Math.round(loc.getX()) + ThreadLocalRandom.current().nextInt(config.getInt("random-locations.distance") * - 1, config.getInt("random-locations.distance")))));
-                loc.setZ(Double.parseDouble(String.valueOf(Math.round(loc.getZ()) + ThreadLocalRandom.current().nextInt(config.getInt("random-locations.distance") * - 1, config.getInt("random-locations.distance")))));
                 tries--;
                 if (tries < 0) {
                     Bukkit.getLogger().warning("Error while starting event, can't find any locations!");
                     return;
                 }
-            } while (topBlock(loc) == null);
-            loc = topBlock(loc);
+                loc = Utils.isGood(center.clone());
+                if (locations.contains(loc))
+                    loc = null;
+                else
+                    locations.add(loc);
+            } while (loc == null);
             Crate cr = new Crate(loc, Utils.randomValue(map));
             cr.load();
         }

@@ -7,6 +7,7 @@ import dev.dejvokep.boostedyaml.settings.general.GeneralSettings;
 import dev.dejvokep.boostedyaml.settings.loader.LoaderSettings;
 import dev.dejvokep.boostedyaml.settings.updater.UpdaterSettings;
 import me.bencex100.rivalsenvoy.RivalsEnvoy;
+import me.bencex100.rivalsenvoy.utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class Config {
             config.reload();
             data.reload();
             messages.reload();
+            new Utils().updateBlackList();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -7,7 +7,7 @@ import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import me.bencex100.rivalsenvoy.RivalsEnvoy;
 import me.bencex100.rivalsenvoy.config.Config;
-import me.bencex100.rivalsenvoy.utils.EnvoyHandler;
+import me.bencex100.rivalsenvoy.envoy.EnvoyHandler;
 import me.bencex100.rivalsenvoy.utils.Utils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Material;
@@ -72,7 +72,7 @@ public class Commands {
                                             if (!config.getBoolean("flare.enabled")) return;
                                             Player p = (Player) args[0];
                                             Integer am = (Integer) args[1];
-                                            ItemStack it = Utils.createItem(Material.getMaterial(config.getString("flare.material")), am, config.getString("flare.name"), new ArrayList<>(config.getStringList("flare.lore")));
+                                            ItemStack it = Utils.createItem(Material.getMaterial(config.getString("flare.material")), am, config.getString("flare.name"), new ArrayList<>(config.getStringList("flare.lore")), "flare");
                                             p.getInventory().addItem(it);
                                         })
                                 )

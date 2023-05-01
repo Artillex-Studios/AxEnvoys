@@ -1,4 +1,4 @@
-package me.bencex100.rivalsenvoy.utils;
+package me.bencex100.rivalsenvoy.envoy;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import eu.decentsoftware.holograms.api.DHAPI;
@@ -6,6 +6,8 @@ import eu.decentsoftware.holograms.api.holograms.Hologram;
 import me.bencex100.rivalsenvoy.RivalsEnvoy;
 import me.bencex100.rivalsenvoy.config.Config;
 import me.bencex100.rivalsenvoy.listeners.FallingBlockListener;
+import me.bencex100.rivalsenvoy.utils.FallingBlockChecker;
+import me.bencex100.rivalsenvoy.utils.Utils;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
@@ -30,6 +32,7 @@ public class Crate {
     Location loc;
     Hologram holo;
     String type;
+
     Crate(Location loc, String type) {
         this.loc = loc.getBlock().getLocation();
         this.type = type;
@@ -37,32 +40,21 @@ public class Crate {
 
     public void load() {
         Location loc2 = loc.getBlock().getLocation();
-        if (loc2.isChunkLoaded()) {
-            loc2.add(0, config.getDouble("fall-height"), 0);
-            FallingBlock falling = loc.getWorld().spawnFallingBlock(loc2, Objects.requireNonNull(Material.getMaterial(config.getString("falling-block-material"))), (byte) 0);
-            falling.setDropItem(false);
-            falling.setVelocity(new Vector(0, config.getDouble("falling-speed"), 0));
-            FallingBlockListener.fallingBlocks.put(falling, this);
-            new FallingBlockChecker().checkIfAlive(falling);
+        if (!loc2.isChunkLoaded()) return;
+        if (config.getDouble("fall-height") == 0.0d) {
+            land();
+            return;
         }
+        loc2.add(0, config.getDouble("fall-height"), 0);
+        FallingBlock falling = loc.getWorld().spawnFallingBlock(loc2, Material.getMaterial(config.getString("falling-block-material")).createBlockData());
+        falling.setDropItem(false);
+        falling.setVelocity(new Vector(0, config.getDouble("falling-speed"), 0));
+        FallingBlockListener.fallingBlocks.put(falling, this);
+        new FallingBlockChecker().checkIfAlive(falling);
     }
 
     public void land() {
         Location loc2 = loc.getBlock().getLocation();
-        loc2.getBlock().setType(Objects.requireNonNull(Material.getMaterial(config.getString("crates." + type + ".material"))));
-        List<String> lines = config.getStringList("crates." + type + ".hologram");
-        lines.replaceAll(input -> LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(input)));
-        loc2.add(0.5D, 0D, 0.5D);
-        EnvoyHandler.crates.put(loc, this);
-        loc2.setY(loc2.getY() + config.getDouble("crates." + type + ".hologram-height"));
-        if (DHAPI.getHologram("RIVALSENVOY-" + loc2.getBlockX() + loc2.getBlockY() + loc2.getBlockZ()) != null) {
-            DHAPI.getHologram("RIVALSENVOY-" + loc2.getBlockX() + loc2.getBlockY() + loc2.getBlockZ()).delete();
-        }
-        holo = DHAPI.createHologram("RIVALSENVOY-" + loc2.getBlockX() + loc2.getBlockY() + loc2.getBlockZ(), loc2, lines);
-    }
-
-    public void landAt(Location loc2) {
-        loc = loc2.getBlock().getLocation();
         loc2.getBlock().setType(Objects.requireNonNull(Material.getMaterial(config.getString("crates." + type + ".material"))));
         List<String> lines = config.getStringList("crates." + type + ".hologram");
         lines.replaceAll(input -> LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(input)));

@@ -8,10 +8,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 public class FireworkDamageListener implements Listener {
     @EventHandler
     public void onFireworkDamage(EntityDamageByEntityEvent e) {
-        if (e.getDamager() instanceof Firework fw) {
-            if (fw.hasMetadata("RIVALSENVOY")) {
-                e.setCancelled(true);
-            }
-        }
+        if (!(e.getDamager() instanceof Firework fw)) return;
+        if (!fw.hasMetadata("RIVALSENVOY")) return;
+        e.setCancelled(true);
     }
 }

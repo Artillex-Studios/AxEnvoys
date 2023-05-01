@@ -1,6 +1,6 @@
 package me.bencex100.rivalsenvoy.listeners;
 
-import me.bencex100.rivalsenvoy.utils.Crate;
+import me.bencex100.rivalsenvoy.envoy.Crate;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.event.EventHandler;
@@ -11,14 +11,15 @@ import java.util.HashMap;
 
 public class FallingBlockListener implements Listener {
     public static HashMap<Entity, Crate> fallingBlocks = new HashMap<>();
+
     @EventHandler
     public void onEntityChangeBlock(EntityChangeBlockEvent e) {
-        if (e.getEntity() instanceof FallingBlock) {
-            if (fallingBlocks.containsKey(e.getEntity())) {
-                e.setCancelled(true);
-                fallingBlocks.get(e.getEntity()).land();
-                fallingBlocks.remove(e.getEntity());
-            }
+        if (!(e.getEntity() instanceof FallingBlock)) return;
+
+        if (fallingBlocks.containsKey(e.getEntity())) {
+            e.setCancelled(true);
+            fallingBlocks.get(e.getEntity()).land();
+            fallingBlocks.remove(e.getEntity());
         }
     }
 }

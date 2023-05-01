@@ -9,12 +9,13 @@ import me.bencex100.rivalsenvoy.listeners.CollectionListener;
 import me.bencex100.rivalsenvoy.listeners.FallingBlockListener;
 import me.bencex100.rivalsenvoy.listeners.BlockPhysicsListener;
 import me.bencex100.rivalsenvoy.listeners.FireworkDamageListener;
-import me.bencex100.rivalsenvoy.utils.EnvoyHandler;
+import me.bencex100.rivalsenvoy.envoy.EnvoyHandler;
+import me.bencex100.rivalsenvoy.utils.Utils;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 
-import static me.bencex100.rivalsenvoy.utils.EnvoyHandler.crates;
+import static me.bencex100.rivalsenvoy.envoy.EnvoyHandler.crates;
 
 public final class RivalsEnvoy extends JavaPlugin {
     private static RivalsEnvoy instance;
@@ -27,6 +28,7 @@ public final class RivalsEnvoy extends JavaPlugin {
         CommandAPI.onLoad(new CommandAPIConfig());
         CommandAPI.onEnable(this);
         new Commands().register();
+        new Utils().updateBlackList();
         getServer().getPluginManager().registerEvents(new CollectionListener(), this);
         getServer().getPluginManager().registerEvents(new FallingBlockListener(), this);
         getServer().getPluginManager().registerEvents(new ActivateFlare(), this);
