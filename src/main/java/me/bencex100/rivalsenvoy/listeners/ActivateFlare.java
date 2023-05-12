@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class ActivateFlare implements Listener {
     private final YamlDocument config = ConfigManager.getCnf("config");
     private final YamlDocument messages = ConfigManager.getCnf("messages");
-    HashMap<Player, Long> cd = new HashMap<>();
+    private final HashMap<Player, Long> cd = new HashMap<>();
 
     @EventHandler
     private void onPlayerInteractEvent(PlayerInteractEvent e) {

@@ -11,12 +11,12 @@ import java.util.HashMap;
 
 public class EnvoyHandler {
     public static HashMap<Location, Crate> crates = new HashMap<>();
-    static boolean active = false;
+    public static boolean active = false;
     public static boolean bcd = false;
     static Location center = null;
     private final YamlDocument config = ConfigManager.getCnf("config");
     private final YamlDocument data = ConfigManager.getCnf("data");
-    Long cd;
+    private Long cd;
 
     public static boolean isActive() {
         return active;

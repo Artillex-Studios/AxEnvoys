@@ -29,9 +29,9 @@ import java.util.Objects;
 
 public class Crate {
     private final YamlDocument config = ConfigManager.getCnf("config");
-    Location loc;
-    Hologram holo;
-    String type;
+    private final Location loc;
+    private Hologram holo;
+    private final String type;
 
     Crate(Location loc, String type) {
         this.loc = loc.getBlock().getLocation();

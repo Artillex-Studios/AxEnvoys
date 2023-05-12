@@ -22,7 +22,7 @@ public class CollectionListener implements Listener {
     public static int cratesSpawned;
     private final YamlDocument config = ConfigManager.getCnf("config");
     private final YamlDocument messages = ConfigManager.getCnf("messages");
-    HashMap<Player, Long> cd = new HashMap<>();
+    private final HashMap<Player, Long> cd = new HashMap<>();
 
     @EventHandler
     public void onCollect(PlayerInteractEvent e) {

@@ -10,7 +10,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import java.util.HashMap;
 
 public class FallingBlockListener implements Listener {
-    public static HashMap<Entity, Crate> fallingBlocks = new HashMap<>();
+    public static final HashMap<Entity, Crate> fallingBlocks = new HashMap<>();
 
     @EventHandler
     public void onEntityChangeBlock(EntityChangeBlockEvent e) {

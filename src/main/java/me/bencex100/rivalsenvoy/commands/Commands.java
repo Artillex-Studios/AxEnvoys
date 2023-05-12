@@ -21,6 +21,7 @@ public class Commands {
     private final YamlDocument config = ConfigManager.getCnf("config");
     private final YamlDocument data = ConfigManager.getCnf("data");
     private final YamlDocument messages = ConfigManager.getCnf("messages");
+    
     public void register() {
         new CommandTree("rivalsenvoy")
                 .withAliases("envoy", "renvoy", "envoys")

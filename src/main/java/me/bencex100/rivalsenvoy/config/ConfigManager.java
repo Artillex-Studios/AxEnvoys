@@ -16,6 +16,7 @@ public class ConfigManager {
     private static YamlDocument config = null;
     private static YamlDocument data = null;
     private static YamlDocument messages = null;
+
     public void loadConfig() {
         try {
             config = YamlDocument.create(new File(RivalsEnvoy.getInstance().getDataFolder(), "config.yml"), RivalsEnvoy.getInstance().getResource("config.yml"),

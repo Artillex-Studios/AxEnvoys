@@ -6,6 +6,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class FireworkDamageListener implements Listener {
+
     @EventHandler
     public void onFireworkDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Firework fw)) return;
