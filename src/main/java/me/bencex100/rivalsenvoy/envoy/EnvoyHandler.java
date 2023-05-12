@@ -1,8 +1,7 @@
 package me.bencex100.rivalsenvoy.envoy;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
-import me.bencex100.rivalsenvoy.config.Config;
-import me.bencex100.rivalsenvoy.envoy.Crate;
+import me.bencex100.rivalsenvoy.config.ConfigManager;
 import me.bencex100.rivalsenvoy.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -15,8 +14,8 @@ public class EnvoyHandler {
     static boolean active = false;
     public static boolean bcd = false;
     static Location center = null;
-    private final YamlDocument config = Config.getCnf("config");
-    private final YamlDocument data = Config.getCnf("data");
+    private final YamlDocument config = ConfigManager.getCnf("config");
+    private final YamlDocument data = ConfigManager.getCnf("data");
     Long cd;
 
     public static boolean isActive() {

@@ -4,7 +4,7 @@ import dev.dejvokep.boostedyaml.YamlDocument;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import me.bencex100.rivalsenvoy.RivalsEnvoy;
-import me.bencex100.rivalsenvoy.config.Config;
+import me.bencex100.rivalsenvoy.config.ConfigManager;
 import me.bencex100.rivalsenvoy.listeners.FallingBlockListener;
 import me.bencex100.rivalsenvoy.utils.FallingBlockChecker;
 import me.bencex100.rivalsenvoy.utils.Utils;
@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Crate {
-    private final YamlDocument config = Config.getCnf("config");
+    private final YamlDocument config = ConfigManager.getCnf("config");
     Location loc;
     Hologram holo;
     String type;

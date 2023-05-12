@@ -6,7 +6,7 @@ import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import me.bencex100.rivalsenvoy.RivalsEnvoy;
-import me.bencex100.rivalsenvoy.config.Config;
+import me.bencex100.rivalsenvoy.config.ConfigManager;
 import me.bencex100.rivalsenvoy.envoy.EnvoyHandler;
 import me.bencex100.rivalsenvoy.utils.Utils;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -18,9 +18,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Commands {
-    private final YamlDocument config = Config.getCnf("config");
-    private final YamlDocument data = Config.getCnf("data");
-    private final YamlDocument messages = Config.getCnf("messages");
+    private final YamlDocument config = ConfigManager.getCnf("config");
+    private final YamlDocument data = ConfigManager.getCnf("data");
+    private final YamlDocument messages = ConfigManager.getCnf("messages");
     public void register() {
         new CommandTree("rivalsenvoy")
                 .withAliases("envoy", "renvoy", "envoys")
@@ -32,7 +32,7 @@ public class Commands {
                 .then(new LiteralArgument("reload")
                         .withPermission("rivalsenvoy.reload")
                         .executes((sender, objects) -> {
-                            Config.reloadCfs();
+                            ConfigManager.reloadCfs();
                             sender.sendRichMessage(messages.getString("success.reloaded"));
                         })
                 )

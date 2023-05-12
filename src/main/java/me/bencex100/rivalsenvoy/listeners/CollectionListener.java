@@ -1,7 +1,7 @@
 package me.bencex100.rivalsenvoy.listeners;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
-import me.bencex100.rivalsenvoy.config.Config;
+import me.bencex100.rivalsenvoy.config.ConfigManager;
 import me.bencex100.rivalsenvoy.envoy.Crate;
 import me.bencex100.rivalsenvoy.envoy.EnvoyHandler;
 import me.bencex100.rivalsenvoy.utils.Utils;
@@ -20,8 +20,8 @@ import java.util.Map;
 
 public class CollectionListener implements Listener {
     public static int cratesSpawned;
-    private final YamlDocument config = Config.getCnf("config");
-    private final YamlDocument messages = Config.getCnf("messages");
+    private final YamlDocument config = ConfigManager.getCnf("config");
+    private final YamlDocument messages = ConfigManager.getCnf("messages");
     HashMap<Player, Long> cd = new HashMap<>();
 
     @EventHandler

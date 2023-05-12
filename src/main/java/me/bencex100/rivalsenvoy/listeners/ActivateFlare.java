@@ -2,7 +2,7 @@ package me.bencex100.rivalsenvoy.listeners;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import me.bencex100.rivalsenvoy.RivalsEnvoy;
-import me.bencex100.rivalsenvoy.config.Config;
+import me.bencex100.rivalsenvoy.config.ConfigManager;
 import me.bencex100.rivalsenvoy.utils.Utils;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.NamespacedKey;
@@ -18,8 +18,8 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.HashMap;
 
 public class ActivateFlare implements Listener {
-    private final YamlDocument config = Config.getCnf("config");
-    private final YamlDocument messages = Config.getCnf("messages");
+    private final YamlDocument config = ConfigManager.getCnf("config");
+    private final YamlDocument messages = ConfigManager.getCnf("messages");
     HashMap<Player, Long> cd = new HashMap<>();
 
     @EventHandler

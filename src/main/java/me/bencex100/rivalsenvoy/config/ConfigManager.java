@@ -12,7 +12,7 @@ import me.bencex100.rivalsenvoy.utils.Utils;
 import java.io.File;
 import java.io.IOException;
 
-public class Config {
+public class ConfigManager {
     private static YamlDocument config = null;
     private static YamlDocument data = null;
     private static YamlDocument messages = null;

@@ -2,10 +2,9 @@ package me.bencex100.rivalsenvoy.utils;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import me.bencex100.rivalsenvoy.RivalsEnvoy;
-import me.bencex100.rivalsenvoy.config.Config;
+import me.bencex100.rivalsenvoy.config.ConfigManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 import org.bukkit.Bukkit;
@@ -28,7 +27,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
-    private static final YamlDocument config = Config.getCnf("config");
+    private static final YamlDocument config = ConfigManager.getCnf("config");
     private static final ArrayList<Material> blackList = new ArrayList<>();
 
     public void updateBlackList() {

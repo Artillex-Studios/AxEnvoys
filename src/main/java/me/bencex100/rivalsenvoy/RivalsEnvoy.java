@@ -3,7 +3,7 @@ package me.bencex100.rivalsenvoy;
 import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIConfig;
 import me.bencex100.rivalsenvoy.commands.Commands;
-import me.bencex100.rivalsenvoy.config.Config;
+import me.bencex100.rivalsenvoy.config.ConfigManager;
 import me.bencex100.rivalsenvoy.listeners.ActivateFlare;
 import me.bencex100.rivalsenvoy.listeners.CollectionListener;
 import me.bencex100.rivalsenvoy.listeners.FallingBlockListener;
@@ -24,7 +24,7 @@ public final class RivalsEnvoy extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
-        new Config().loadConfig();
+        new ConfigManager().loadConfig();
         CommandAPI.onLoad(new CommandAPIConfig());
         CommandAPI.onEnable(this);
         new Commands().register();
@@ -51,7 +51,7 @@ public final class RivalsEnvoy extends JavaPlugin {
         crates.forEach((key, value) -> value.collectCrate(null));
         CommandAPI.onDisable();
         try {
-            Config.getCnf("data").save();
+            ConfigManager.getCnf("data").save();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
