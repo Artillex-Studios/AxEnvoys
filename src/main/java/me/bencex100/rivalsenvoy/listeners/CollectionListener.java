@@ -4,6 +4,7 @@ import dev.dejvokep.boostedyaml.YamlDocument;
 import me.bencex100.rivalsenvoy.config.ConfigManager;
 import me.bencex100.rivalsenvoy.envoy.Crate;
 import me.bencex100.rivalsenvoy.envoy.EnvoyHandler;
+import me.bencex100.rivalsenvoy.utils.ColorUtils;
 import me.bencex100.rivalsenvoy.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,27 +32,31 @@ public class CollectionListener implements Listener {
         if (e.getClickedBlock() == null) return;
         if (e.getClickedBlock().getType() == Material.AIR) return;
         if (!(EnvoyHandler.crates.size() > 0)) return;
+
         for (Map.Entry<Location, Crate> entry : EnvoyHandler.crates.entrySet()) {
 
             if (!e.getClickedBlock().getLocation().equals(entry.getKey())) continue;
             e.setCancelled(true);
-            if (cd.containsKey(e.getPlayer())) {
-                if (System.currentTimeMillis() - cd.get(e.getPlayer()) < config.getLong("collect-cooldown-in-seconds") * 1000) {
-                    e.getPlayer().sendRichMessage(config.getString("prefix") + messages.getString("error.cooldown-message").replace("%time%", Utils.fancyTime(config.getLong("collect-cooldown-in-seconds") * 1000 - System.currentTimeMillis() + cd.get(e.getPlayer()))));
-                    return;
-                }
+
+            if (cd.containsKey(e.getPlayer()) && System.currentTimeMillis() - cd.get(e.getPlayer()) < config.getLong("collect-cooldown-in-seconds") * 1000) {
+                e.getPlayer().sendMessage(ColorUtils.deserialize(config.getString("prefix") + messages.getString("error.cooldown-message").replace("%time%", Long.toString(config.getLong("collect-cooldown-in-seconds") - Math.round((System.currentTimeMillis() - cd.get(e.getPlayer())) / 1000f)))));
+                return;
             }
+
             cd.put(e.getPlayer(), System.currentTimeMillis());
             entry.getValue().collectCrate(e.getPlayer());
             --cratesSpawned;
+
             for (Player p : Bukkit.getOnlinePlayers()) {
-                p.sendRichMessage(config.getString("prefix") + messages.getString("broadcast.found").replace("%amount%", Integer.toString(cratesSpawned)).replace("%player%", e.getPlayer().getName()));
+                p.sendMessage(ColorUtils.deserialize(config.getString("prefix") + messages.getString("broadcast.found").replace("%amount%", Integer.toString(cratesSpawned)).replace("%player%", e.getPlayer().getName())));
             }
-            if (cratesSpawned == 0) {
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.sendRichMessage(config.getString("prefix") + messages.getString("broadcast.ended"));
-                }
+
+            if (cratesSpawned != 0) continue;
+
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                p.sendMessage(ColorUtils.deserialize(config.getString("prefix") + messages.getString("broadcast.ended")));
             }
+
             return;
         }
     }

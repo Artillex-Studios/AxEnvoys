@@ -13,6 +13,7 @@ public class BlockPhysicsListener implements Listener {
         if (!EnvoyHandler.isActive()) return;
         if (!(e.getBlock().getType() == Material.OCHRE_FROGLIGHT || e.getBlock().getType() == Material.PEARLESCENT_FROGLIGHT || e.getBlock().getType() == Material.VERDANT_FROGLIGHT)) return;
         if (!EnvoyHandler.getCenter().getWorld().equals(e.getBlock().getWorld())) return;
+
         e.setCancelled(true);
     }
 }

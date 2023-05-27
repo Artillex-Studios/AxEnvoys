@@ -5,7 +5,6 @@ import dev.jorel.commandapi.CommandTree;
 import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.PlayerArgument;
-import me.bencex100.rivalsenvoy.RivalsEnvoy;
 import me.bencex100.rivalsenvoy.config.ConfigManager;
 import me.bencex100.rivalsenvoy.envoy.EnvoyHandler;
 import me.bencex100.rivalsenvoy.utils.Utils;
@@ -14,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 public class Commands {
@@ -43,17 +41,13 @@ public class Commands {
                             Player p = (Player) sender;
                             data.set("data.center", p.getLocation().serialize());
                             sender.sendRichMessage(messages.getString("success.set-center"));
-                            try {
-                                data.save();
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
+                            ConfigManager.saveData();
                         })
                 )
                 .then(new LiteralArgument("start")
                         .withPermission("rivalsenvoy.admin")
                         .executes((sender, objects) -> {
-                            RivalsEnvoy.getEvh().startEnvoy();
+                            EnvoyHandler.startEnvoy();
                             sender.sendRichMessage(messages.getString("success.started"));
                         })
                 )
@@ -72,7 +66,7 @@ public class Commands {
                                         .executes((sender, args) -> {
                                             if (!config.getBoolean("flare.enabled")) return;
                                             Player p = (Player) args[0];
-                                            Integer am = (Integer) args[1];
+                                            int am = (int) args[1];
                                             ItemStack it = Utils.createItem(Material.getMaterial(config.getString("flare.material")), am, config.getString("flare.name"), new ArrayList<>(config.getStringList("flare.lore")), "flare");
                                             p.getInventory().addItem(it);
                                         })

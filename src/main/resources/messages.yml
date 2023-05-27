@@ -10,7 +10,7 @@ error:
   no-permission: "<red>Nincs ehhez jogod!</red>"
   player-not-found: "<red>Nincs ilyen játékos online!</red>"
   incorrect-amount: "<red>Hibás mennyiség!</red>"
-  cooldown-message: "<red>Várnod kell még <yellow>%time%</yellow> a lámpás begyűjtéséig!</red>"
+  cooldown-message: "<red>Várnod kell még <yellow>%time%</yellow> másodpercet a lámpás begyűjtéséig!</red>"
   no-locations: "<red>Nincsennek beállított lokációk!</red>"
   no-center: "<red>Nincs beállítva a középpont!</red>"
   flare-cooldown: "<red>Várnod kell még <yellow>%time%</yellow> az indító elhasználásig!</red>"

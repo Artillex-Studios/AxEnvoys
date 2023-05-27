@@ -4,7 +4,6 @@ import dev.jorel.commandapi.CommandAPI;
 import dev.jorel.commandapi.CommandAPIConfig;
 import me.bencex100.rivalsenvoy.commands.Commands;
 import me.bencex100.rivalsenvoy.config.ConfigManager;
-import me.bencex100.rivalsenvoy.envoy.EnvoyHandler;
 import me.bencex100.rivalsenvoy.listeners.ActivateFlare;
 import me.bencex100.rivalsenvoy.listeners.BlockPhysicsListener;
 import me.bencex100.rivalsenvoy.listeners.CollectionListener;
@@ -13,20 +12,13 @@ import me.bencex100.rivalsenvoy.listeners.FireworkDamageListener;
 import me.bencex100.rivalsenvoy.utils.Utils;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
-
 import static me.bencex100.rivalsenvoy.envoy.EnvoyHandler.crates;
 
 public final class RivalsEnvoy extends JavaPlugin {
     private static RivalsEnvoy instance;
-    private static EnvoyHandler evh;
 
     public static RivalsEnvoy getInstance() {
         return instance;
-    }
-
-    public static EnvoyHandler getEvh() {
-        return evh;
     }
 
     @Override
@@ -45,18 +37,12 @@ public final class RivalsEnvoy extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockPhysicsListener(), this);
         getServer().getPluginManager().registerEvents(new FireworkDamageListener(), this);
 
-        evh = new EnvoyHandler();
-
     }
 
     @Override
     public void onDisable() {
         crates.forEach((key, value) -> value.collectCrate(null));
         CommandAPI.onDisable();
-        try {
-            ConfigManager.getCnf("data").save();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        ConfigManager.saveData();
     }
 }

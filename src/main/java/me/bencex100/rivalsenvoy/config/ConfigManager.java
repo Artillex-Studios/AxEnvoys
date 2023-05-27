@@ -37,6 +37,14 @@ public class ConfigManager {
         };
     }
 
+    public static void saveData() {
+        try {
+            data.save();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static void reloadCfs() {
         try {
             config.reload();

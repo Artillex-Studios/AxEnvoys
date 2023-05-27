@@ -11,6 +11,7 @@ public class FireworkDamageListener implements Listener {
     public void onFireworkDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Firework fw)) return;
         if (!fw.hasMetadata("RIVALSENVOY")) return;
+
         e.setCancelled(true);
     }
 }
