@@ -35,6 +35,7 @@ public class EnvoyHandler {
             key.remove();
             FallingBlockListener.fallingBlocks.remove(key);
         });
+
         center = Utils.deserializeLocation(data, "data.center").getBlock().getLocation();
         crates.forEach((key, value) -> value.collectCrate(null));
         crates.clear();

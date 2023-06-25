@@ -1,6 +1,7 @@
 package me.bencex100.rivalsenvoy;
 
 import dev.jorel.commandapi.CommandAPI;
+import dev.jorel.commandapi.CommandAPIBukkitConfig;
 import dev.jorel.commandapi.CommandAPIConfig;
 import me.bencex100.rivalsenvoy.commands.Commands;
 import me.bencex100.rivalsenvoy.config.ConfigManager;
@@ -22,13 +23,17 @@ public final class RivalsEnvoy extends JavaPlugin {
     }
 
     @Override
+    public void onLoad() {
+        CommandAPI.onLoad(new CommandAPIBukkitConfig(this));
+        new Commands().register();
+    }
+
+    @Override
     public void onEnable() {
         instance = this;
 
         new ConfigManager().loadConfig();
-        CommandAPI.onLoad(new CommandAPIConfig());
-        CommandAPI.onEnable(this);
-        new Commands().register();
+        CommandAPI.onEnable();
         new Utils().updateBlackList();
 
         getServer().getPluginManager().registerEvents(new CollectionListener(), this);

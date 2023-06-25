@@ -65,8 +65,8 @@ public class Commands {
                                 .then(new IntegerArgument("amount")
                                         .executes((sender, args) -> {
                                             if (!config.getBoolean("flare.enabled")) return;
-                                            Player p = (Player) args[0];
-                                            int am = (int) args[1];
+                                            Player p = (Player) args.get(0);
+                                            int am = (int) args.get(1);
                                             ItemStack it = Utils.createItem(Material.getMaterial(config.getString("flare.material")), am, config.getString("flare.name"), new ArrayList<>(config.getStringList("flare.lore")), "flare");
                                             p.getInventory().addItem(it);
                                         })

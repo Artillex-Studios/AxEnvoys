@@ -47,8 +47,8 @@
                             <shadedPattern>me.bencex100.rivalsenvoy.libs.boostedyaml</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>dev.jorel.commandapi</pattern>
-                            <shadedPattern>me.bencex100.rivalsenvoy.commandapi</shadedPattern>
+                            <pattern>dev.jorel.commandapi-bukkit</pattern>
+                            <shadedPattern>me.bencex100.rivalsenvoy.libs.commandapi</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -101,8 +101,8 @@
         </dependency>
         <dependency>
             <groupId>dev.jorel</groupId>
-            <artifactId>commandapi-shade</artifactId>
-            <version>8.8.0</version>
+            <artifactId>commandapi-bukkit-shade</artifactId>
+            <version>9.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.github.decentsoftware-eu</groupId>

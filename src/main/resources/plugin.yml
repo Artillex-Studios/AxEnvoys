@@ -1,7 +1,7 @@
 name: RivalsEnvoy
 version: '${project.version}'
 main: me.bencex100.rivalsenvoy.RivalsEnvoy
-api-version: 1.19
+api-version: 1.13
 softdepend: [ PlaceholderAPI, DecentHolograms ]
 
 permissions:
