@@ -47,7 +47,7 @@
                             <shadedPattern>me.bencex100.rivalsenvoy.libs.boostedyaml</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>dev.jorel.commandapi-bukkit</pattern>
+                            <pattern>dev.jorel.commandapi</pattern>
                             <shadedPattern>me.bencex100.rivalsenvoy.libs.commandapi</shadedPattern>
                         </relocation>
                     </relocations>
