@@ -5,6 +5,8 @@ import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import me.bencex100.rivalsenvoy.RivalsEnvoy;
 import me.bencex100.rivalsenvoy.config.ConfigManager;
+import me.bencex100.rivalsenvoy.crateconfig.Crate;
+import me.bencex100.rivalsenvoy.crateconfig.Crates;
 import me.bencex100.rivalsenvoy.listeners.FallingBlockListener;
 import me.bencex100.rivalsenvoy.utils.ColorUtils;
 import me.bencex100.rivalsenvoy.utils.FallingBlockChecker;
@@ -22,22 +24,24 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
+import java.awt.Color;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
-public class Crate {
+public class SpawnedCrate {
     private final YamlDocument config = ConfigManager.getCnf("config");
     private final Location loc;
     private Hologram holo;
     private final String type;
+    private final Crate cr;
 
-    public Crate(Location loc, String type) {
+    public SpawnedCrate(@NotNull Location loc, String type) {
         this.loc = loc.getBlock().getLocation();
         this.type = type;
+        this.cr = Crates.getCrate(type);
     }
 
     public void load() {
@@ -59,12 +63,12 @@ public class Crate {
 
     public void land() {
         Location loc2 = loc.getBlock().getLocation();
-        loc2.getBlock().setType(Objects.requireNonNull(Material.getMaterial(config.getString("crates." + type + ".material"))));
-        List<String> lines = config.getStringList("crates." + type + ".hologram");
+        loc2.getBlock().setType(cr.getMaterial());
+        List<String> lines = cr.getHologramLines();
         lines.replaceAll(input -> LegacyComponentSerializer.legacyAmpersand().serialize(MiniMessage.miniMessage().deserialize(input)));
         loc2.add(0.5, 0D, 0.5);
         EnvoyHandler.crates.put(loc, this);
-        loc2.setY(loc2.getY() + config.getDouble("crates." + type + ".hologram-height"));
+        loc2.setY(loc2.getY() + cr.getHologramHeight());
 
         if (DHAPI.getHologram("RIVALSENVOY-" + loc2.getBlockX() + loc2.getBlockY() + loc2.getBlockZ()) != null) {
             DHAPI.getHologram("RIVALSENVOY-" + loc2.getBlockX() + loc2.getBlockY() + loc2.getBlockZ()).delete();
@@ -80,18 +84,18 @@ public class Crate {
         if (p == null) return;
 
         final HashMap<String, Double> map = new HashMap<>();
-        for (Object j : config.getSection("crates." + type + ".reward-commands").getKeys()) {
-            map.put(j.toString(), config.getDouble("crates." + type + ".reward-commands." + j + ".chance"));
+        for (Object j : cr.getCrateConfig().getSection("reward-commands").getKeys()) {
+            map.put(j.toString(), cr.getCrateConfig().getDouble("reward-commands." + j + ".chance"));
         }
 
         String rw = Utils.randomValue(map);
-        p.sendMessage(ColorUtils.deserialize(config.getString("prefix") + config.getString("crates." + type + ".reward-commands." + rw + ".message")));
-        for (String i : config.getStringList("crates." + type + ".reward-commands." + rw + ".commands")) {
+        p.sendMessage(ColorUtils.deserialize(config.getString("prefix") + cr.getCrateConfig().getString("reward-commands." + rw + ".message")));
+        for (String i : cr.getCrateConfig().getStringList("reward-commands." + rw + ".commands")) {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), i.replace("%player_name%", p.getName()).replace("%player%", p.getName()));
         }
 
-        if (config.getBoolean("crates." + type + ".firework.enabled")) {
-            String hex = config.getString("crates." + type + ".firework.firework-color");
+        if (cr.isFireworkEnabled()) {
+            String hex = cr.getFireworkColor();
             Location loc2 = loc.clone();
             loc2.add(0.5, 0.5, 0.5);
             Firework fw = (Firework) loc.getWorld().spawnEntity(loc2, EntityType.FIREWORK);

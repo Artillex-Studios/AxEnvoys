@@ -2,6 +2,8 @@ package me.bencex100.rivalsenvoy.envoy;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import me.bencex100.rivalsenvoy.config.ConfigManager;
+import me.bencex100.rivalsenvoy.crateconfig.Crate;
+import me.bencex100.rivalsenvoy.crateconfig.Crates;
 import me.bencex100.rivalsenvoy.listeners.FallingBlockListener;
 import me.bencex100.rivalsenvoy.utils.Utils;
 import org.bukkit.Bukkit;
@@ -11,7 +13,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class EnvoyHandler {
-    public static HashMap<Location, Crate> crates = new HashMap<>();
+    public static HashMap<Location, SpawnedCrate> crates = new HashMap<>();
     public static boolean active = false;
     public static boolean bcd = false;
     public static Location center = null;
@@ -43,8 +45,8 @@ public class EnvoyHandler {
         active = true;
 
         final HashMap<String, Double> map = new HashMap<>();
-        for (Object j : config.getSection("crates").getKeys()) {
-            map.put(j.toString(), config.getDouble("crates." + j + ".spawn-chance"));
+        for (Crate cr : Crates.getCrates().values()) {
+            map.put(cr.getName(), cr.getSpawnChance());
         }
 
         final ArrayList<Location> locations = new ArrayList<>();
@@ -64,7 +66,7 @@ public class EnvoyHandler {
                 else
                     locations.add(loc);
             } while (loc == null);
-            new Crate(loc, Utils.randomValue(map)).load();
+            new SpawnedCrate(loc, Utils.randomValue(map)).load();
         }
     }
 }

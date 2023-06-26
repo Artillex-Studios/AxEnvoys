@@ -2,10 +2,9 @@ package me.bencex100.rivalsenvoy.listeners;
 
 import dev.dejvokep.boostedyaml.YamlDocument;
 import me.bencex100.rivalsenvoy.config.ConfigManager;
-import me.bencex100.rivalsenvoy.envoy.Crate;
+import me.bencex100.rivalsenvoy.envoy.SpawnedCrate;
 import me.bencex100.rivalsenvoy.envoy.EnvoyHandler;
 import me.bencex100.rivalsenvoy.utils.ColorUtils;
-import me.bencex100.rivalsenvoy.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,7 +32,7 @@ public class CollectionListener implements Listener {
         if (e.getClickedBlock().getType() == Material.AIR) return;
         if (!(EnvoyHandler.crates.size() > 0)) return;
 
-        for (Map.Entry<Location, Crate> entry : EnvoyHandler.crates.entrySet()) {
+        for (Map.Entry<Location, SpawnedCrate> entry : EnvoyHandler.crates.entrySet()) {
 
             if (!e.getClickedBlock().getLocation().equals(entry.getKey())) continue;
             e.setCancelled(true);

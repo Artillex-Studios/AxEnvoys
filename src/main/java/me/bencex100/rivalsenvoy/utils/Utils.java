@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -52,7 +53,7 @@ public class Utils {
         return new Location(world, x, y, z, yaw, pitch);
     }
 
-    public static String randomValue(HashMap<String, Double> map) {
+    public static String randomValue(@NotNull HashMap<String, Double> map) {
         List<Pair<String,Double>> list = new ArrayList<>();
         map.forEach((key, value) -> list.add(new Pair<>(key, value)));
 
@@ -62,7 +63,7 @@ public class Utils {
     }
 
     @Nullable
-    public static Location isGood(Location loc) {
+    public static Location isGood(@NotNull Location loc) {
         loc.setX(Double.parseDouble(String.valueOf(Math.round(loc.getX()) + ThreadLocalRandom.current().nextInt(config.getInt("random-locations.distance") * - 1, config.getInt("random-locations.distance")))));
         loc.setZ(Double.parseDouble(String.valueOf(Math.round(loc.getZ()) + ThreadLocalRandom.current().nextInt(config.getInt("random-locations.distance") * - 1, config.getInt("random-locations.distance")))));
 
@@ -78,13 +79,15 @@ public class Utils {
         return loc2;
     }
 
-    public static Location topBlock(Location loc) {
+    @NotNull
+    public static Location topBlock(@NotNull Location loc) {
         loc.getWorld().getChunkAtAsync(loc, false).thenAccept(chunk -> {
             loc.setY(chunk.getChunkSnapshot().getHighestBlockYAt(loc.getBlockX() & 15, loc.getBlockZ() & 15) + 1);
         });
         return loc;
     }
 
+    @NotNull
     public static String fancyTime(long time) {
 
         Duration remainingTime = Duration.ofMillis(time);
@@ -99,7 +102,8 @@ public class Utils {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
-    public static ItemStack createItem(final Material material, final int amount, final String name, final ArrayList<String> lore, final String id) {
+    @NotNull
+    public static ItemStack createItem(final Material material, final int amount, final String name, @NotNull final ArrayList<String> lore, final String id) {
         final ItemStack item = new ItemStack(material, amount);
         final ItemMeta meta = item.getItemMeta();
         meta.displayName(ColorUtils.deserialize(name).applyFallbackStyle(TextDecoration.ITALIC.withState(false)));

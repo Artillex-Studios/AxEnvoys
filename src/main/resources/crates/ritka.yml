@@ -1,0 +1,25 @@
+spawn-chance: 25.0
+material: OCHRE_FROGLIGHT
+firework:
+  enabled: true
+  firework-color: "#FFFF00"
+reward-commands:
+  "1":
+    chance: 5.0
+    message: "<white>Felvettél egy <b><color:#FFFF00>RITKA</color></b> envoy lámpást!</white>"
+    commands:
+      - "crate key give %player% impulse 3"
+  "2":
+    chance: 25.0
+    message: "<white>Felvettél egy <b><color:#FFFF00>RITKA</color></b> envoy lámpást!</white>"
+    commands:
+      - "crate key give %player% impulse 2"
+  "3":
+    chance: 100.0
+    message: "<white>Felvettél egy <b><color:#FFFF00>RITKA</color></b> envoy lámpást!</white>"
+    commands:
+      - "crate key give %player% impulse 1"
+hologram-height: 2.0
+hologram:
+  - "<color:#FF0000><b>ENVOY EVENT</b></color>"
+  - "<gray> - <white>Ritkaság:</white> <b><color:#FFFF00>RITKA</color></b> - </gray>"

@@ -6,6 +6,7 @@ import dev.jorel.commandapi.arguments.IntegerArgument;
 import dev.jorel.commandapi.arguments.LiteralArgument;
 import dev.jorel.commandapi.arguments.PlayerArgument;
 import me.bencex100.rivalsenvoy.config.ConfigManager;
+import me.bencex100.rivalsenvoy.crateconfig.Crates;
 import me.bencex100.rivalsenvoy.envoy.EnvoyHandler;
 import me.bencex100.rivalsenvoy.utils.Utils;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -33,6 +34,7 @@ public class Commands {
                         .executes((sender, objects) -> {
                             ConfigManager.reloadCfs();
                             sender.sendRichMessage(messages.getString("success.reloaded"));
+                            Crates.loadCrates();
                         })
                 )
                 .then(new LiteralArgument("center")

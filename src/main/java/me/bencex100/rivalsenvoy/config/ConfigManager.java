@@ -18,11 +18,12 @@ public class ConfigManager {
     private static YamlDocument messages = null;
 
     public void loadConfig() {
+        RivalsEnvoy main = RivalsEnvoy.getInstance();
         try {
-            config = YamlDocument.create(new File(RivalsEnvoy.getInstance().getDataFolder(), "config.yml"), RivalsEnvoy.getInstance().getResource("config.yml"),
+            config = YamlDocument.create(new File(main.getDataFolder(), "config.yml"), main.getResource("config.yml"),
                     GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.builder().setAutoUpdate(true).build(), DumperSettings.DEFAULT, UpdaterSettings.builder().setVersioning(new BasicVersioning("version")).build());
-            data = YamlDocument.create(new File(RivalsEnvoy.getInstance().getDataFolder(), "data.yml"), RivalsEnvoy.getInstance().getResource("data.yml"));
-            messages = YamlDocument.create(new File(RivalsEnvoy.getInstance().getDataFolder(), "messages.yml"), RivalsEnvoy.getInstance().getResource("messages.yml"),
+            data = YamlDocument.create(new File(main.getDataFolder(), "data.yml"), main.getResource("data.yml"), GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.builder().build(), DumperSettings.DEFAULT, UpdaterSettings.builder().build());
+            messages = YamlDocument.create(new File(main.getDataFolder(), "messages.yml"), main.getResource("messages.yml"),
                     GeneralSettings.builder().setUseDefaults(false).build(), LoaderSettings.builder().setAutoUpdate(true).build(), DumperSettings.DEFAULT, UpdaterSettings.builder().setVersioning(new BasicVersioning("version")).build());
         } catch (IOException e) {
             throw new RuntimeException(e);
