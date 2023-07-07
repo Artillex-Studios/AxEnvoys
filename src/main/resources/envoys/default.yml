@@ -1,0 +1,47 @@
+crates:
+  # The name of the crate:the spawn chance of the crate spawning
+  common: 50
+  legendary: 30
+  rare: 20
+
+amount: 30
+collect-cooldown: 10 # Seconds
+broadcast-collect: false
+
+random-spawn:
+  enabled: true # Should we use random spawning?
+  center: "world;0;100;0" # The center location
+  min-distance: 20 # The minimum distance from the center an envoy may spawn
+  max-distance: 100 # The maximum distance from the center an envoy may spawn
+  min-height: 10 # The minimum height at which an envoy may spawn
+  max-height: 200 # The maximum height at which an envoy may spawn
+
+  # You can use RegEx here, to match the name of the block
+  # For a list of materials, visit: https://jd.papermc.io/paper/1.20/org/bukkit/Material.html
+  not-on-blocks:
+    - "(air)"
+    - "barrier"
+    - "(leaves)"
+    - "(sign)"
+
+messages:
+  start: "You started the default envoy event!"
+  flare-start: "You started the default envoy event with your flare!"
+  claim: ""
+
+flare:
+  enabled: true
+  cooldown: 30 # Cooldown in seconds
+  item:
+    material: "prismarine_shard"
+    name: "&cEnvoy flare"
+    glow: true
+    custom-model-data: 0
+    lore:
+      - "&7Right click with this, to start"
+      - "&7the default envoy!"
+
+pre-defined-spawns:
+  enabled: true
+  locations:
+    - "world;1;1;1"

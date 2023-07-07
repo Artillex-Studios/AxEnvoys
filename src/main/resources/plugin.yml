@@ -1,13 +1,7 @@
-name: RivalsEnvoy
+name: AxEnvoy
 version: '${project.version}'
-main: me.bencex100.rivalsenvoy.RivalsEnvoy
-api-version: 1.13
-softdepend: [ PlaceholderAPI, DecentHolograms ]
-
-permissions:
-  rivalsenvoy.reload:
-    description: Reloads the plugin.
-    default: op
-  rivalsenvoy.admin:
-    description: Admin permissions.
-    default: op
+main: com.artillexstudios.axenvoy.AxEnvoyPlugin
+api-version: 1.18
+softdepend:
+  - DecentHolograms
+  - PlaceholderAPI

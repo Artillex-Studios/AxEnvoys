@@ -4,12 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>me.bencex100</groupId>
-    <artifactId>RivalsEnvoy</artifactId>
+    <groupId>com.artillexstudios.axenvoy</groupId>
+    <artifactId>AxEnvoy</artifactId>
     <version>2.0</version>
     <packaging>jar</packaging>
 
-    <name>RivalsEnvoy</name>
+    <name>AxEnvoy</name>
 
     <properties>
         <java.version>17</java.version>
@@ -43,11 +43,15 @@
                     <relocations>
                         <relocation>
                             <pattern>dev.dejvokep.boostedyaml</pattern>
-                            <shadedPattern>me.bencex100.rivalsenvoy.libs.boostedyaml</shadedPattern>
+                            <shadedPattern>com.artillexstudios.axenvoy.libs.boostedyaml</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>dev.jorel.commandapi</pattern>
-                            <shadedPattern>me.bencex100.rivalsenvoy.libs.commandapi</shadedPattern>
+                            <pattern>me.hsgamer.unihologram</pattern>
+                            <shadedPattern>com.artillexstudios.axenvoy.libs.unihologram</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>io.leangen.geantyref</pattern>
+                            <shadedPattern>com.artillexstudios.axenvoy.libs.geantyref</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -99,11 +103,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>dev.jorel</groupId>
-            <artifactId>commandapi-bukkit-shade</artifactId>
-            <version>9.0.3</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.decentsoftware-eu</groupId>
             <artifactId>decentholograms</artifactId>
             <version>2.8.1</version>
@@ -113,6 +112,46 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>3.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-core</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+        <dependency>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-brigadier</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+        <dependency>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-paper</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+        <dependency>
+            <groupId>cloud.commandframework</groupId>
+            <artifactId>cloud-minecraft-extras</artifactId>
+            <version>1.8.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.NEZNAMY</groupId>
+            <artifactId>YamlAssist</artifactId>
+            <version>1.0.5</version>
+        </dependency>
+        <dependency>
+            <groupId>me.hsgamer</groupId>
+            <artifactId>uni-hologram-spigot-decentholograms</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>me.hsgamer</groupId>
+            <artifactId>uni-hologram-spigot-decentholograms</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>me.hsgamer</groupId>
+            <artifactId>uni-hologram-spigot-vanilla</artifactId>
+            <version>2.1.0</version>
         </dependency>
     </dependencies>
 </project>

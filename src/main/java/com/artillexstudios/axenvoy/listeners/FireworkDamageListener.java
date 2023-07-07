@@ -1,4 +1,4 @@
-package me.bencex100.rivalsenvoy.listeners;
+package com.artillexstudios.axenvoy.listeners;
 
 import org.bukkit.entity.Firework;
 import org.bukkit.event.EventHandler;
