@@ -1,11 +1,11 @@
 package com.artillexstudios.axenvoy.envoy;
 
+import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.rewards.CommandReward;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.StringUtils;
 import com.artillexstudios.axenvoy.utils.Utils;
 import me.hsgamer.unihologram.common.api.Hologram;
-import me.hsgamer.unihologram.common.api.extra.Visibility;
 import me.hsgamer.unihologram.common.line.TextHologramLine;
 import me.hsgamer.unihologram.spigot.SpigotHologramProvider;
 import me.hsgamer.unihologram.spigot.common.hologram.extra.PlayerVisibility;
@@ -26,27 +26,28 @@ public class SpawnedCrate {
     private Location finishLocation;
     private FallingBlock fallingBlock;
     private Hologram<Location> hologram;
-    private Location fallLocation;
 
     public SpawnedCrate(@NotNull Envoy parent, @NotNull Crate handle, @NotNull Location location) {
         this.parent = parent;
         this.handle = handle;
         this.finishLocation = location;
-        this.fallLocation = location;
 
-        if (!location.getChunk().isLoaded()) return;
-        if (!handle.isFallingBlock()) {
-            land(location);
-            return;
-        }
+        location.getWorld().getChunkAtAsync(location).thenAccept(chunk -> {
+            chunk.addPluginChunkTicket(AxEnvoyPlugin.getInstance());
+            this.parent.getSpawnedCrates().add(this);
 
-        Location spawnAt = location.clone();
-        spawnAt.add(0, this.handle.getFallingBlockHeight(), 0);
-        this.fallLocation = spawnAt;
-        fallingBlock = location.getWorld().spawnFallingBlock(spawnAt, this.handle.getFallingBlockType().createBlockData());
-        fallingBlock.setDropItem(false);
-        FallingBlockChecker.addToCheck(this);
-        fallingBlock.setVelocity(new Vector(0, handle.getFallingBlockSpeed(), 0));
+            if (!handle.isFallingBlock()) {
+                land(location);
+                return;
+            }
+
+            Location spawnAt = location.clone();
+            spawnAt.add(0, this.handle.getFallingBlockHeight(), 0);
+            fallingBlock = location.getWorld().spawnFallingBlock(spawnAt, this.handle.getFallingBlockType().createBlockData());
+            fallingBlock.setDropItem(false);
+            FallingBlockChecker.addToCheck(this);
+            fallingBlock.setVelocity(new Vector(0, handle.getFallingBlockSpeed(), 0));
+        });
     }
 
     public void land(@NotNull Location location) {
@@ -60,26 +61,35 @@ public class SpawnedCrate {
         Location hologramLocation = location.clone().getBlock().getLocation();
         hologramLocation.add(0.5, handle.getHologramHeight(), 0.5);
 
-        hologram = provider.createHologram("envoy-%s".formatted(Utils.serializeLocation(hologramLocation)), hologramLocation);
+        hologram = provider.createHologram("axenvoy-%s".formatted(Utils.serializeLocation(hologramLocation).replace(";", "")), hologramLocation);
         hologram.init();
         for (String hologramLine : handle.getHologramLines()) {
             hologram.addLine(new TextHologramLine(StringUtils.formatToString(hologramLine)));
         }
 
-        if (hologram instanceof Visibility<?>) {
-            System.out.println("AJKASDASD");
+        if (hologram instanceof PlayerVisibility v) {
+            v.showAll();
         }
     }
 
     public void claim(@Nullable Player player, Envoy envoy) {
+        this.claim(player, envoy, true);
+    }
+
+    public void claim(@Nullable Player player, Envoy envoy, boolean remove) {
         if (player != null) {
             CommandReward reward = Utils.randomReward(this.handle.getRewards());
             reward.execute(player);
         }
-        hologram.clear();
-        finishLocation.getWorld().getBlockAt(finishLocation).setType(Material.AIR);
 
-        this.parent.getSpawnedCrates().remove(this);
+        finishLocation.getWorld().getBlockAt(finishLocation).setType(Material.AIR);
+        if (hologram != null) {
+            hologram.clear();
+        }
+
+        if (remove) {
+            this.parent.getSpawnedCrates().remove(this);
+        }
 
         if (envoy != null) {
             boolean broadcast;
@@ -89,22 +99,25 @@ public class SpawnedCrate {
                 broadcast = Boolean.TRUE.equals(this.handle.isBroadcastCollect().toBoolean());
             }
 
-            if (broadcast) {
+            if (broadcast && player != null) {
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    onlinePlayer.sendMessage(envoy.getMessage("collect").replaceText(text -> {
+                    onlinePlayer.sendMessage(envoy.getMessage("prefix").append(envoy.getMessage("collect").replaceText(text -> {
                         text.match("%crate%");
-                        text.replacement(this.handle.getDisplayName());
+                        text.replacement(StringUtils.formatToString(this.handle.getDisplayName()));
                     }).replaceText(replace -> {
                         replace.match("%amount%");
                         replace.replacement(String.valueOf(envoy.getSpawnedCrates().size()));
-                    }));
+                    }).replaceText(replace -> {
+                        replace.match("%player%");
+                        replace.replacement(player.getName());
+                    })));
                 }
             }
 
             if (this.parent.getSpawnedCrates().isEmpty()) {
                 envoy.setActive(false);
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    onlinePlayer.sendMessage(envoy.getMessage("ended"));
+                    onlinePlayer.sendMessage(envoy.getMessage("prefix").append(envoy.getMessage("ended")));
                 }
             }
         }
@@ -120,14 +133,6 @@ public class SpawnedCrate {
 
     public void setFallingBlock(FallingBlock fallingBlock) {
         this.fallingBlock = fallingBlock;
-    }
-
-    public Location getFallLocation() {
-        return fallLocation;
-    }
-
-    public void setFallLocation(Location fallLocation) {
-        this.fallLocation = fallLocation;
     }
 
     public Location getFinishLocation() {

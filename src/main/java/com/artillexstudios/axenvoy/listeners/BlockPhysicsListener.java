@@ -8,11 +8,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class BlockPhysicsListener implements Listener {
 
     @EventHandler
-    public void onForm(BlockPhysicsEvent e) {
+    public void onBlockPhysicsEvent(@NotNull BlockPhysicsEvent e) {
         ObjectArrayList<Envoy> envoys = EnvoyLoader.envoys;
         if (envoys.isEmpty()) return;
 
@@ -27,7 +28,7 @@ public class BlockPhysicsListener implements Listener {
 
             for (int i1 = 0; i1 < crateSize; i1++) {
                 Crate crate = crates.get(i);
-                if (crate.getMaterial() != e.getBlock().getType()) continue;
+                if (crate.getMaterial() != e.getSourceBlock().getType() || crate.getMaterial() != e.getBlock().getType()) continue;
 
                 e.setCancelled(true);
                 return;

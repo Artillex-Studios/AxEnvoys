@@ -19,4 +19,5 @@ messages:
   info-active: ""
   starting-in: ""
   ended: ""
-  already-running: "Mán fut az event dik"
+  already-active: "Mán fut az event dik"
+  flare-disabled: ""

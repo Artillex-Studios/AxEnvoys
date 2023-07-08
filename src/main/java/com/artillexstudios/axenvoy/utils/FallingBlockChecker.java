@@ -5,6 +5,8 @@ import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -17,21 +19,21 @@ public class FallingBlockChecker {
             Iterator<SpawnedCrate> crateIterator = fallingCrates.iterator();
             while (crateIterator.hasNext()) {
                 SpawnedCrate next = crateIterator.next();
-                Location location = next.getFallLocation();
-                if (next.getFallingBlock() != null && location.equals(next.getFallingBlock().getLocation())) {
-                    crateIterator.remove();
-                    Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
-                        next.land(location);
-                        next.getFallingBlock().remove();
-                        next.setFallLocation(null);
-                        next.setFallingBlock(null);
-                    });
-                    continue;
-                }
+                Entity fallingBlock = next.getFallingBlock();
+                Location finishLocation = next.getFinishLocation();
+                Location currentLocation = fallingBlock.getLocation();
 
-                next.setFallLocation(next.getFallingBlock().getLocation());
+                if (next.getFallingBlock() != null && (finishLocation.getWorld().equals(currentLocation.getWorld()) && finishLocation.getBlockX() == currentLocation.getBlockX() && finishLocation.getBlockY() == currentLocation.getBlockY() && finishLocation.getBlockZ() == currentLocation.getBlockZ())) {
+                    crateIterator.remove();
+                    next.setFallingBlock(null);
+                    Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
+                        finishLocation.getChunk().removePluginChunkTicket(AxEnvoyPlugin.getInstance());
+                        next.land(next.getFinishLocation());
+                        fallingBlock.remove();
+                    });
+                }
             }
-        }, 0, 5);
+        }, 0, 0);
     }
 
     public static void addToCheck(@NotNull SpawnedCrate crate) {

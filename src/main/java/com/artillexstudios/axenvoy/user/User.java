@@ -58,6 +58,10 @@ public class User {
         return false;
     }
 
+    public long getCooldown(Crate crate) {
+        return this.crateCooldown.getOrDefault(crate, System.currentTimeMillis());
+    }
+
     public static void listen() {
         Bukkit.getPluginManager().registerEvents(new Listener() {
             @EventHandler

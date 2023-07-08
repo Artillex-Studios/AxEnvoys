@@ -65,16 +65,12 @@ public class Envoy {
         }
 
         for (Object crates : config.getSection("crates").getKeys()) {
-            System.out.println("Key:" + crates);
             for (Crate crate : CrateLoader.crates) {
-                System.out.println(crate);
                 if (!crate.getName().equals(crates)) continue;
-                System.out.println("aaa");
                 cratesMap.put(crate, config.getSection("crates").getDouble((String) crates));
             }
         }
 
-        System.out.println(this.cratesMap);
         config.getOptionalStringList("random-spawn.not-on-blocks").ifPresent(list -> {
             ObjectArrayList<Pattern> patterns = new ObjectArrayList<>(list.size());
             for (String s : list) {
@@ -93,7 +89,6 @@ public class Envoy {
                     continue material;
                 }
             }
-            System.out.println(this.notOnMaterials);
         });
     }
 
@@ -123,20 +118,20 @@ public class Envoy {
             }
         }
 
-        if (!randomSpawns) {
-            return;
-        }
+        if (randomSpawns) {
+            for (int i = 0; i < crateAmount; i++) {
+                Location location = null;
+                int tries = 0;
+                while (location == null || tries < 500) {
+                    tries++;
+                    location = Utils.getNextLocation(this, center.clone());
+                }
 
-        for (int i = 0; i < crateAmount; i++) {
-            Location location = null;
-            int tries = 0;
-            while (location == null || tries < 500) {
-                tries++;
-                location = Utils.getNextLocation(this, center.clone());
+                new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
             }
-
-            this.spawnedCrates.add(new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone()));
         }
+
+        System.out.println("Spawned:" + spawnedCrates.size());
 
         if (player == null) {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {

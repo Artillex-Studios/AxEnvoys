@@ -14,11 +14,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
 
 public class ActivateFlare implements Listener {
 
     @EventHandler
-    private void onPlayerInteractEvent(PlayerInteractEvent e) {
+    private void onPlayerInteractEvent(@NotNull PlayerInteractEvent e) {
         if (!e.getAction().isRightClick()) return;
         if (e.getHand() != EquipmentSlot.HAND) return;
         if (e.getItem() == null) return;
@@ -31,8 +32,13 @@ public class ActivateFlare implements Listener {
 
         for (Envoy envoy : EnvoyLoader.envoys) {
             if (envoy.getName().equals(container.get(key, PersistentDataType.STRING))) {
+                if (!envoy.isFlareEnabled()) {
+                    e.getPlayer().sendMessage(envoy.getMessage("messages.prefix").append(envoy.getMessage("messages.flare-disabled")));
+                    return;
+                }
+
                 if (envoy.isActive()) {
-                    e.getPlayer().sendMessage(ConfigManager.getLang().getString("messages.already-active"));
+                    e.getPlayer().sendMessage(envoy.getMessage("messages.prefix").append(envoy.getMessage("messages.already-active")));
                     return;
                 }
 

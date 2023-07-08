@@ -18,9 +18,12 @@ public class FallingBlockListener implements Listener {
         for (Envoy envoy : EnvoyLoader.envoys) {
             if (!envoy.isActive()) continue;
             for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
+                if (spawnedCrate.getFallingBlock() == null) continue;
+
                 if (spawnedCrate.getFallingBlock().equals(event.getEntity())) {
+                    spawnedCrate.land(spawnedCrate.getFinishLocation());
                     spawnedCrate.getFallingBlock().remove();
-                    spawnedCrate.land(spawnedCrate.getFallLocation());
+                    spawnedCrate.setFallingBlock(null);
                     event.setCancelled(true);
                     return;
                 }
