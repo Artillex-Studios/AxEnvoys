@@ -29,7 +29,6 @@ public class FileUtils {
         final File folder = new File(FileUtils.MAIN_DIRECTORY.toFile(), "/" + path);
 
         if (folder.mkdirs()) {
-            System.out.println("aasd");
             try (ZipFile file = new ZipFile(AxEnvoyPlugin.getInstance().getClass().getProtectionDomain().getCodeSource().getLocation().getPath())) {
                 for (Iterator<? extends ZipEntry> it = file.entries().asIterator(); it.hasNext();) {
                     ZipEntry entry = it.next();

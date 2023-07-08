@@ -1,7 +1,6 @@
 package com.artillexstudios.axenvoy.listeners;
 
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
-import com.artillexstudios.axenvoy.config.ConfigManager;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.EnvoyLoader;
 import org.bukkit.Material;
@@ -33,12 +32,12 @@ public class ActivateFlare implements Listener {
         for (Envoy envoy : EnvoyLoader.envoys) {
             if (envoy.getName().equals(container.get(key, PersistentDataType.STRING))) {
                 if (!envoy.isFlareEnabled()) {
-                    e.getPlayer().sendMessage(envoy.getMessage("messages.prefix").append(envoy.getMessage("messages.flare-disabled")));
+                    e.getPlayer().sendMessage(envoy.getMessage("prefix").append(envoy.getMessage("flare-disabled")));
                     return;
                 }
 
                 if (envoy.isActive()) {
-                    e.getPlayer().sendMessage(envoy.getMessage("messages.prefix").append(envoy.getMessage("messages.already-active")));
+                    e.getPlayer().sendMessage(envoy.getMessage("prefix").append(envoy.getMessage("already-active")));
                     return;
                 }
 

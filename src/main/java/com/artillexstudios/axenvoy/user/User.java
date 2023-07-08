@@ -5,20 +5,21 @@ import com.artillexstudios.axenvoy.envoy.Crate;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.checkerframework.common.value.qual.EnumVal;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.UUID;
 
 public class User {
     public static final Object2ObjectArrayMap<UUID, User> USER_MAP = new Object2ObjectArrayMap<>();
-    private final Object2LongArrayMap<Crate> crateCooldown = new Object2LongArrayMap<>();
+    private final ObjectArrayList<CrateCooldown> crateCooldowns = new ObjectArrayList<>();
     private final Object2LongArrayMap<Envoy> flareCooldown = new Object2LongArrayMap<>();
     private final Player player;
 
@@ -28,25 +29,24 @@ public class User {
     }
 
     public void clear() {
-        crateCooldown.clear();
+        crateCooldowns.clear();
         flareCooldown.clear();
     }
 
-    public void addCooldown(Crate crate, long seconds) {
-        crateCooldown.put(crate, System.currentTimeMillis() + (seconds * 1000));
+    public void addCrateCooldown(Crate crate, long seconds, Envoy envoy) {
+        if (!envoy.isCollectGlobalCooldown()) {
+            crateCooldowns.add(new CrateCooldown(envoy, crate, System.currentTimeMillis() + (seconds * 1000)));
+        } else {
+            crateCooldowns.add(new CrateCooldown(envoy, null, System.currentTimeMillis() + (seconds * 1000)));
+        }
     }
 
-    public void addCooldown(Envoy envoy, long seconds) {
+    public void addFlareCooldown(Envoy envoy, long seconds) {
         flareCooldown.put(envoy, System.currentTimeMillis() + (seconds * 1000));
     }
 
-    public boolean canCollect(Crate crate) {
-        long cooldown = crateCooldown.getOrDefault(crate, System.currentTimeMillis());
-        if (cooldown <= System.currentTimeMillis()) {
-            return true;
-        }
-
-        return false;
+    public boolean canCollect(Envoy envoy, Crate crate) {
+        return (getCooldown(envoy, crate) - System.currentTimeMillis()) / 1000 == 0;
     }
 
     public boolean canUseFlare(Envoy envoy) {
@@ -58,8 +58,26 @@ public class User {
         return false;
     }
 
-    public long getCooldown(Crate crate) {
-        return this.crateCooldown.getOrDefault(crate, System.currentTimeMillis());
+    public long getCooldown(Envoy envoy, Crate crate) {
+        Iterator<CrateCooldown> cooldownIterator = crateCooldowns.iterator();
+        while (cooldownIterator.hasNext()) {
+            CrateCooldown next = cooldownIterator.next();
+            if (next.envoy != envoy) continue;
+            if (next.end <= System.currentTimeMillis()) {
+                cooldownIterator.remove();
+                continue;
+            }
+
+            if (envoy.isCollectGlobalCooldown()) {
+                return next.end;
+            }
+
+            if (next.crate != crate) continue;
+
+            return next.end;
+        }
+
+        return System.currentTimeMillis();
     }
 
     public static void listen() {

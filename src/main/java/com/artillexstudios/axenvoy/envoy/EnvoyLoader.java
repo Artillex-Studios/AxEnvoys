@@ -28,7 +28,6 @@ public class EnvoyLoader {
                 continue;
             }
 
-            System.out.println("new envoy");
             envoys.add(new Envoy(document));
         }
     }

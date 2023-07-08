@@ -5,10 +5,8 @@ import com.artillexstudios.axenvoy.rewards.CommandReward;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.StringUtils;
 import com.artillexstudios.axenvoy.utils.Utils;
-import me.hsgamer.unihologram.common.api.Hologram;
-import me.hsgamer.unihologram.common.line.TextHologramLine;
-import me.hsgamer.unihologram.spigot.SpigotHologramProvider;
-import me.hsgamer.unihologram.spigot.common.hologram.extra.PlayerVisibility;
+import eu.decentsoftware.holograms.api.DHAPI;
+import eu.decentsoftware.holograms.api.holograms.Hologram;
 import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,13 +17,14 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 public class SpawnedCrate {
-    public static final SpigotHologramProvider provider = new SpigotHologramProvider();
     private final Envoy parent;
     private final Crate handle;
     private Location finishLocation;
     private FallingBlock fallingBlock;
-    private Hologram<Location> hologram;
+    private Hologram hologram;
 
     public SpawnedCrate(@NotNull Envoy parent, @NotNull Crate handle, @NotNull Location location) {
         this.parent = parent;
@@ -33,7 +32,6 @@ public class SpawnedCrate {
         this.finishLocation = location;
 
         location.getWorld().getChunkAtAsync(location).thenAccept(chunk -> {
-            chunk.addPluginChunkTicket(AxEnvoyPlugin.getInstance());
             this.parent.getSpawnedCrates().add(this);
 
             if (!handle.isFallingBlock()) {
@@ -58,18 +56,20 @@ public class SpawnedCrate {
 
     private void spawnHologram(@NotNull Location location) {
         if (!handle.isHologram()) return;
-        Location hologramLocation = location.clone().getBlock().getLocation();
-        hologramLocation.add(0.5, handle.getHologramHeight(), 0.5);
+        Location hologramLocation = location.clone().toCenterLocation();
+        hologramLocation.add(0, handle.getHologramHeight(), 0);
 
-        hologram = provider.createHologram("axenvoy-%s".formatted(Utils.serializeLocation(hologramLocation).replace(";", "")), hologramLocation);
-        hologram.init();
+        ArrayList<String> formatted = new ArrayList<>(handle.getHologramLines().size());
         for (String hologramLine : handle.getHologramLines()) {
-            hologram.addLine(new TextHologramLine(StringUtils.formatToString(hologramLine)));
+            formatted.add(StringUtils.formatToString(hologramLine));
         }
 
-        if (hologram instanceof PlayerVisibility v) {
-            v.showAll();
+        Hologram tempHolo = DHAPI.getHologram(Utils.serializeLocation(hologramLocation).replace(";", ""));
+        if (tempHolo != null) {
+            tempHolo.delete();
         }
+
+        hologram = DHAPI.createHologram(Utils.serializeLocation(hologramLocation).replace(";", ""), hologramLocation, formatted);
     }
 
     public void claim(@Nullable Player player, Envoy envoy) {
@@ -84,7 +84,7 @@ public class SpawnedCrate {
 
         finishLocation.getWorld().getBlockAt(finishLocation).setType(Material.AIR);
         if (hologram != null) {
-            hologram.clear();
+            hologram.delete();
         }
 
         if (remove) {
@@ -103,13 +103,10 @@ public class SpawnedCrate {
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(envoy.getMessage("prefix").append(envoy.getMessage("collect").replaceText(text -> {
                         text.match("%crate%");
-                        text.replacement(StringUtils.formatToString(this.handle.getDisplayName()));
+                        text.replacement(StringUtils.format(this.handle.getDisplayName()));
                     }).replaceText(replace -> {
                         replace.match("%amount%");
                         replace.replacement(String.valueOf(envoy.getSpawnedCrates().size()));
-                    }).replaceText(replace -> {
-                        replace.match("%player%");
-                        replace.replacement(player.getName());
                     })));
                 }
             }

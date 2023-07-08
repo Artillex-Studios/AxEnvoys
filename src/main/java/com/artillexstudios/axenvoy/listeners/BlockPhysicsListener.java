@@ -28,7 +28,7 @@ public class BlockPhysicsListener implements Listener {
 
             for (int i1 = 0; i1 < crateSize; i1++) {
                 Crate crate = crates.get(i);
-                if (crate.getMaterial() != e.getSourceBlock().getType() || crate.getMaterial() != e.getBlock().getType()) continue;
+                if (crate.getMaterial() != e.getSourceBlock().getType() && crate.getMaterial() != e.getBlock().getType()) continue;
 
                 e.setCancelled(true);
                 return;

@@ -66,27 +66,28 @@ public class Utils {
 
     @Nullable
     public static Location getNextLocation(@NotNull Envoy envoy, @NotNull Location loc) {
-        loc.setX(Double.parseDouble(String.valueOf(Math.round(loc.getX()) + ThreadLocalRandom.current().nextInt(envoy.getMaxDistance() * -1, envoy.getMaxDistance()))));
-        loc.setZ(Double.parseDouble(String.valueOf(Math.round(loc.getZ()) + ThreadLocalRandom.current().nextInt(envoy.getMaxDistance() * -1, envoy.getMaxDistance()))));
+        Location center = loc.clone();
+        loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getMaxDistance() * -1, envoy.getMaxDistance()));
+        loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getMaxDistance() * -1, envoy.getMaxDistance()));
 
         Location loc2 = topBlock(loc);
         Location tempLoc = loc2.clone();
         if (envoy.getNotOnMaterials().contains(tempLoc.add(0, -1, 0).getBlock().getType())) return null;
         if (loc2.getY() < envoy.getMinHeight()) return null;
         if (loc2.getY() > envoy.getMaxHeight()) return null;
+        if (loc.distanceSquared(center) < envoy.getMinDistance() * envoy.getMinDistance()) return null;
 
         return loc2;
     }
 
     @NotNull
     public static Location topBlock(@NotNull Location loc) {
-        loc.getWorld().getChunkAtAsync(loc, false).thenAccept(chunk -> loc.setY(chunk.getChunkSnapshot().getHighestBlockYAt(loc.getBlockX() & 15, loc.getBlockZ() & 15) + 1));
+        loc.getWorld().getChunkAtAsync(loc, false).thenAccept(chunk -> loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 1));
         return loc;
     }
 
     @NotNull
     public static String fancyTime(long time) {
-
         Duration remainingTime = Duration.ofMillis(time);
         long total = remainingTime.getSeconds();
         long days = total / 84600;

@@ -1,15 +1,8 @@
 package com.artillexstudios.axenvoy.envoy;
 
-import com.artillexstudios.axenvoy.config.ConfigManager;
 import com.artillexstudios.axenvoy.rewards.CommandReward;
-import com.artillexstudios.axenvoy.utils.ConfigUtils;
-import com.artillexstudios.axenvoy.utils.StringUtils;
 import dev.dejvokep.boostedyaml.YamlDocument;
-import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2LongLinkedOpenCustomHashMap;
-import it.unimi.dsi.fastutil.objects.Object2LongOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.util.TriState;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
@@ -17,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 public class Crate {
     private final ObjectArrayList<CommandReward> rewards = new ObjectArrayList<>();
@@ -46,7 +38,7 @@ public class Crate {
         this.collectionCooldown = config.getInt("collect-cooldown", 10);
         this.hasCollectionCooldown = config.getOptional("collect-cooldown").isPresent();
         this.hologram = config.getBoolean("hologram.enabled", true);
-        this.hologramLines = config.getStringList("hologram.enabled", new ArrayList<>());
+        this.hologramLines = config.getStringList("hologram.lines", new ArrayList<>());
         this.hologramHeight = config.getDouble("hologram.height", 2.0);
         this.fallingBlock = config.getBoolean("falling-block.enabled", false);
         this.broadcastCollect = TriState.byBoolean(config.getBoolean("broadcast-collect"));

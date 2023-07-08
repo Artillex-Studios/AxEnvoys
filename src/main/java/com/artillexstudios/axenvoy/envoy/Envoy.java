@@ -27,6 +27,7 @@ public class Envoy {
     private final Location center;
     private final ItemStack flare;
     private final boolean broadcastCollect;
+    private final boolean collectGlobalCooldown;
     private boolean active;
     private boolean randomSpawns;
     private boolean predefinedSpawns;
@@ -49,6 +50,7 @@ public class Envoy {
         this.predefinedSpawns = config.getBoolean("pre-defined-spawns.enabled", false);
         this.flareEnabled = config.getBoolean("flare.enabled", false);
         this.broadcastCollect = config.getBoolean("broadcast-collect", false);
+        this.collectGlobalCooldown = config.getBoolean("collect-global-cooldown", false);
         this.crateAmount = config.getInt("amount", 30);
         this.collectCooldown = config.getInt("collect-cooldown", 10);
         this.timeoutTime = config.getInt("timeout-time", 900);
@@ -109,6 +111,11 @@ public class Envoy {
     }
 
     public void start(Player player) {
+        long now = System.currentTimeMillis();
+        if (active) {
+            return;
+        }
+
         this.active = true;
 
         if (predefinedSpawns) {
@@ -130,8 +137,6 @@ public class Envoy {
                 new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
             }
         }
-
-        System.out.println("Spawned:" + spawnedCrates.size());
 
         if (player == null) {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -267,5 +272,9 @@ public class Envoy {
 
     public ItemStack getFlare() {
         return flare;
+    }
+
+    public boolean isCollectGlobalCooldown() {
+        return collectGlobalCooldown;
     }
 }

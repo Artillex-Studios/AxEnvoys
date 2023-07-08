@@ -32,16 +32,22 @@ public class CollectionListener implements Listener {
                 e.setCancelled(true);
                 e.setUseInteractedBlock(Event.Result.DENY);
 
-                if (user.canCollect(spawnedCrate.getHandle())) {
+                if (user.canCollect(envoy, spawnedCrate.getHandle())) {
                     spawnedCrate.claim(e.getPlayer(), envoy);
-                    user.addCooldown(spawnedCrate.getHandle(), spawnedCrate.getHandle().isHasCollectionCooldown() ? spawnedCrate.getHandle().getCollectionCooldown() : envoy.getCollectCooldown());
+
+                    int cooldown = spawnedCrate.getHandle().isHasCollectionCooldown() ? spawnedCrate.getHandle().getCollectionCooldown() : envoy.getCollectCooldown();
+                    if (envoy.isCollectGlobalCooldown()) {
+                        cooldown = envoy.getCollectCooldown();
+                    }
+
+                    user.addCrateCooldown(spawnedCrate.getHandle(), cooldown, envoy);
                 } else {
                     e.getPlayer().sendMessage(envoy.getMessage("prefix").append(envoy.getMessage("cooldown").replaceText(replace -> {
                         replace.match("%crate%");
-                        replace.replacement(StringUtils.formatToString(spawnedCrate.getHandle().getDisplayName()));
+                        replace.replacement(StringUtils.format(spawnedCrate.getHandle().getDisplayName()));
                     }).replaceText(replace -> {
                         replace.match("%cooldown%");
-                        replace.replacement(String.valueOf((user.getCooldown(spawnedCrate.getHandle()) - System.currentTimeMillis()) / 1000));
+                        replace.replacement(String.valueOf((user.getCooldown(envoy, spawnedCrate.getHandle()) - System.currentTimeMillis()) / 1000));
                     })));
                 }
                 return;

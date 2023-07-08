@@ -27,7 +27,6 @@ public class FallingBlockChecker {
                     crateIterator.remove();
                     next.setFallingBlock(null);
                     Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
-                        finishLocation.getChunk().removePluginChunkTicket(AxEnvoyPlugin.getInstance());
                         next.land(next.getFinishLocation());
                         fallingBlock.remove();
                     });
