@@ -3,8 +3,13 @@
 collect-cooldown: 10
 broadcast-collect: false # Also overridden
 
-displayname: "&cLegendary"
+display-name: "&cLegendary"
 block: verdant_froglight
+
+firework:
+  enabled: true
+  color: #ff0000
+  type: ball
 
 falling-block:
   enabled: true # If a falling block should be spawned where a crate is spawned
@@ -28,4 +33,4 @@ hologram:
   enabled: true
   lines:
     - "&7Envoy"
-    - "&fRarity: &alegendary."
+    - "&fRarity: &6legendary."

@@ -3,8 +3,13 @@
 collect-cooldown: 30
 broadcast-collect: false
 
-displayname: "&cRare"
+display-name: "&cRare"
 block: verdant_froglight
+
+firework:
+  enabled: true
+  color: #ff0000
+  type: ball
 
 falling-block:
   enabled: true # If a falling block should be spawned where a crate is spawned
@@ -28,4 +33,4 @@ hologram:
   enabled: true
   lines:
     - "&7Envoy"
-    - "&fRarity: &arare."
+    - "&fRarity: &9rare."

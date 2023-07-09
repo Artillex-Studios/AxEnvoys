@@ -10,7 +10,7 @@ public class FireworkDamageListener implements Listener {
     @EventHandler
     public void onFireworkDamage(EntityDamageByEntityEvent e) {
         if (!(e.getDamager() instanceof Firework fw)) return;
-        if (!fw.hasMetadata("RIVALSENVOY")) return;
+        if (!fw.hasMetadata("axenvoy")) return;
 
         e.setCancelled(true);
     }

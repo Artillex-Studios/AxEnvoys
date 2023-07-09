@@ -3,7 +3,7 @@
 collect-cooldown: 10
 broadcast-collect: false
 
-displayname: "&cCommon"
+display-name: "&cCommon"
 block: verdant_froglight
 
 falling-block:
@@ -27,5 +27,5 @@ hologram:
   enabled: true
   height: 2.0
   lines:
-    - "&7Envoy"
+    - "&7Envoy!"
     - "&fRarity: &acommon."

@@ -8,6 +8,7 @@ import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import com.artillexstudios.axenvoy.listeners.ActivateFlare;
 import com.artillexstudios.axenvoy.listeners.BlockPhysicsListener;
 import com.artillexstudios.axenvoy.listeners.CollectionListener;
+import com.artillexstudios.axenvoy.listeners.FireworkDamageListener;
 import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import org.bukkit.Bukkit;
@@ -35,6 +36,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new ActivateFlare(), this);
         Bukkit.getPluginManager().registerEvents(new BlockPhysicsListener(), this);
         Bukkit.getPluginManager().registerEvents(new CollectionListener(), this);
+        Bukkit.getPluginManager().registerEvents(new FireworkDamageListener(), this);
     }
 
     @Override

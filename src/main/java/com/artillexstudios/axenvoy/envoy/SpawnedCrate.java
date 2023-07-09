@@ -9,14 +9,20 @@ import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
 import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.ArrayList;
 
 public class SpawnedCrate {
@@ -52,6 +58,7 @@ public class SpawnedCrate {
         this.finishLocation = location;
         location.getWorld().getBlockAt(location).setType(this.handle.getMaterial());
         this.spawnHologram(location);
+        this.spawnFirework(location);
     }
 
     private void spawnHologram(@NotNull Location location) {
@@ -75,6 +82,23 @@ public class SpawnedCrate {
     public void claim(@Nullable Player player, Envoy envoy) {
         this.claim(player, envoy, true);
     }
+
+    public void spawnFirework(Location location) {
+        if (!this.handle.isFirework()) return;
+
+        String hex = this.handle.getFireworkHex();
+        Location loc2 = location.clone();
+        loc2.add(0.5, 0.5, 0.5);
+        Firework fw = (Firework) location.getWorld().spawnEntity(loc2, EntityType.FIREWORK);
+        FireworkMeta meta = fw.getFireworkMeta();
+        Color color = new Color(Integer.valueOf(hex.substring(1, 3), 16), Integer.valueOf(hex.substring(3, 5), 16), Integer.valueOf(hex.substring(5, 7), 16));
+        meta.addEffect(FireworkEffect.builder().with(this.handle.getFireworkType()).withColor(org.bukkit.Color.fromRGB(color.getRed(), color.getGreen(), color.getBlue())).build());
+        meta.setPower(0);
+        fw.setFireworkMeta(meta);
+        fw.setMetadata("axenvoy", new FixedMetadataValue(AxEnvoyPlugin.getInstance(), true));
+        fw.detonate();
+    }
+
 
     public void claim(@Nullable Player player, Envoy envoy, boolean remove) {
         if (player != null) {

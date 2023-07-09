@@ -1,14 +1,19 @@
 package com.artillexstudios.axenvoy.envoy;
 
+import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.rewards.CommandReward;
+import com.artillexstudios.axenvoy.utils.StringUtils;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.kyori.adventure.util.TriState;
+import org.bukkit.Bukkit;
+import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class Crate {
@@ -28,16 +33,21 @@ public class Crate {
     private final double fallingBlockSpeed;
     private final int collectionCooldown;
     private final int fallingBlockHeight;
+    private final FireworkEffect.Type fireworkType;
     private final YamlDocument document;
 
     public Crate(@NotNull YamlDocument config) {
-        System.out.println("new crate");
         this.document = config;
         this.name = config.getFile().getName().replace(".yml", "").replace(".yaml", "");
         this.material = Material.matchMaterial(config.getString("block", "stone"));
         this.collectionCooldown = config.getInt("collect-cooldown", 10);
         this.hasCollectionCooldown = config.getOptional("collect-cooldown").isPresent();
-        this.hologram = config.getBoolean("hologram.enabled", true);
+        if (Bukkit.getPluginManager().isPluginEnabled("DecentHolograms")) {
+            this.hologram = config.getBoolean("hologram.enabled", true);
+        } else {
+            AxEnvoyPlugin.getInstance().getComponentLogger().error(StringUtils.format("<color:#ff0000>Disabling hologram due to DecentHolograms not being loaded!"));
+            this.hologram = false;
+        }
         this.hologramLines = config.getStringList("hologram.lines", new ArrayList<>());
         this.hologramHeight = config.getDouble("hologram.height", 2.0);
         this.fallingBlock = config.getBoolean("falling-block.enabled", false);
@@ -48,6 +58,7 @@ public class Crate {
         this.fallingBlockType = Material.matchMaterial(config.getString("falling-block.block", "stone"));
         this.fallingBlockSpeed = config.getDouble("falling-block.speed", 1.0D);
         this.displayName = config.getString("display-name", this.name);
+        this.fireworkType = FireworkEffect.Type.valueOf(config.getString("firework.type", "ball").toUpperCase(Locale.ENGLISH));
 
         for (Map<?, ?> map : config.getMapList("rewards")) {
             this.rewards.add(new CommandReward((double) map.get("chance"), (List<String>) map.get("commands")));
@@ -116,5 +127,9 @@ public class Crate {
 
     public String getDisplayName() {
         return displayName;
+    }
+
+    public FireworkEffect.Type getFireworkType() {
+        return fireworkType;
     }
 }
