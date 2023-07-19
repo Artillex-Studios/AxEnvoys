@@ -49,6 +49,7 @@ public class SpawnedCrate {
             spawnAt.add(0, this.handle.getFallingBlockHeight(), 0);
             fallingBlock = location.getWorld().spawnFallingBlock(spawnAt, this.handle.getFallingBlockType().createBlockData());
             fallingBlock.setDropItem(false);
+            fallingBlock.setPersistent(false);
             FallingBlockChecker.addToCheck(this);
             fallingBlock.setVelocity(new Vector(0, handle.getFallingBlockSpeed(), 0));
         });
@@ -101,6 +102,11 @@ public class SpawnedCrate {
 
 
     public void claim(@Nullable Player player, Envoy envoy, boolean remove) {
+        if (fallingBlock != null) {
+            fallingBlock.remove();
+            fallingBlock = null;
+        }
+
         if (player != null) {
             CommandReward reward = Utils.randomReward(this.handle.getRewards());
             reward.execute(player);

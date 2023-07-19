@@ -15,13 +15,13 @@ falling-block:
 rewards:
   - chance: 10.0
     commands:
-      - "crate key give %player% starter 3"
+      - "eco give %player% 1000"
   - chance: 30.0
     commands:
-      - "crate key give %player% starter 2"
+      - "eco give %player% 500"
   - chance: 100.0
     commands:
-      - "crate key give %player% starter 1"
+      - "eco give %player% 50"
 
 hologram:
   enabled: true

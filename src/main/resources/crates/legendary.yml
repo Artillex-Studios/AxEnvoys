@@ -18,15 +18,16 @@ falling-block:
   speed: 1 # The speed at which the block will fall (blocks per second)
 
 rewards:
+  - chance: 70.0
+    commands:
+      - "eco give %player% 100"
   - chance: 10.0
     commands:
-      - "crate key give %player% starter 3"
-  - chance: 30.0
+      - "eco give %player% 500"
+  - chance: 0.3
     commands:
-      - "crate key give %player% starter 2"
-  - chance: 100.0
-    commands:
-      - "crate key give %player% starter 1"
+      - "eco give %player% 50000"
+      - "bc %player% won the jackpot of 50.000 coins! WOW!"
 
 hologram:
   height: 2.0

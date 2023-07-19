@@ -20,6 +20,7 @@ public class FallingBlockChecker {
             while (crateIterator.hasNext()) {
                 SpawnedCrate next = crateIterator.next();
                 Entity fallingBlock = next.getFallingBlock();
+                if (fallingBlock == null) continue;
                 Location finishLocation = next.getFinishLocation();
                 Location currentLocation = fallingBlock.getLocation();
 

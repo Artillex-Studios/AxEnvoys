@@ -26,9 +26,7 @@ random-spawn:
 
 # You can override messages from messages.yml. You need to put it exactly how it is in that file.
 messages:
-  start: "You started the default envoy event!"
-  flare-start: "You started the default envoy event with your flare!"
-  claim: ""
+  prefix: "&#00FFAA&lAxEnvoy &7» "
 
 flare:
   enabled: true
