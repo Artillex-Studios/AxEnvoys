@@ -66,16 +66,14 @@ public class Commands {
         this.manager.command(commands.literal("flare").permission("axenvoy.command.flare.other").argument(argument.copy()).argument(PlayerArgument.optional("player")).argument(IntegerArgument.optional("amount", 1)).handler(c -> {
             String envoyName = c.get("envoy");
             Optional<Player> playerArg = c.getOptional("player");
-            playerArg.ifPresent(player -> {
-                EnvoyLoader.envoys.forEach(envoy -> {
-                    if (envoy.getName().equals(envoyName)) {
-                        ItemStack item = envoy.getFlare().clone();
-                        Optional<Integer> count = c.getOptional("amount");
-                        count.ifPresent(item::setAmount);
-                        player.getInventory().addItem(item);
-                    }
-                });
-            });
+            playerArg.ifPresent(player -> EnvoyLoader.envoys.forEach(envoy -> {
+                if (envoy.getName().equals(envoyName)) {
+                    ItemStack item = envoy.getFlare().clone();
+                    Optional<Integer> count = c.getOptional("amount");
+                    count.ifPresent(item::setAmount);
+                    player.getInventory().addItem(item);
+                }
+            }));
 
             if (c.getSender() instanceof Player player && playerArg.isEmpty()) {
                 EnvoyLoader.envoys.forEach(envoy -> {
@@ -91,37 +89,29 @@ public class Commands {
             String envoyName = c.get("envoy");
             EnvoyLoader.envoys.forEach(envoy -> {
                 if (envoy.getName().equals(envoyName)) {
-                    Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
-                        envoy.start(null);
-                    });
+                    Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> envoy.start(null));
                 }
             });
         })).command(commands.literal("stop").argument(argument.copy()).permission("axenvoy.command.stop").handler(c -> {
             String envoyName = c.get("envoy");
-            Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
-                EnvoyLoader.envoys.forEach(envoy -> {
-                    if (envoy.getName().equals(envoyName)) {
-                        Iterator<SpawnedCrate> crates = envoy.getSpawnedCrates().iterator();
-                        while (crates.hasNext()) {
-                            SpawnedCrate crate = crates.next();
-                            crate.claim(null, envoy, false);
-                            crates.remove();
-                        }
-                    }
-                });
-            });
-        })).command(commands.literal("stopall").permission("axenvoy.command.stopall").handler(c -> {
-            Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
-                EnvoyLoader.envoys.forEach(envoy -> {
+            Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> EnvoyLoader.envoys.forEach(envoy -> {
+                if (envoy.getName().equals(envoyName)) {
                     Iterator<SpawnedCrate> crates = envoy.getSpawnedCrates().iterator();
                     while (crates.hasNext()) {
                         SpawnedCrate crate = crates.next();
                         crate.claim(null, envoy, false);
                         crates.remove();
                     }
-                });
-            });
-        })).command(commands.literal("reload").permission("axenvoy.command.reload").handler(c -> {
+                }
+            }));
+        })).command(commands.literal("stopall").permission("axenvoy.command.stopall").handler(c -> Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> EnvoyLoader.envoys.forEach(envoy -> {
+            Iterator<SpawnedCrate> crates = envoy.getSpawnedCrates().iterator();
+            while (crates.hasNext()) {
+                SpawnedCrate crate = crates.next();
+                crate.claim(null, envoy, false);
+                crates.remove();
+            }
+        })))).command(commands.literal("reload").permission("axenvoy.command.reload").handler(c -> {
             long now = System.currentTimeMillis();
             Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
                 for (Envoy envoy : EnvoyLoader.envoys) {

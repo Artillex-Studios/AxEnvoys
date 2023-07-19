@@ -6,7 +6,7 @@ messages:
   set-center: "Set center to your location!"
   set-predefined: "You added a predefined spawn to this envoy!"
   stopped: "The envoy was forcefully stopped."
-  cooldown: "Woah! Slow down! You need to wait %crate% seconds before opening %crate%!"
+  cooldown: "Woah! Slow down! You need to wait %cooldown% seconds before opening %crate%!"
   ended: "The event has ended!"
   already-active: "This event is already running!"
   flare-disabled: "This envoy's flare is disabled!"

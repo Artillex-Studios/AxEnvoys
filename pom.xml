@@ -6,7 +6,7 @@
 
     <groupId>com.artillexstudios.axenvoy</groupId>
     <artifactId>AxEnvoy</artifactId>
-    <version>2.0</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>AxEnvoy</name>
@@ -52,6 +52,10 @@
                         <relocation>
                             <pattern>me.hsgamer.unihologram</pattern>
                             <shadedPattern>com.artillexstudios.axenvoy.libs.unihologram</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.bstats</pattern>
+                            <shadedPattern>om.artillexstudios.axenvoy.libs.bstats</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -137,6 +141,12 @@
             <artifactId>decentholograms</artifactId>
             <version>2.8.3</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bstats</groupId>
+            <artifactId>bstats-bukkit</artifactId>
+            <version>3.0.2</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>

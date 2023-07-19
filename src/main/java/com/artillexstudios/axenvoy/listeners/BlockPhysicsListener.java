@@ -1,10 +1,11 @@
 package com.artillexstudios.axenvoy.listeners;
 
-import com.artillexstudios.axenvoy.envoy.Crate;
-import com.artillexstudios.axenvoy.envoy.CrateLoader;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.EnvoyLoader;
+import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
@@ -22,16 +23,21 @@ public class BlockPhysicsListener implements Listener {
             Envoy envoy = envoys.get(i);
             if (!envoy.isActive()) continue;
             if (!envoy.getCenter().getWorld().equals(e.getBlock().getWorld())) continue;
-            ObjectArrayList<Crate> crates = CrateLoader.crates;
-            if (crates.isEmpty()) continue;
-            int crateSize = crates.size();
+            ObjectArrayList<SpawnedCrate> spawnedCrate = envoy.getSpawnedCrates();
+            if (spawnedCrate.isEmpty()) return;
+            int spawnedCrateSize = spawnedCrate.size();
+            for (int i1 = 0; i1 < spawnedCrateSize; i1++) {
+                SpawnedCrate crate = spawnedCrate.get(i1);
+                BlockFace[] faces = BlockFace.values();
+                int faceSize = faces.length;
+                for (int i2 = 0; i2 < faceSize; i2++) {
+                    Block relative = crate.getFinishLocation().getBlock().getRelative(faces[i2]);
 
-            for (int i1 = 0; i1 < crateSize; i1++) {
-                Crate crate = crates.get(i);
-                if (crate.getMaterial() != e.getSourceBlock().getType() && crate.getMaterial() != e.getBlock().getType()) continue;
-
-                e.setCancelled(true);
-                return;
+                    if (relative.getLocation().distanceSquared(e.getSourceBlock().getLocation()) <= 4) {
+                        e.setCancelled(true);
+                        return;
+                    }
+                }
             }
         }
     }
