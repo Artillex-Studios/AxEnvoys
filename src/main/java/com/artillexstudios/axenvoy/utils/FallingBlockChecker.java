@@ -28,8 +28,8 @@ public class FallingBlockChecker {
                     crateIterator.remove();
                     next.setFallingBlock(null);
                     Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
-                        next.land(next.getFinishLocation());
                         fallingBlock.remove();
+                        next.land(next.getFinishLocation());
                     });
                 }
             }
