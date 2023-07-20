@@ -4,7 +4,7 @@ collect-cooldown: 10
 broadcast-collect: false # Also overridden
 
 display-name: "&cLegendary"
-block: verdant_froglight
+block: diamond_block
 
 firework:
   enabled: true
@@ -12,7 +12,7 @@ firework:
   type: ball
 
 falling-block:
-  enabled: true # If a falling block should be spawned where a crate is spawned
+  enabled: false # If a falling block should be spawned where a crate is spawned
   height: 10 # The height where the falling block will fall from
   block: end_rod # The type of the block that is falling
   speed: 1 # The speed at which the block will fall (blocks per second)

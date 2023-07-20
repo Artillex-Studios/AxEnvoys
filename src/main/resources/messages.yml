@@ -11,3 +11,7 @@ messages:
   already-active: "This event is already running!"
   flare-disabled: "This envoy's flare is disabled!"
   reload: "Reloaded! Took: %time% ms!"
+  placeholder:
+    running: "&aRunning!"
+    not-running: "&cNot running"
+    remaining: "%remaining% crates left"

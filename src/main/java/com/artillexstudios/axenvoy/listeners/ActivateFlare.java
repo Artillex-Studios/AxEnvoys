@@ -41,11 +41,16 @@ public class ActivateFlare implements Listener {
                     return;
                 }
 
-                envoy.start(e.getPlayer());
-                if (e.getItem().getAmount() > 1) {
-                    e.getItem().setAmount(e.getItem().getAmount() - 1);
-                } else {
-                    e.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                if (envoy.getCenter() == null) {
+                    return;
+                }
+
+                if (envoy.start(e.getPlayer())) {
+                    if (e.getItem().getAmount() > 1) {
+                        e.getItem().setAmount(e.getItem().getAmount() - 1);
+                    } else {
+                        e.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                    }
                 }
 
                 return;

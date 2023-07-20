@@ -9,6 +9,7 @@ import com.artillexstudios.axenvoy.listeners.ActivateFlare;
 import com.artillexstudios.axenvoy.listeners.BlockPhysicsListener;
 import com.artillexstudios.axenvoy.listeners.CollectionListener;
 import com.artillexstudios.axenvoy.listeners.FireworkDamageListener;
+import com.artillexstudios.axenvoy.placeholders.Placeholders;
 import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import org.bstats.bukkit.Metrics;
@@ -30,6 +31,9 @@ public final class AxEnvoyPlugin extends JavaPlugin {
 
         new ConfigManager();
         new Commands(this);
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new Placeholders().register();
+        }
 
         Bukkit.getOnlinePlayers().forEach(User::new);
         User.listen();

@@ -4,10 +4,10 @@ collect-cooldown: 10
 broadcast-collect: false
 
 display-name: "&cCommon"
-block: verdant_froglight
+block: iron_block
 
 falling-block:
-  enabled: true # If a falling block should be spawned where a crate is spawned
+  enabled: false # If a falling block should be spawned where a crate is spawned
   height: 10 # The height where the falling block will fall from
   block: end_rod # The type of the block that is falling
   speed: 1 # The speed at which the block will fall (blocks per second)

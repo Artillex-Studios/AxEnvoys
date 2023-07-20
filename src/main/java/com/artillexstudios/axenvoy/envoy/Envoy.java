@@ -110,9 +110,13 @@ public class Envoy {
         return center;
     }
 
-    public void start(Player player) {
+    public boolean start(Player player) {
+        if (center == null) {
+            return false;
+        }
+
         if (active) {
-            return;
+            return false;
         }
 
         this.active = true;
@@ -155,6 +159,8 @@ public class Envoy {
                 })));
             }
         }
+
+        return true;
     }
 
     public Component getMessage(String path) {

@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
@@ -100,7 +101,7 @@ public class Utils {
     }
 
     @NotNull
-    public static ItemStack createItem(final Material material, final int amount, final String name, @NotNull final ArrayList<String> lore, final String id, final boolean glow) {
+    public static ItemStack createItem(final Material material, final int amount, final String name, @NotNull final List<String> lore, final String id, final boolean glow, final boolean addTag) {
         final ItemStack item = new ItemStack(material, amount);
         final ItemMeta meta = item.getItemMeta();
 
@@ -117,8 +118,10 @@ public class Utils {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
 
-        NamespacedKey key = new NamespacedKey(AxEnvoyPlugin.getInstance(), "rivalsenvoy");
-        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, id);
+        if (addTag) {
+            NamespacedKey key = new NamespacedKey(AxEnvoyPlugin.getInstance(), "rivalsenvoy");
+            meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, id);
+        }
 
         item.setItemMeta(meta);
         return item;
@@ -126,26 +129,6 @@ public class Utils {
 
     @NotNull
     public static ItemStack createItem(Section section, String id) {
-        final ItemStack item = new ItemStack(Material.matchMaterial(section.getString("material", "stone").toLowerCase(Locale.ENGLISH)));
-        final ItemMeta meta = item.getItemMeta();
-
-        meta.displayName(StringUtils.format(section.getString("name", "")).applyFallbackStyle(TextDecoration.ITALIC.withState(false)));
-        ArrayList<Component> ar = new ArrayList<>();
-
-        for (String s : section.getStringList("lore", new ArrayList<>())) {
-            ar.add(StringUtils.format(s).applyFallbackStyle(TextDecoration.ITALIC.withState(false)));
-        }
-        meta.lore(ar);
-
-        if (section.getBoolean("glow", false)) {
-            item.addUnsafeEnchantment(Enchantment.WATER_WORKER, 1);
-            meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        }
-
-        NamespacedKey key = new NamespacedKey(AxEnvoyPlugin.getInstance(), "rivalsenvoy");
-        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, id);
-
-        item.setItemMeta(meta);
-        return item;
+        return createItem(Material.matchMaterial(section.getString("material", "stone").toLowerCase(Locale.ENGLISH)), section.getInt("amount", 1), section.getString("name", ""), section.getStringList("lore", new ArrayList<>()), id, section.getBoolean("glow", false), true);
     }
 }
