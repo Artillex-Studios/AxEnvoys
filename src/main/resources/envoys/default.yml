@@ -23,6 +23,7 @@ random-spawn:
     - "(?<!s)t?air(?!s)"
     - "(leaves)"
     - "(sign)"
+    - "diamond_block"
 
 # You can override messages from messages.yml. You need to put it exactly how it is in that file.
 messages:
@@ -41,6 +42,6 @@ flare:
       - "&7the default envoy!"
 
 pre-defined-spawns:
-  enabled: true
+  enabled: false
   locations:
     - "world;1;1;1"
