@@ -62,6 +62,7 @@
                             <shadedPattern>com.artillexstudios.axenvoy.libs.kyori</shadedPattern>
                         </relocation>
                     </relocations>
+                    <minimizeJar>true</minimizeJar>
                 </configuration>
             </plugin>
         </plugins>
