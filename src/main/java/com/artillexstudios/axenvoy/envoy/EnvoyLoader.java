@@ -24,7 +24,7 @@ public class EnvoyLoader {
             try {
                 document = YamlDocument.create(file);
             } catch (Exception exception) {
-                AxEnvoyPlugin.getInstance().getLogger().warning(StringUtils.formatToString("<color:#ff0000>Could not load file %s! Please check if there were any YAML syntax errors!</color>".formatted(file.getName())));
+                AxEnvoyPlugin.getInstance().getLogger().warning(StringUtils.format("<color:#ff0000>Could not load file %s! Please check if there were any YAML syntax errors!</color>".formatted(file.getName())));
                 continue;
             }
 

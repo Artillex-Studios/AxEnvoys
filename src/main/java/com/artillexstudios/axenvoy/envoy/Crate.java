@@ -45,7 +45,7 @@ public class Crate {
         if (Bukkit.getPluginManager().isPluginEnabled("DecentHolograms")) {
             this.hologram = config.getBoolean("hologram.enabled", true);
         } else {
-            AxEnvoyPlugin.getInstance().getLogger().warning(StringUtils.formatToString("<color:#ff0000>Disabling hologram due to DecentHolograms not being loaded!"));
+            AxEnvoyPlugin.getInstance().getLogger().warning(StringUtils.format("<color:#ff0000>Disabling hologram due to DecentHolograms not being loaded!"));
             this.hologram = false;
         }
         this.hologramLines = config.getStringList("hologram.lines", new ArrayList<>());

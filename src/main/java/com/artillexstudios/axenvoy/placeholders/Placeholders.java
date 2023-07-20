@@ -3,8 +3,8 @@ package com.artillexstudios.axenvoy.placeholders;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.EnvoyLoader;
+import com.artillexstudios.axenvoy.utils.StringUtils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,20 +42,17 @@ public class Placeholders extends PlaceholderExpansion {
         switch (args[0]) {
             case "active" -> {
                 if (envoy.isActive()) {
-                    return LegacyComponentSerializer.legacySection().serialize(envoy.getMessage("placeholder.running"));
+                    return StringUtils.format(envoy.getMessage("placeholder.running"));
                 }
 
-                return LegacyComponentSerializer.legacySection().serialize(envoy.getMessage("placeholder.not-running"));
+                return StringUtils.format(envoy.getMessage("placeholder.not-running"));
             }
             case "remaining" -> {
                 if (!envoy.isActive()) {
-                    return LegacyComponentSerializer.legacySection().serialize(envoy.getMessage("placeholder.not-running"));
+                    return StringUtils.format(envoy.getMessage("placeholder.not-running"));
                 }
 
-                return LegacyComponentSerializer.legacySection().serialize(envoy.getMessage("placeholder.remaining").replaceText(replacement -> {
-                    replacement.match("%replacement%");
-                    replacement.replacement(String.valueOf(envoy.getSpawnedCrates().size()));
-                }));
+                return StringUtils.format(envoy.getMessage("placeholder.remaining").replace("%remaining%", String.valueOf(envoy.getSpawnedCrates().size())));
             }
         }
 

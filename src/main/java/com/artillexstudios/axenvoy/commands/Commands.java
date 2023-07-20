@@ -63,7 +63,7 @@ public class Commands {
 
         CommandArgument<CommandSender, String> argument = StringArgument.<CommandSender>builder("envoy").withSuggestionsProvider((context, string) -> EnvoyLoader.envoys.stream().map(Envoy::getName).toList()).build();
 
-        this.manager.command(commands.literal("flare").permission("axenvoy.command.flare.other").permission("axenvoy.*").permission("axenvoy.command.*").argument(argument.copy()).argument(PlayerArgument.optional("player")).argument(IntegerArgument.optional("amount", 1)).handler(c -> {
+        this.manager.command(commands.literal("flare").permission("axenvoy.command.flare").argument(argument.copy()).argument(PlayerArgument.optional("player")).argument(IntegerArgument.optional("amount", 1)).handler(c -> {
             String envoyName = c.get("envoy");
             Optional<Player> playerArg = c.getOptional("player");
             playerArg.ifPresent(player -> EnvoyLoader.envoys.forEach(envoy -> {
@@ -85,14 +85,14 @@ public class Commands {
                     }
                 });
             }
-        })).command(commands.literal("start").argument(argument.copy()).permission("axenvoy.command.start").permission("axenvoy.*").permission("axenvoy.command.*").handler(c -> {
+        })).command(commands.literal("start").argument(argument.copy()).permission("axenvoy.command.start").handler(c -> {
             String envoyName = c.get("envoy");
             EnvoyLoader.envoys.forEach(envoy -> {
                 if (envoy.getName().equals(envoyName)) {
                     Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> envoy.start(null));
                 }
             });
-        })).command(commands.literal("stop").argument(argument.copy()).permission("axenvoy.command.stop").permission("axenvoy.*").permission("axenvoy.command.*").handler(c -> {
+        })).command(commands.literal("stop").argument(argument.copy()).permission("axenvoy.command.stop").handler(c -> {
             String envoyName = c.get("envoy");
             Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> EnvoyLoader.envoys.forEach(envoy -> {
                 if (envoy.getName().equals(envoyName)) {
@@ -104,14 +104,14 @@ public class Commands {
                     }
                 }
             }));
-        })).command(commands.literal("stopall").permission("axenvoy.command.stopall").permission("axenvoy.*").permission("axenvoy.command.*").handler(c -> Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> EnvoyLoader.envoys.forEach(envoy -> {
+        })).command(commands.literal("stopall").permission("axenvoy.command.stopall").handler(c -> Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> EnvoyLoader.envoys.forEach(envoy -> {
             Iterator<SpawnedCrate> crates = envoy.getSpawnedCrates().iterator();
             while (crates.hasNext()) {
                 SpawnedCrate crate = crates.next();
                 crate.claim(null, envoy, false);
                 crates.remove();
             }
-        })))).command(commands.literal("reload").permission("axenvoy.command.reload").permission("axenvoy.*").permission("axenvoy.command.*").handler(c -> {
+        })))).command(commands.literal("reload").permission("axenvoy.command.reload").handler(c -> {
             long now = System.currentTimeMillis();
             Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
                 for (Envoy envoy : EnvoyLoader.envoys) {
@@ -125,9 +125,9 @@ public class Commands {
                 }
 
                 new ConfigManager();
-                c.getSender().sendMessage(StringUtils.formatToString(ConfigManager.getLang().getString("messages.reload").replace("%time%", String.valueOf((System.currentTimeMillis() - now)))));
+                c.getSender().sendMessage(StringUtils.format(ConfigManager.getLang().getString("messages.reload").replace("%time%", String.valueOf((System.currentTimeMillis() - now)))));
             });
-        })).command(commands.literal("center").permission("axenvoy.command.center").permission("axenvoy.*").permission("axenvoy.command.*").argument(argument.copy()).senderType(Player.class).handler(c -> {
+        })).command(commands.literal("center").permission("axenvoy.command.center").argument(argument.copy()).senderType(Player.class).handler(c -> {
             String envoyName = c.get("envoy");
             EnvoyLoader.envoys.forEach(envoy -> {
                 if (envoy.getName().equals(envoyName)) {
@@ -135,13 +135,13 @@ public class Commands {
 
                     try {
                         envoy.getDocument().save();
-                        c.getSender().sendMessage(StringUtils.toString(envoy.getMessage("set-center")));
+                        c.getSender().sendMessage(envoy.getMessage("set-center"));
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
                 }
             });
-        })).command(commands.literal("definedspawn").permission("axenvoy.command.definedspawn").permission("axenvoy.*").permission("axenvoy.command.*").argument(argument.copy()).handler(c -> {
+        })).command(commands.literal("definedspawn").permission("axenvoy.command.definedspawn").argument(argument.copy()).handler(c -> {
             String envoyName = c.get("envoy");
             EnvoyLoader.envoys.forEach(envoy -> {
                 if (envoy.getName().equals(envoyName)) {
@@ -151,7 +151,7 @@ public class Commands {
 
                     try {
                         envoy.getDocument().save();
-                        c.getSender().sendMessage(StringUtils.toString(envoy.getMessage("set-predefined")));
+                        c.getSender().sendMessage(envoy.getMessage("set-predefined"));
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }

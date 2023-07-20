@@ -6,7 +6,6 @@ import com.artillexstudios.axenvoy.utils.Utils;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -142,28 +141,21 @@ public class Envoy {
         }
 
         if (player == null) {
+            String message = String.format("%s%s", getMessage("prefix"), getMessage("start").replace("%amount%", String.valueOf(spawnedCrates.size())));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                onlinePlayer.sendMessage(StringUtils.toString(getMessage("prefix").append(getMessage("start").replaceText(replace -> {
-                    replace.match("%amount%");
-                    replace.replacement(String.valueOf(spawnedCrates.size()));
-                }))));
+                onlinePlayer.sendMessage(message);
             }
         } else {
+            String message = String.format("%s%s", getMessage("prefix"), getMessage("flare-start").replace("%player%", player.getName()).replace("%amount%", String.valueOf(spawnedCrates.size())));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                onlinePlayer.sendMessage(StringUtils.toString(getMessage("prefix").append(getMessage("flare-start").replaceText(replace -> {
-                    replace.match("%player%");
-                    replace.replacement(player.getName());
-                }).replaceText(replace -> {
-                    replace.match("%amount%");
-                    replace.replacement(String.valueOf(spawnedCrates.size()));
-                }))));
+                onlinePlayer.sendMessage(message);
             }
         }
 
         return true;
     }
 
-    public Component getMessage(String path) {
+    public String getMessage(String path) {
         return document.getOptionalString("messages.%s".formatted(path)).map(StringUtils::format).orElseGet(() -> StringUtils.format(ConfigManager.getLang().getString("messages.%s".formatted(path))));
     }
 

@@ -103,11 +103,11 @@ public class Utils {
         final ItemStack item = new ItemStack(material, amount);
         final ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(StringUtils.formatToString(name));
+        meta.setDisplayName(StringUtils.format(name));
         ArrayList<String> ar = new ArrayList<>();
 
         for (String s : lore) {
-            ar.add(StringUtils.formatToString(s));
+            ar.add(StringUtils.format(s));
         }
         meta.setLore(ar);
 

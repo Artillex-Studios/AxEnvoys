@@ -43,7 +43,7 @@ public class SpawnedCrate {
         PaperLib.getChunkAtAsync(location).thenAccept(chunk -> {
             this.parent.getSpawnedCrates().add(this);
 
-            if (!handle.isFallingBlock()) {
+            if (!handle.isFallingBlock() || location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).isEmpty()) {
                 land(location);
                 return;
             }
@@ -72,7 +72,7 @@ public class SpawnedCrate {
 
         ArrayList<String> formatted = new ArrayList<>(handle.getHologramLines().size());
         for (String hologramLine : handle.getHologramLines()) {
-            formatted.add(StringUtils.formatToString(hologramLine));
+            formatted.add(StringUtils.format(hologramLine));
         }
 
         Hologram tempHolo = DHAPI.getHologram(Utils.serializeLocation(hologramLocation).replace(";", ""));
@@ -133,21 +133,17 @@ public class SpawnedCrate {
             }
 
             if (broadcast && player != null) {
+                String message = String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("collect").replace("%crate%", StringUtils.format(this.handle.getDisplayName())).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    onlinePlayer.sendMessage(StringUtils.toString(envoy.getMessage("prefix").append(envoy.getMessage("collect").replaceText(text -> {
-                        text.match("%crate%");
-                        text.replacement(StringUtils.format(this.handle.getDisplayName()));
-                    }).replaceText(replace -> {
-                        replace.match("%amount%");
-                        replace.replacement(String.valueOf(envoy.getSpawnedCrates().size()));
-                    }))));
+                    onlinePlayer.sendMessage(message);
                 }
             }
 
             if (this.parent.getSpawnedCrates().isEmpty()) {
                 envoy.setActive(false);
+                String message = String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("ended"));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    onlinePlayer.sendMessage(StringUtils.toString(envoy.getMessage("prefix").append(envoy.getMessage("ended"))));
+                    onlinePlayer.sendMessage(message);
                 }
             }
         }

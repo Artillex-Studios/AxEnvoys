@@ -28,6 +28,21 @@ public class User {
         USER_MAP.put(player.getUniqueId(), this);
     }
 
+    public static void listen() {
+        Bukkit.getPluginManager().registerEvents(new Listener() {
+            @EventHandler
+            public void onPlayerJoinEvent(@NotNull PlayerJoinEvent event) {
+                new User(event.getPlayer());
+            }
+
+            @EventHandler
+            public void onPlayerQuitEvent(@NotNull PlayerQuitEvent event) {
+                USER_MAP.get(event.getPlayer().getUniqueId()).clear();
+                USER_MAP.remove(event.getPlayer().getUniqueId());
+            }
+        }, AxEnvoyPlugin.getInstance());
+    }
+
     public void clear() {
         crateCooldowns.clear();
         flareCooldown.clear();
@@ -51,11 +66,7 @@ public class User {
 
     public boolean canUseFlare(Envoy envoy) {
         long cooldown = flareCooldown.getOrDefault(envoy, System.currentTimeMillis());
-        if (cooldown <= System.currentTimeMillis()) {
-            return true;
-        }
-
-        return false;
+        return cooldown <= System.currentTimeMillis();
     }
 
     public long getCooldown(Envoy envoy, Crate crate) {
@@ -78,20 +89,5 @@ public class User {
         }
 
         return System.currentTimeMillis();
-    }
-
-    public static void listen() {
-        Bukkit.getPluginManager().registerEvents(new Listener() {
-            @EventHandler
-            public void onPlayerJoinEvent(@NotNull PlayerJoinEvent event) {
-                new User(event.getPlayer());
-            }
-
-            @EventHandler
-            public void onPlayerQuitEvent(@NotNull PlayerQuitEvent event) {
-                USER_MAP.get(event.getPlayer().getUniqueId()).clear();
-                USER_MAP.remove(event.getPlayer().getUniqueId());
-            }
-        }, AxEnvoyPlugin.getInstance());
     }
 }
