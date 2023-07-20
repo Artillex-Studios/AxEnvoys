@@ -48,6 +48,10 @@ public class Placeholders extends PlaceholderExpansion {
                 return LegacyComponentSerializer.legacySection().serialize(envoy.getMessage("placeholder.not-running"));
             }
             case "remaining" -> {
+                if (!envoy.isActive()) {
+                    return LegacyComponentSerializer.legacySection().serialize(envoy.getMessage("placeholder.not-running"));
+                }
+
                 return LegacyComponentSerializer.legacySection().serialize(envoy.getMessage("placeholder.remaining").replaceText(replacement -> {
                     replacement.match("%replacement%");
                     replacement.replacement(String.valueOf(envoy.getSpawnedCrates().size()));
