@@ -25,7 +25,7 @@ public class Placeholders extends PlaceholderExpansion {
 
     @Override
     public @NotNull String getVersion() {
-        return AxEnvoyPlugin.getInstance().getPluginMeta().getVersion();
+        return AxEnvoyPlugin.getInstance().getDescription().getVersion();
     }
 
     @Override

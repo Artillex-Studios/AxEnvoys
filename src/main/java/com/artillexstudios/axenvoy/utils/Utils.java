@@ -6,9 +6,8 @@ import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.rewards.CommandReward;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.block.implementation.Section;
+import io.papermc.lib.PaperLib;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 import org.bukkit.Bukkit;
@@ -28,7 +27,6 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
@@ -83,7 +81,7 @@ public class Utils {
 
     @NotNull
     public static Location topBlock(@NotNull Location loc) {
-        loc.getWorld().getChunkAtAsync(loc, false).thenAccept(chunk -> loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 1));
+        PaperLib.getChunkAtAsync(loc, false).thenAccept(chunk -> loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 1));
         return loc;
     }
 
@@ -105,13 +103,13 @@ public class Utils {
         final ItemStack item = new ItemStack(material, amount);
         final ItemMeta meta = item.getItemMeta();
 
-        meta.displayName(StringUtils.format(name).applyFallbackStyle(TextDecoration.ITALIC.withState(false)));
-        ArrayList<Component> ar = new ArrayList<>();
+        meta.setDisplayName(StringUtils.formatToString(name));
+        ArrayList<String> ar = new ArrayList<>();
 
         for (String s : lore) {
-            ar.add(StringUtils.format(s).applyFallbackStyle(TextDecoration.ITALIC.withState(false)));
+            ar.add(StringUtils.formatToString(s));
         }
-        meta.lore(ar);
+        meta.setLore(ar);
 
         if (glow) {
             item.addUnsafeEnchantment(Enchantment.WATER_WORKER, 1);

@@ -7,6 +7,7 @@ import com.artillexstudios.axenvoy.utils.StringUtils;
 import com.artillexstudios.axenvoy.utils.Utils;
 import eu.decentsoftware.holograms.api.DHAPI;
 import eu.decentsoftware.holograms.api.holograms.Hologram;
+import io.papermc.lib.PaperLib;
 import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
@@ -39,7 +40,7 @@ public class SpawnedCrate {
         this.handle = handle;
         this.finishLocation = location;
 
-        location.getWorld().getChunkAtAsync(location).thenAccept(chunk -> {
+        PaperLib.getChunkAtAsync(location).thenAccept(chunk -> {
             this.parent.getSpawnedCrates().add(this);
 
             if (!handle.isFallingBlock()) {
@@ -66,7 +67,7 @@ public class SpawnedCrate {
 
     private void spawnHologram(@NotNull Location location) {
         if (!handle.isHologram()) return;
-        Location hologramLocation = location.clone().toCenterLocation();
+        Location hologramLocation = location.clone().add(0.5, 0, 0.5);
         hologramLocation.add(0, handle.getHologramHeight(), 0);
 
         ArrayList<String> formatted = new ArrayList<>(handle.getHologramLines().size());
@@ -128,25 +129,25 @@ public class SpawnedCrate {
             if (this.handle.isBroadcastCollect() == TriState.NOT_SET) {
                 broadcast = envoy.isBroadcastCollect();
             } else {
-                broadcast = Boolean.TRUE.equals(this.handle.isBroadcastCollect().toBoolean());
+                broadcast = this.handle.isBroadcastCollect().name().equalsIgnoreCase("TRUE");
             }
 
             if (broadcast && player != null) {
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    onlinePlayer.sendMessage(envoy.getMessage("prefix").append(envoy.getMessage("collect").replaceText(text -> {
+                    onlinePlayer.sendMessage(StringUtils.toString(envoy.getMessage("prefix").append(envoy.getMessage("collect").replaceText(text -> {
                         text.match("%crate%");
                         text.replacement(StringUtils.format(this.handle.getDisplayName()));
                     }).replaceText(replace -> {
                         replace.match("%amount%");
                         replace.replacement(String.valueOf(envoy.getSpawnedCrates().size()));
-                    })));
+                    }))));
                 }
             }
 
             if (this.parent.getSpawnedCrates().isEmpty()) {
                 envoy.setActive(false);
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    onlinePlayer.sendMessage(envoy.getMessage("prefix").append(envoy.getMessage("ended")));
+                    onlinePlayer.sendMessage(StringUtils.toString(envoy.getMessage("prefix").append(envoy.getMessage("ended"))));
                 }
             }
         }

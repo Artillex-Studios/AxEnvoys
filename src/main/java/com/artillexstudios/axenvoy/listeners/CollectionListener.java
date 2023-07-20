@@ -42,13 +42,13 @@ public class CollectionListener implements Listener {
 
                     user.addCrateCooldown(spawnedCrate.getHandle(), cooldown, envoy);
                 } else {
-                    e.getPlayer().sendMessage(envoy.getMessage("prefix").append(envoy.getMessage("cooldown").replaceText(replace -> {
+                    e.getPlayer().sendMessage(StringUtils.toString(envoy.getMessage("prefix").append(envoy.getMessage("cooldown").replaceText(replace -> {
                         replace.match("%crate%");
                         replace.replacement(StringUtils.format(spawnedCrate.getHandle().getDisplayName()));
                     }).replaceText(replace -> {
                         replace.match("%cooldown%");
                         replace.replacement(String.valueOf((user.getCooldown(envoy, spawnedCrate.getHandle()) - System.currentTimeMillis()) / 1000));
-                    })));
+                    }))));
                 }
                 return;
             }

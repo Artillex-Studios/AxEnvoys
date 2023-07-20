@@ -2,6 +2,7 @@ package com.artillexstudios.axenvoy.utils;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.jetbrains.annotations.NotNull;
@@ -24,5 +25,10 @@ public class StringUtils {
         final Component ct = legacyComponentSerializer.deserialize(string);
         string = miniMessage.serialize(ct).replace("\\", "");
         return legacyComponentSerializer.serialize(miniMessage.deserialize(string));
+    }
+
+    @NotNull
+    public static String toString(Component component) {
+        return legacyComponentSerializer.serialize(component);
     }
 }

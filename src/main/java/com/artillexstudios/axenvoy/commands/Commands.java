@@ -125,7 +125,7 @@ public class Commands {
                 }
 
                 new ConfigManager();
-                c.getSender().sendMessage(StringUtils.format(ConfigManager.getLang().getString("messages.reload").replace("%time%", String.valueOf((System.currentTimeMillis() - now)))));
+                c.getSender().sendMessage(StringUtils.formatToString(ConfigManager.getLang().getString("messages.reload").replace("%time%", String.valueOf((System.currentTimeMillis() - now)))));
             });
         })).command(commands.literal("center").permission("axenvoy.command.center").argument(argument.copy()).senderType(Player.class).handler(c -> {
             String envoyName = c.get("envoy");
@@ -135,7 +135,7 @@ public class Commands {
 
                     try {
                         envoy.getDocument().save();
-                        c.getSender().sendMessage(envoy.getMessage("set-center"));
+                        c.getSender().sendMessage(StringUtils.toString(envoy.getMessage("set-center")));
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }
@@ -151,7 +151,7 @@ public class Commands {
 
                     try {
                         envoy.getDocument().save();
-                        c.getSender().sendMessage(envoy.getMessage("set-predefined"));
+                        c.getSender().sendMessage(StringUtils.toString(envoy.getMessage("set-predefined")));
                     } catch (Exception exception) {
                         exception.printStackTrace();
                     }

@@ -19,9 +19,9 @@ public class ConfigUtils {
             if (exception.getCause() instanceof YAMLException) {
                 List<String> suggestions = YamlAssist.getSuggestions(file);
 
-                AxEnvoyPlugin.getInstance().getComponentLogger().error(StringUtils.format("<color:#ff0000>Found %s issues while parsing file: %s. This file won't be loaded.</color>".formatted(suggestions.size(), file.getName())));
+                AxEnvoyPlugin.getInstance().getLogger().warning(StringUtils.formatToString("<color:#ff0000>Found %s issues while parsing file: %s. This file won't be loaded.</color>".formatted(suggestions.size(), file.getName())));
                 for (String suggestion : suggestions) {
-                    AxEnvoyPlugin.getInstance().getComponentLogger().error(StringUtils.format("<color:#ff0000>Possible issue: %s</color>".formatted(suggestion)));
+                    AxEnvoyPlugin.getInstance().getLogger().warning(StringUtils.formatToString("<color:#ff0000>Possible issue: %s</color>".formatted(suggestion)));
                 }
                 return false;
             }

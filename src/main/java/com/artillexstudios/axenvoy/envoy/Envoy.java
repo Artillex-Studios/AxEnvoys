@@ -143,20 +143,20 @@ public class Envoy {
 
         if (player == null) {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                onlinePlayer.sendMessage(getMessage("prefix").append(getMessage("start").replaceText(replace -> {
+                onlinePlayer.sendMessage(StringUtils.toString(getMessage("prefix").append(getMessage("start").replaceText(replace -> {
                     replace.match("%amount%");
                     replace.replacement(String.valueOf(spawnedCrates.size()));
-                })));
+                }))));
             }
         } else {
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                onlinePlayer.sendMessage(getMessage("prefix").append(getMessage("flare-start").replaceText(replace -> {
+                onlinePlayer.sendMessage(StringUtils.toString(getMessage("prefix").append(getMessage("flare-start").replaceText(replace -> {
                     replace.match("%player%");
                     replace.replacement(player.getName());
                 }).replaceText(replace -> {
                     replace.match("%amount%");
                     replace.replacement(String.valueOf(spawnedCrates.size()));
-                })));
+                }))));
             }
         }
 
