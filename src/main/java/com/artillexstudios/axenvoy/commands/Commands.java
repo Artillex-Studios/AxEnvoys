@@ -96,6 +96,7 @@ public class Commands {
             String envoyName = c.get("envoy");
             Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> EnvoyLoader.envoys.forEach(envoy -> {
                 if (envoy.getName().equals(envoyName)) {
+                    if (!envoy.isActive()) return;
                     Iterator<SpawnedCrate> crates = envoy.getSpawnedCrates().iterator();
                     while (crates.hasNext()) {
                         SpawnedCrate crate = crates.next();
@@ -105,6 +106,7 @@ public class Commands {
                 }
             }));
         })).command(commands.literal("stopall").permission("axenvoy.command.stopall").handler(c -> Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> EnvoyLoader.envoys.forEach(envoy -> {
+            if (!envoy.isActive())  return;
             Iterator<SpawnedCrate> crates = envoy.getSpawnedCrates().iterator();
             while (crates.hasNext()) {
                 SpawnedCrate crate = crates.next();
