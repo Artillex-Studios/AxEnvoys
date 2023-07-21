@@ -2,7 +2,7 @@ messages:
   prefix: "<#00FFAA>&lAxEnvoy &7» "
   collect: "%player_name% collected a %crate% crate! But fear not, there is still %amount% left!"
   start: "An envoy event began! %amount% crates spawned!"
-  flare-start: "%player% started an envoy!"
+  flare-start: "%player_name% started an envoy!"
   set-center: "Set center to your location!"
   set-predefined: "You added a predefined spawn to this envoy!"
   stopped: "The envoy was forcefully stopped."
