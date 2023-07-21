@@ -137,6 +137,7 @@ public class Commands {
 
                     try {
                         envoy.getDocument().save();
+                        new ConfigManager();
                         c.getSender().sendMessage(envoy.getMessage("set-center"));
                     } catch (Exception exception) {
                         exception.printStackTrace();
@@ -153,6 +154,7 @@ public class Commands {
 
                     try {
                         envoy.getDocument().save();
+                        new ConfigManager();
                         c.getSender().sendMessage(envoy.getMessage("set-predefined"));
                     } catch (Exception exception) {
                         exception.printStackTrace();
