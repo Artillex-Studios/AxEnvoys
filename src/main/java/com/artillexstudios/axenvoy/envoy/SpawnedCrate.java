@@ -133,7 +133,7 @@ public class SpawnedCrate {
             }
 
             if (broadcast && player != null) {
-                String message = String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("collect").replace("%crate%", StringUtils.format(this.handle.getDisplayName())).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
+                String message = String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("collect").replace("%crate%", StringUtils.format(this.handle.getDisplayName())).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }
@@ -141,7 +141,7 @@ public class SpawnedCrate {
 
             if (this.parent.getSpawnedCrates().isEmpty()) {
                 envoy.setActive(false);
-                String message = String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("ended"));
+                String message = String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("ended"));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }

@@ -27,7 +27,7 @@ random-spawn:
 
 # You can override messages from messages.yml. You need to put it exactly how it is in that file.
 messages:
-  prefix: "&#00FFAA&lAxEnvoy &7» "
+  prefix: "<#00FFAA>&lAxEnvoy &7» "
 
 flare:
   enabled: true

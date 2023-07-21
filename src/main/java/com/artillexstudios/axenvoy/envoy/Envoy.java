@@ -141,12 +141,12 @@ public class Envoy {
         }
 
         if (player == null) {
-            String message = String.format("%s%s", getMessage("prefix"), getMessage("start").replace("%amount%", String.valueOf(spawnedCrates.size())));
+            String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start").replace("%amount%", String.valueOf(spawnedCrates.size())));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.sendMessage(message);
             }
         } else {
-            String message = String.format("%s%s", getMessage("prefix"), getMessage("flare-start").replace("%player%", player.getName()).replace("%amount%", String.valueOf(spawnedCrates.size())));
+            String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("flare-start").replace("%player%", player.getName()).replace("%amount%", String.valueOf(spawnedCrates.size())));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.sendMessage(message);
             }

@@ -52,8 +52,8 @@ public final class AxEnvoyPlugin extends JavaPlugin {
             Iterator<SpawnedCrate> iterator = envoy.getSpawnedCrates().iterator();
             while (iterator.hasNext()) {
                 SpawnedCrate next = iterator.next();
-                next.claim(null, envoy, false);
                 iterator.remove();
+                next.claim(null, envoy, false);
             }
         }
     }

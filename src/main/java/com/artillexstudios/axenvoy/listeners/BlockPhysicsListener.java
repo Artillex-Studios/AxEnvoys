@@ -24,7 +24,7 @@ public class BlockPhysicsListener implements Listener {
             if (!envoy.isActive()) continue;
             if (!envoy.getCenter().getWorld().equals(e.getBlock().getWorld())) continue;
             ObjectArrayList<SpawnedCrate> spawnedCrate = envoy.getSpawnedCrates();
-            if (spawnedCrate.isEmpty()) return;
+            if (spawnedCrate.isEmpty()) continue;
             int spawnedCrateSize = spawnedCrate.size();
             for (int i1 = 0; i1 < spawnedCrateSize; i1++) {
                 SpawnedCrate crate = spawnedCrate.get(i1);
