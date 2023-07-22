@@ -1,7 +1,7 @@
 # Cooldown in seconds until a player can collect a new crate of this type
 # THIS OVERRIDES THE SAME SETTING IN THE ENVOY'S CATEGORY! If you do NOT want to override it, remove it from here
 collect-cooldown: 30
-broadcast-collect: false
+broadcast-collect: true
 
 display-name: "&cRare"
 block: gold_block
