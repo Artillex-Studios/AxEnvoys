@@ -10,10 +10,10 @@ import org.bukkit.persistence.PersistentDataType;
 public class FireworkDamageListener implements Listener {
 
     @EventHandler
-    public void onFireworkDamage(EntityDamageByEntityEvent e) {
-        if (!(e.getDamager() instanceof Firework fw)) return;
+    public void onFireworkDamage(EntityDamageByEntityEvent event) {
+        if (!(event.getDamager() instanceof Firework fw)) return;
         if (!fw.getPersistentDataContainer().has(SpawnedCrate.FIREWORK_KEY, PersistentDataType.BYTE)) return;
 
-        e.setCancelled(true);
+        event.setCancelled(true);
     }
 }

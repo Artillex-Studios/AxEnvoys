@@ -141,12 +141,12 @@ public class Envoy {
         }
 
         if (player == null) {
-            String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start").replace("%amount%", String.valueOf(spawnedCrates.size())));
+            String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start", player).replace("%amount%", String.valueOf(spawnedCrates.size())));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.sendMessage(message);
             }
         } else {
-            String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("flare-start").replace("%player%", player.getName()).replace("%amount%", String.valueOf(spawnedCrates.size())));
+            String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("flare-start", player).replace("%player%", player.getName()).replace("%amount%", String.valueOf(spawnedCrates.size())));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.sendMessage(message);
             }
@@ -157,6 +157,10 @@ public class Envoy {
 
     public String getMessage(String path) {
         return document.getOptionalString("messages.%s".formatted(path)).map(StringUtils::format).orElseGet(() -> StringUtils.format(ConfigManager.getLang().getString("messages.%s".formatted(path))));
+    }
+
+    public String getMessage(String path, Player player) {
+        return document.getOptionalString("messages.%s".formatted(path)).map(message -> StringUtils.format(message.replace("%player%", player.getName()))).orElseGet(() -> StringUtils.format(ConfigManager.getLang().getString("messages.%s".formatted(path)).replace("%player%", player.getName())));
     }
 
     public ObjectArrayList<Material> getNotOnMaterials() {

@@ -17,23 +17,23 @@ import org.jetbrains.annotations.NotNull;
 public class CollectionListener implements Listener {
 
     @EventHandler
-    public void onPlayerInteractEvent(@NotNull PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_BLOCK && e.getAction() != Action.LEFT_CLICK_BLOCK) return;
-        if (e.getHand() != EquipmentSlot.HAND) return;
-        if (e.getClickedBlock() == null) return;
-        if (e.getClickedBlock().getType() == Material.AIR) return;
+    public void onPlayerInteractEvent(@NotNull PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.LEFT_CLICK_BLOCK) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getClickedBlock() == null) return;
+        if (event.getClickedBlock().getType() == Material.AIR) return;
 
         for (Envoy envoy : EnvoyLoader.envoys) {
             if (!envoy.isActive()) continue;
             for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
-                if (!spawnedCrate.getFinishLocation().equals(e.getClickedBlock().getLocation())) continue;
-                User user = User.USER_MAP.get(e.getPlayer().getUniqueId());
+                if (!spawnedCrate.getFinishLocation().equals(event.getClickedBlock().getLocation())) continue;
+                User user = User.USER_MAP.get(event.getPlayer().getUniqueId());
                 if (user == null) return;
-                e.setCancelled(true);
-                e.setUseInteractedBlock(Event.Result.DENY);
+                event.setCancelled(true);
+                event.setUseInteractedBlock(Event.Result.DENY);
 
                 if (user.canCollect(envoy, spawnedCrate.getHandle())) {
-                    spawnedCrate.claim(e.getPlayer(), envoy);
+                    spawnedCrate.claim(event.getPlayer(), envoy);
 
                     int cooldown = spawnedCrate.getHandle().isHasCollectionCooldown() ? spawnedCrate.getHandle().getCollectionCooldown() : envoy.getCollectCooldown();
                     if (envoy.isCollectGlobalCooldown()) {
@@ -42,7 +42,7 @@ public class CollectionListener implements Listener {
 
                     user.addCrateCooldown(spawnedCrate.getHandle(), cooldown, envoy);
                 } else {
-                    e.getPlayer().sendMessage(String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("cooldown").replace("%crate%", StringUtils.format(spawnedCrate.getHandle().getDisplayName())).replace("%cooldown%", String.valueOf((user.getCooldown(envoy, spawnedCrate.getHandle()) - System.currentTimeMillis()) / 1000))));
+                    event.getPlayer().sendMessage(String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("cooldown", event.getPlayer()).replace("%crate%", StringUtils.format(spawnedCrate.getHandle().getDisplayName())).replace("%cooldown%", String.valueOf((user.getCooldown(envoy, spawnedCrate.getHandle()) - System.currentTimeMillis()) / 1000))));
                 }
                 return;
             }

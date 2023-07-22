@@ -14,12 +14,7 @@ public class StringUtils {
 
     @NotNull
     public static String format(@NotNull String message) {
-        message = PlaceholderAPI.setPlaceholders(null, message);
-        message = message.replace('\u00a7', '&');
-        message = toLegacy(MINI_MESSAGE.deserialize(message));
-        message = ChatColor.translateAlternateColorCodes('&', message);
-
-        return message;
+        return format(message, null);
     }
 
     @NotNull

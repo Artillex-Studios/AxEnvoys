@@ -19,12 +19,12 @@ import org.jetbrains.annotations.NotNull;
 public class ActivateFlare implements Listener {
 
     @EventHandler
-    private void onPlayerInteractEvent(@NotNull PlayerInteractEvent e) {
-        if (e.getAction() != Action.RIGHT_CLICK_AIR && e.getAction() != Action.RIGHT_CLICK_BLOCK) return;
-        if (e.getHand() != EquipmentSlot.HAND) return;
-        if (e.getItem() == null) return;
-        if (e.getItem().getItemMeta() == null) return;
-        final ItemMeta meta = e.getItem().getItemMeta();
+    private void onPlayerInteractEvent(@NotNull PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        if (event.getHand() != EquipmentSlot.HAND) return;
+        if (event.getItem() == null) return;
+        if (event.getItem().getItemMeta() == null) return;
+        final ItemMeta meta = event.getItem().getItemMeta();
         final PersistentDataContainer container = meta.getPersistentDataContainer();
         final NamespacedKey key = new NamespacedKey(AxEnvoyPlugin.getInstance(), "rivalsenvoy");
         if (!container.has(key, PersistentDataType.STRING)) return;
@@ -32,12 +32,12 @@ public class ActivateFlare implements Listener {
         for (Envoy envoy : EnvoyLoader.envoys) {
             if (envoy.getName().equals(container.get(key, PersistentDataType.STRING))) {
                 if (!envoy.isFlareEnabled()) {
-                    e.getPlayer().sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("flare-disabled")));
+                    event.getPlayer().sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("flare-disabled")));
                     return;
                 }
 
                 if (envoy.isActive()) {
-                    e.getPlayer().sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("already-active")));
+                    event.getPlayer().sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("already-active")));
                     return;
                 }
 
@@ -45,11 +45,11 @@ public class ActivateFlare implements Listener {
                     return;
                 }
 
-                if (envoy.start(e.getPlayer())) {
-                    if (e.getItem().getAmount() > 1) {
-                        e.getItem().setAmount(e.getItem().getAmount() - 1);
+                if (envoy.start(event.getPlayer())) {
+                    if (event.getItem().getAmount() > 1) {
+                        event.getItem().setAmount(event.getItem().getAmount() - 1);
                     } else {
-                        e.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                        event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
                     }
                 }
 

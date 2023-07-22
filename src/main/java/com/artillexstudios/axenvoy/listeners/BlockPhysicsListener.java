@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class BlockPhysicsListener implements Listener {
 
     @EventHandler
-    public void onBlockPhysicsEvent(@NotNull BlockPhysicsEvent e) {
+    public void onBlockPhysicsEvent(@NotNull BlockPhysicsEvent event) {
         ObjectArrayList<Envoy> envoys = EnvoyLoader.envoys;
         if (envoys.isEmpty()) return;
 
@@ -22,7 +22,7 @@ public class BlockPhysicsListener implements Listener {
         for (int i = 0; i < size; i++) {
             Envoy envoy = envoys.get(i);
             if (!envoy.isActive()) continue;
-            if (!envoy.getCenter().getWorld().equals(e.getBlock().getWorld())) continue;
+            if (!envoy.getCenter().getWorld().equals(event.getBlock().getWorld())) continue;
             ObjectArrayList<SpawnedCrate> spawnedCrate = envoy.getSpawnedCrates();
             if (spawnedCrate.isEmpty()) continue;
             int spawnedCrateSize = spawnedCrate.size();
@@ -33,8 +33,8 @@ public class BlockPhysicsListener implements Listener {
                 for (int i2 = 0; i2 < faceSize; i2++) {
                     Block relative = crate.getFinishLocation().getBlock().getRelative(faces[i2]);
 
-                    if (relative.getLocation().distanceSquared(e.getSourceBlock().getLocation()) <= 4) {
-                        e.setCancelled(true);
+                    if (relative.getLocation().distanceSquared(event.getSourceBlock().getLocation()) <= 4) {
+                        event.setCancelled(true);
                         return;
                     }
                 }
