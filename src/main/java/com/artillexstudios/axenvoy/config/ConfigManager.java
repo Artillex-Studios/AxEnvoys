@@ -11,7 +11,7 @@ import java.io.File;
 public class ConfigManager {
     private static YamlDocument lang;
 
-    public ConfigManager() {
+    public static void reload() {
         try {
             lang = YamlDocument.create(new File(FileUtils.MAIN_DIRECTORY.toFile(), "messages.yml"), FileUtils.getResource("messages.yml"));
         } catch (Exception exception) {

@@ -5,12 +5,17 @@ messages:
   flare-start: "%player% started an envoy!"
   set-center: "Set center to your location!"
   set-predefined: "You added a predefined spawn to this envoy!"
+  remove-predefined: "You removed a predefined spawn from this envoy!"
   stopped: "The envoy was forcefully stopped."
   cooldown: "Woah! Slow down! You need to wait %cooldown% seconds before opening %crate%!"
   ended: "The event has ended!"
   already-active: "This event is already running!"
   flare-disabled: "This envoy's flare is disabled!"
   reload: "Reloaded! Took: %time% ms!"
+  no-envoy-found: "There is no loaded envoy named %name%!"
+  editor:
+    join: "You have entered the editor!"
+    leave: "You have left the editor!"
   placeholder:
     running: "&aRunning!"
     not-running: "&cNot running"

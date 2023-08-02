@@ -5,12 +5,12 @@ import com.artillexstudios.axenvoy.utils.ConfigUtils;
 import com.artillexstudios.axenvoy.utils.FileUtils;
 import com.artillexstudios.axenvoy.utils.StringUtils;
 import dev.dejvokep.boostedyaml.YamlDocument;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 
 import java.io.File;
 
 public class EnvoyLoader {
-    public static final ObjectArrayList<Envoy> envoys = new ObjectArrayList<>();
+    public static final Object2ObjectArrayMap<String, Envoy> envoys = new Object2ObjectArrayMap<>();
 
     public static void loadAll() {
         envoys.clear();
@@ -28,7 +28,7 @@ public class EnvoyLoader {
                 continue;
             }
 
-            envoys.add(new Envoy(document));
+            envoys.put(file.getName().replace(".yml", "").replace(".yaml", ""), new Envoy(document));
         }
     }
 }

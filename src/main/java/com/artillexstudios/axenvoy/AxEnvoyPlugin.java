@@ -29,7 +29,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        new ConfigManager();
+        ConfigManager.reload();
         new Commands(this);
         if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
             new Placeholders().register();
@@ -47,7 +47,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        for (Envoy envoy : EnvoyLoader.envoys) {
+        for (Envoy envoy : EnvoyLoader.envoys.values()) {
             if (!envoy.isActive()) continue;
             Iterator<SpawnedCrate> iterator = envoy.getSpawnedCrates().iterator();
             while (iterator.hasNext()) {

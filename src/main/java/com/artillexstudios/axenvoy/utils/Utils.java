@@ -33,8 +33,12 @@ public class Utils {
 
     @NotNull
     public static Location deserializeLocation(@NotNull YamlDocument file, String path) {
-        String locString = file.getString(path, "world;0;0;0");
-        String[] split = locString.split(";");
+        return deserializeLocation(file.getString(path, "world;0;0;0"));
+    }
+
+    @NotNull
+    public static Location deserializeLocation(@NotNull String locationString) {
+        String[] split = locationString.split(";");
         World world = Bukkit.getWorld(split[0]);
         return new Location(world, Double.parseDouble(split[1]), Double.parseDouble(split[2]), Double.parseDouble(split[3]), 0, 0);
     }

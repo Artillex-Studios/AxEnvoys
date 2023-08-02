@@ -4,6 +4,7 @@ import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.EnvoyLoader;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectCollection;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
@@ -15,12 +16,10 @@ public class BlockPhysicsListener implements Listener {
 
     @EventHandler
     public void onBlockPhysicsEvent(@NotNull BlockPhysicsEvent event) {
-        ObjectArrayList<Envoy> envoys = EnvoyLoader.envoys;
+        ObjectCollection<Envoy> envoys = EnvoyLoader.envoys.values();
         if (envoys.isEmpty()) return;
 
-        int size = envoys.size();
-        for (int i = 0; i < size; i++) {
-            Envoy envoy = envoys.get(i);
+        for (Envoy envoy : envoys) {
             if (!envoy.isActive()) continue;
             if (!envoy.getCenter().getWorld().equals(event.getBlock().getWorld())) continue;
             ObjectArrayList<SpawnedCrate> spawnedCrate = envoy.getSpawnedCrates();

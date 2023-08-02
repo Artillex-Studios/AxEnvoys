@@ -29,7 +29,7 @@ public class ActivateFlare implements Listener {
         final NamespacedKey key = new NamespacedKey(AxEnvoyPlugin.getInstance(), "rivalsenvoy");
         if (!container.has(key, PersistentDataType.STRING)) return;
 
-        for (Envoy envoy : EnvoyLoader.envoys) {
+        for (Envoy envoy : EnvoyLoader.envoys.values()) {
             if (envoy.getName().equals(container.get(key, PersistentDataType.STRING))) {
                 if (!envoy.isFlareEnabled()) {
                     event.getPlayer().sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("flare-disabled")));

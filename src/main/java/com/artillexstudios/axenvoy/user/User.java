@@ -22,6 +22,7 @@ public class User {
     private final ObjectArrayList<CrateCooldown> crateCooldowns = new ObjectArrayList<>();
     private final Object2LongArrayMap<Envoy> flareCooldown = new Object2LongArrayMap<>();
     private final Player player;
+    private Envoy editor = null;
 
     public User(@NotNull Player player) {
         this.player = player;
@@ -89,5 +90,17 @@ public class User {
         }
 
         return System.currentTimeMillis();
+    }
+
+    public void setEditor(Envoy value) {
+        this.editor = value;
+    }
+
+    public Envoy getEditor() {
+        return editor;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 }

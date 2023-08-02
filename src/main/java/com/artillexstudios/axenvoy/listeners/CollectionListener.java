@@ -23,7 +23,7 @@ public class CollectionListener implements Listener {
         if (event.getClickedBlock() == null) return;
         if (event.getClickedBlock().getType() == Material.AIR) return;
 
-        for (Envoy envoy : EnvoyLoader.envoys) {
+        for (Envoy envoy : EnvoyLoader.envoys.values()) {
             if (!envoy.isActive()) continue;
             for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
                 if (!spawnedCrate.getFinishLocation().equals(event.getClickedBlock().getLocation())) continue;

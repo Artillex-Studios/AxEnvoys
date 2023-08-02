@@ -9,8 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
-
 public class Placeholders extends PlaceholderExpansion {
 
     @Override
@@ -32,12 +30,8 @@ public class Placeholders extends PlaceholderExpansion {
     public @Nullable String onRequest(OfflinePlayer player, @NotNull String params) {
         String[] args = params.split("_");
         String envoyName = args[1];
-        Optional<Envoy> optionalEnvoy = EnvoyLoader.envoys.stream().filter(envoy1 -> envoy1.getName().equalsIgnoreCase(envoyName)).findFirst();
-
-        if (optionalEnvoy.isEmpty()) {
-            return "";
-        }
-        Envoy envoy = optionalEnvoy.get();
+        Envoy envoy = EnvoyLoader.envoys.get(envoyName);
+        if (envoy == null) return "";
 
         switch (args[0]) {
             case "active" -> {
