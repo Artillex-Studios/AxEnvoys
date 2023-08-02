@@ -96,13 +96,16 @@ public class Commands {
             }
         })).command(commands.literal("start").argument(argument.copy()).permission("axenvoy.command.start").handler(c -> {
             String envoyName = c.get("envoy");
-            Envoy envoy = EnvoyLoader.envoys.get(envoyName);
-            if (envoy == null) {
-                c.getSender().sendMessage(StringUtils.format(String.format("%s%s", ConfigManager.getLang().getString("messages.prefix"), ConfigManager.getLang().getString("messages.no-envoy-found"))));
-                return;
-            }
 
-            Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> envoy.start(null));
+            Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
+                Envoy envoy = EnvoyLoader.envoys.get(envoyName);
+                if (envoy == null) {
+                    c.getSender().sendMessage(StringUtils.format(String.format("%s%s", ConfigManager.getLang().getString("messages.prefix"), ConfigManager.getLang().getString("messages.no-envoy-found"))));
+                    return;
+                }
+
+                envoy.start(null);
+            });
 
         })).command(commands.literal("stop").argument(argument.copy()).permission("axenvoy.command.stop").handler(c -> {
             String envoyName = c.get("envoy");
@@ -117,8 +120,8 @@ public class Commands {
                 Iterator<SpawnedCrate> crates = envoy.getSpawnedCrates().iterator();
                 while (crates.hasNext()) {
                     SpawnedCrate crate = crates.next();
-                    crate.claim(null, envoy, false);
                     crates.remove();
+                    crate.claim(null, envoy, false);
                 }
             });
         })).command(commands.literal("stopall").permission("axenvoy.command.stopall").handler(c -> Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
