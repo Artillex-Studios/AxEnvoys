@@ -11,6 +11,7 @@ import com.artillexstudios.axenvoy.listeners.CollectionListener;
 import com.artillexstudios.axenvoy.listeners.FireworkDamageListener;
 import com.artillexstudios.axenvoy.placeholders.Placeholders;
 import com.artillexstudios.axenvoy.user.User;
+import com.artillexstudios.axenvoy.utils.EditorListener;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -44,6 +45,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new BlockPhysicsListener(), this);
         Bukkit.getPluginManager().registerEvents(new CollectionListener(), this);
         Bukkit.getPluginManager().registerEvents(new FireworkDamageListener(), this);
+        Bukkit.getPluginManager().registerEvents(new EditorListener(), this);
         new Metrics(this, 19146);
     }
 
