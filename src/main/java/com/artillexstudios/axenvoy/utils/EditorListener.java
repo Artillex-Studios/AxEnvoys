@@ -55,6 +55,7 @@ public class EditorListener implements Listener {
 
         locations.add(Utils.serializeLocation(event.getBlock().getLocation()));
         editor.getDocument().set("pre-defined-spawns.locations", locations);
+        event.setCancelled(true);
 
         User.USER_MAP.forEach(((uuid, user1) -> {
             if (user1.getEditor() == editor) {
