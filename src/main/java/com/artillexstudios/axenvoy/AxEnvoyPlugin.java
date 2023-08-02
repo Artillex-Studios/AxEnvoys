@@ -20,6 +20,7 @@ import java.util.Iterator;
 
 public final class AxEnvoyPlugin extends JavaPlugin {
     private static AxEnvoyPlugin instance;
+    private boolean placeholderApi;
 
     public static AxEnvoyPlugin getInstance() {
         return instance;
@@ -31,7 +32,8 @@ public final class AxEnvoyPlugin extends JavaPlugin {
 
         ConfigManager.reload();
         new Commands(this);
-        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+        this.placeholderApi = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+        if (placeholderApi) {
             new Placeholders().register();
         }
 
@@ -56,5 +58,9 @@ public final class AxEnvoyPlugin extends JavaPlugin {
                 next.claim(null, envoy, false);
             }
         }
+    }
+
+    public boolean isPlaceholderApi() {
+        return this.placeholderApi;
     }
 }

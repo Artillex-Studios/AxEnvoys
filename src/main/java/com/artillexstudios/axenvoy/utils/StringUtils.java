@@ -1,5 +1,6 @@
 package com.artillexstudios.axenvoy.utils;
 
+import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -19,7 +20,9 @@ public class StringUtils {
 
     @NotNull
     public static String format(@NotNull String message, Player player) {
-        message = PlaceholderAPI.setPlaceholders(player, message);
+        if (AxEnvoyPlugin.getInstance().isPlaceholderApi()) {
+            message = PlaceholderAPI.setPlaceholders(player, message);
+        }
         message = message.replace('\u00a7', '&');
         message = toLegacy(MINI_MESSAGE.deserialize(message));
         message = ChatColor.translateAlternateColorCodes('&', message);
