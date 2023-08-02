@@ -103,4 +103,20 @@ public class User {
     public Player getPlayer() {
         return player;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User user)) return false;
+
+        if (!getPlayer().equals(user.getPlayer())) return false;
+        return getEditor() != null ? getEditor().equals(user.getEditor()) : user.getEditor() == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getPlayer().hashCode();
+        result = 31 * result + (getEditor() != null ? getEditor().hashCode() : 0);
+        return result;
+    }
 }

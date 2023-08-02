@@ -237,6 +237,8 @@ public class Commands {
                     sender.sendBlockChange(location, Material.DIAMOND_BLOCK.createBlockData());
                 }
 
+                sender.getInventory().addItem(new ItemStack(Material.DIAMOND_BLOCK));
+
                 sender.sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("editor.join")));
             }
         }));

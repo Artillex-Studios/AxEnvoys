@@ -1,8 +1,10 @@
 package com.artillexstudios.axenvoy.utils;
 
+import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.config.ConfigManager;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.user.User;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,7 +31,7 @@ public class EditorListener implements Listener {
             editor.getDocument().set("pre-defined-spawns.locations", locations);
 
             User.USER_MAP.forEach(((uuid, user1) -> {
-                if (user1.getEditor() == editor) {
+                if (user1.getEditor().equals(editor)) {
                     user1.getPlayer().sendBlockChange(event.getBlock().getLocation(), Material.AIR.createBlockData());
                 }
             }));
@@ -50,23 +52,31 @@ public class EditorListener implements Listener {
         if (user == null) return;
         Envoy editor = user.getEditor();
         if (editor == null) return;
+        if (event.getBlockPlaced().getType() != Material.DIAMOND_BLOCK) return;
 
         List<String> locations = editor.getDocument().getStringList("pre-defined-spawns.locations", new ArrayList<String>());
 
-        locations.add(Utils.serializeLocation(event.getBlock().getLocation()));
-        editor.getDocument().set("pre-defined-spawns.locations", locations);
-        event.setCancelled(true);
+        String serialized = Utils.serializeLocation(event.getBlock().getLocation());
+        if (locations.contains(serialized)) {
+            return;
+        }
 
-        User.USER_MAP.forEach(((uuid, user1) -> {
-            if (user1.getEditor() == editor) {
-                user1.getPlayer().sendBlockChange(event.getBlock().getLocation(), Material.DIAMOND_BLOCK.createBlockData());
-            }
-        }));
+        locations.add(serialized);
+        event.setCancelled(true);
+        editor.getDocument().set("pre-defined-spawns.locations", locations);
+
+        Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
+            User.USER_MAP.forEach(((uuid, user1) -> {
+                if (user1.getEditor().equals(editor)) {
+                    user1.getPlayer().sendBlockChange(event.getBlock().getLocation(), Material.DIAMOND_BLOCK.createBlockData());
+                }
+            }));
+        }, 2);
 
         try {
             editor.getDocument().save();
             ConfigManager.reload();
-            event.getPlayer().sendMessage(editor.getMessage("remove-predefined"));
+            event.getPlayer().sendMessage(editor.getMessage("set-predefined"));
         } catch (Exception exception) {
             exception.printStackTrace();
         }
