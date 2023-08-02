@@ -1,5 +1,6 @@
 package com.artillexstudios.axenvoy.envoy;
 
+import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.config.ConfigManager;
 import com.artillexstudios.axenvoy.utils.StringUtils;
 import com.artillexstudios.axenvoy.utils.Utils;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,14 +33,15 @@ public class Envoy {
     private boolean randomSpawns;
     private boolean predefinedSpawns;
     private boolean flareEnabled;
-    private int flareCooldown;
     private int collectCooldown;
+    private int flareCooldown;
     private int timeoutTime;
     private int crateAmount;
     private int minDistance;
     private int maxDistance;
     private int minHeight;
     private int maxHeight;
+    private long startTime;
 
     public Envoy(@NotNull YamlDocument config) {
         this.document = config;
@@ -52,7 +55,7 @@ public class Envoy {
         this.collectGlobalCooldown = config.getBoolean("collect-global-cooldown", false);
         this.crateAmount = config.getInt("amount", 30);
         this.collectCooldown = config.getInt("collect-cooldown", 10);
-        this.timeoutTime = config.getInt("timeout-time", 900);
+        this.timeoutTime = config.getInt("timeout-time", -1);
         this.minDistance = config.getInt("random-spawn.min-distance", 20);
         this.maxDistance = config.getInt("random-spawn.max-distance", 100);
         this.minHeight = config.getInt("random-spawn.min-height", 10);
@@ -119,6 +122,7 @@ public class Envoy {
         }
 
         this.active = true;
+        startTime = System.currentTimeMillis();
 
         if (predefinedSpawns) {
             for (String s : this.document.getStringList("pre-defined-spawns.locations")) {
@@ -152,6 +156,19 @@ public class Envoy {
             }
         }
 
+        if (this.timeoutTime > 0) {
+            Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
+                Iterator<SpawnedCrate> crateIterator = this.spawnedCrates.iterator();
+
+                while (crateIterator.hasNext()) {
+                    SpawnedCrate next = crateIterator.next();
+                    crateIterator.remove();
+                    next.claim(null, this, false);
+                }
+
+                this.active = false;
+            }, this.timeoutTime);
+        }
         return true;
     }
 
@@ -277,5 +294,9 @@ public class Envoy {
 
     public boolean isCollectGlobalCooldown() {
         return collectGlobalCooldown;
+    }
+
+    public long getStartTime() {
+        return startTime;
     }
 }

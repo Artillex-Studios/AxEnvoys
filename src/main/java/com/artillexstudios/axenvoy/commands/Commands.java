@@ -20,6 +20,9 @@ import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.StringUtils;
 import com.artillexstudios.axenvoy.utils.Utils;
+import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -244,6 +247,23 @@ public class Commands {
                 sender.getInventory().addItem(new ItemStack(Material.DIAMOND_BLOCK));
 
                 sender.sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("editor.join")));
+            }
+        })).command(commands.literal("coords").permission("axenvoy.command.coords").argument(argument.copy()).handler(c -> {
+            Optional<String> envoyName = c.getOptional("envoy");
+            Envoy envoy = EnvoyLoader.envoys.get(envoyName.get());
+            if (envoy == null) {
+                c.getSender().sendMessage(StringUtils.format(String.format("%s%s", ConfigManager.getLang().getString("messages.prefix"), ConfigManager.getLang().getString("messages.no-envoy-found"))));
+                return;
+            }
+
+            for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
+                Audience audience = BukkitAudiences.create(AxEnvoyPlugin.getInstance()).sender(c.getSender());
+                audience.sendMessage(MiniMessage.miniMessage().deserialize("<click:run_command:'/tp %x% %y% %z%'><hover:show_text:'<color:#7df0ff>Click to teleport!</color>'><white>Crate</white> %crate% %x% %y% %z%.</hover></click>"
+                        .replace("%x%", String.valueOf(spawnedCrate.getFinishLocation().getBlockX()))
+                        .replace("%y%", String.valueOf(spawnedCrate.getFinishLocation().getBlockY()))
+                        .replace("%z%", String.valueOf(spawnedCrate.getFinishLocation().getBlockZ()))
+                        .replace("%crate%", String.valueOf(spawnedCrate.getHandle().getName()))
+                ));
             }
         }));
     }

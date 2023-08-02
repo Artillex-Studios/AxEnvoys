@@ -4,6 +4,7 @@ import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.EnvoyLoader;
 import com.artillexstudios.axenvoy.utils.StringUtils;
+import com.artillexstudios.axenvoy.utils.Utils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
@@ -47,6 +48,13 @@ public class Placeholders extends PlaceholderExpansion {
                 }
 
                 return StringUtils.format(envoy.getMessage("placeholder.remaining").replace("%remaining%", String.valueOf(envoy.getSpawnedCrates().size())));
+            }
+            case "time_left" -> {
+                if (!envoy.isActive()) {
+                    return StringUtils.format(envoy.getMessage("placeholder.not-running"));
+                }
+
+                return Utils.fancyTime(envoy.getStartTime() + envoy.getTimeoutTime() * 1000L);
             }
         }
 

@@ -8,6 +8,7 @@ amount: 30
 collect-cooldown: 10 # Seconds
 collect-global-cooldown: false # Whether the cooldown should be for all crates of this envoy, or per-crate
 broadcast-collect: true
+timeout-time: 300 # This is in seconds
 
 random-spawn:
   enabled: true # Should we use random spawning?
