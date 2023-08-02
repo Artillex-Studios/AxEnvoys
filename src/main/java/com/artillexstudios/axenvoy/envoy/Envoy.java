@@ -141,7 +141,7 @@ public class Envoy {
         }
 
         if (player == null) {
-            String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start", player).replace("%amount%", String.valueOf(spawnedCrates.size())));
+            String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start").replace("%amount%", String.valueOf(spawnedCrates.size())));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.sendMessage(message);
             }

@@ -102,7 +102,8 @@ public class Commands {
                 return;
             }
 
-            envoy.start(null);
+            Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> envoy.start(null));
+
         })).command(commands.literal("stop").argument(argument.copy()).permission("axenvoy.command.stop").handler(c -> {
             String envoyName = c.get("envoy");
             Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
