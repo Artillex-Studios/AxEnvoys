@@ -122,7 +122,7 @@ public class Envoy {
 
         if (predefinedSpawns) {
             for (String s : this.document.getStringList("pre-defined-spawns.locations")) {
-                Location location = Utils.deserializeLocation(this.document, "pre-defined-spawns.locations.%s".formatted(s));
+                Location location = Utils.deserializeLocation(s);
                 this.spawnedCrates.add(new SpawnedCrate(this, Utils.randomCrate(cratesMap), Utils.topBlock(location)));
             }
         }
