@@ -218,6 +218,18 @@ public class Commands {
             }
 
             if (envoy.getName().equals(envoyName.get())) {
+                if (user.getEditor() != null) {
+                    List<Location> locations = envoy.getDocument().getStringList("pre-defined-spawns.locations", new ArrayList<>()).stream().map(Utils::deserializeLocation).toList();
+                    for (Location location : locations) {
+                        sender.sendBlockChange(location, Material.AIR.createBlockData());
+                    }
+
+                    user.setEditor(null);
+                    sender.sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("editor.leave")));
+
+                    return;
+                }
+
                 user.setEditor(envoy);
                 List<Location> locations = envoy.getDocument().getStringList("pre-defined-spawns.locations", new ArrayList<>()).stream().map(Utils::deserializeLocation).toList();
 
