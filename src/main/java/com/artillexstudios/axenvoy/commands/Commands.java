@@ -32,6 +32,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -233,8 +234,8 @@ public class Commands {
                 sender.sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("editor.join")));
             }
         })).command(commands.literal("coords").permission("axenvoy.command.coords").argument(argument.copy()).handler(c -> {
-            Optional<String> envoyName = c.getOptional("envoy");
-            Envoy envoy = EnvoyLoader.envoys.get(envoyName.get());
+            String envoyName = c.get("envoy");
+            Envoy envoy = EnvoyLoader.envoys.get(envoyName);
             if (envoy == null) {
                 c.getSender().sendMessage(StringUtils.format(String.format("%s%s", ConfigManager.getLang().getString("messages.prefix"), ConfigManager.getLang().getString("messages.no-envoy-found"))));
                 return;
@@ -249,6 +250,15 @@ public class Commands {
                         .replace("%crate%", String.valueOf(spawnedCrate.getHandle().getName()))
                 ));
             }
+        })).command(commands.literal("time").permission("axenvoy.command.time").argument(argument.copy()).handler(c -> {
+            String envoyName = c.get("envoy");
+            Envoy envoy = EnvoyLoader.envoys.get(envoyName);
+            if (envoy == null) {
+                c.getSender().sendMessage(StringUtils.format(String.format("%s%s", ConfigManager.getLang().getString("messages.prefix"), ConfigManager.getLang().getString("messages.no-envoy-found"))));
+                return;
+            }
+
+            c.getSender().sendMessage(Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis()));
         }));
     }
 }

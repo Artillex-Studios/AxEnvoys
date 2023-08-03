@@ -36,7 +36,7 @@ public class Envoy {
     private final boolean collectGlobalCooldown;
     private ObjectArrayList<Calendar> warns = new ObjectArrayList<>();
     private final String every;
-    private Calendar next;
+    private final Calendar next = Calendar.getInstance();
     private BukkitTask bukkitTask;
     private boolean active;
     private boolean randomSpawns;
@@ -121,7 +121,7 @@ public class Envoy {
                     timeCheck.clear(Calendar.MILLISECOND);
 
                     if (timeCheck.compareTo(now) == 0) {
-                        Bukkit.broadcastMessage(getMessage("alert-times").replace("%time%", Utils.fancyTime(next.getTimeInMillis())));
+                        Bukkit.broadcastMessage(getMessage("alert").replace("%time%", Utils.fancyTime(next.getTimeInMillis() - Calendar.getInstance().getTimeInMillis())));
                     }
                 }
 
@@ -159,7 +159,7 @@ public class Envoy {
     }
 
     public void updateNext() {
-        setCalendar(Calendar.getInstance(), null, this.every);
+        setCalendar(next, null, this.every);
         warns.clear();
         warns = updateWarns();
     }

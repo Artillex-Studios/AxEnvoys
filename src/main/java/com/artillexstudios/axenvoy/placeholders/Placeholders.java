@@ -10,6 +10,8 @@ import org.bukkit.OfflinePlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Calendar;
+
 public class Placeholders extends PlaceholderExpansion {
 
     @Override
@@ -54,14 +56,14 @@ public class Placeholders extends PlaceholderExpansion {
                     return StringUtils.format(envoy.getMessage("placeholder.not-running"));
                 }
 
-                return Utils.fancyTime(envoy.getStartTime() + envoy.getTimeoutTime() * 1000L);
+                return StringUtils.format(envoy.getMessage("placeholder.remaining-time").replace("%time%", Utils.fancyTime(envoy.getStartTime() + envoy.getTimeoutTime() * 1000L)));
             }
             case "next_start" -> {
                 if (envoy.isActive() || envoy.getNext() == null) {
                     return StringUtils.format(envoy.getMessage("placeholder.running"));
                 }
 
-                return Utils.fancyTime(envoy.getNext().getTimeInMillis());
+                return StringUtils.format(envoy.getMessage("placeholder.until-next").replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis())));
             }
         }
 
