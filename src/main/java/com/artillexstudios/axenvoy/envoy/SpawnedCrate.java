@@ -141,6 +141,10 @@ public class SpawnedCrate {
 
             if (this.parent.getSpawnedCrates().isEmpty()) {
                 envoy.setActive(false);
+                if (envoy.getBukkitTask() != null) {
+                    envoy.getBukkitTask().cancel();
+                    envoy.setBukkitTask(null);
+                }
                 String message = String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("ended"));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);

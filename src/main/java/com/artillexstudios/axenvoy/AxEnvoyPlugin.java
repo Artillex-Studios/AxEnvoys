@@ -4,7 +4,6 @@ import com.artillexstudios.axenvoy.commands.Commands;
 import com.artillexstudios.axenvoy.config.ConfigManager;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.EnvoyLoader;
-import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import com.artillexstudios.axenvoy.listeners.ActivateFlare;
 import com.artillexstudios.axenvoy.listeners.BlockPhysicsListener;
 import com.artillexstudios.axenvoy.listeners.CollectionListener;
@@ -16,8 +15,6 @@ import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.util.Iterator;
 
 public final class AxEnvoyPlugin extends JavaPlugin {
     private static AxEnvoyPlugin instance;
@@ -53,12 +50,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
     public void onDisable() {
         for (Envoy envoy : EnvoyLoader.envoys.values()) {
             if (!envoy.isActive()) continue;
-            Iterator<SpawnedCrate> iterator = envoy.getSpawnedCrates().iterator();
-            while (iterator.hasNext()) {
-                SpawnedCrate next = iterator.next();
-                iterator.remove();
-                next.claim(null, envoy, false);
-            }
+            envoy.stop();
         }
     }
 

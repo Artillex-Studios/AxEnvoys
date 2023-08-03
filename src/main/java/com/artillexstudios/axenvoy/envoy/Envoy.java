@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
@@ -29,6 +30,7 @@ public class Envoy {
     private final ItemStack flare;
     private final boolean broadcastCollect;
     private final boolean collectGlobalCooldown;
+    private BukkitTask bukkitTask;
     private boolean active;
     private boolean randomSpawns;
     private boolean predefinedSpawns;
@@ -127,7 +129,7 @@ public class Envoy {
         if (predefinedSpawns) {
             for (String s : this.document.getStringList("pre-defined-spawns.locations")) {
                 Location location = Utils.deserializeLocation(s);
-                this.spawnedCrates.add(new SpawnedCrate(this, Utils.randomCrate(cratesMap), Utils.topBlock(location)));
+                new SpawnedCrate(this, Utils.randomCrate(cratesMap), Utils.topBlock(location));
             }
         }
 
@@ -157,19 +159,31 @@ public class Envoy {
         }
 
         if (this.timeoutTime > 0) {
-            Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
-                Iterator<SpawnedCrate> crateIterator = this.spawnedCrates.iterator();
+            bukkitTask = Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
+                if (!active) return;
 
-                while (crateIterator.hasNext()) {
-                    SpawnedCrate next = crateIterator.next();
-                    crateIterator.remove();
-                    next.claim(null, this, false);
-                }
-
-                this.active = false;
+                stop();
             }, this.timeoutTime);
         }
         return true;
+    }
+
+    public void stop() {
+        if (!active) return;
+
+        Iterator<SpawnedCrate> crateIterator = this.spawnedCrates.iterator();
+
+        while (crateIterator.hasNext()) {
+            SpawnedCrate next = crateIterator.next();
+            crateIterator.remove();
+            next.claim(null, this, false);
+        }
+
+        this.active = false;
+        if (this.bukkitTask != null) {
+            this.bukkitTask.cancel();
+            this.bukkitTask = null;
+        }
     }
 
     public String getMessage(String path) {
@@ -298,5 +312,13 @@ public class Envoy {
 
     public long getStartTime() {
         return startTime;
+    }
+
+    public void setBukkitTask(BukkitTask bukkitTask) {
+        this.bukkitTask = bukkitTask;
+    }
+
+    public BukkitTask getBukkitTask() {
+        return bukkitTask;
     }
 }

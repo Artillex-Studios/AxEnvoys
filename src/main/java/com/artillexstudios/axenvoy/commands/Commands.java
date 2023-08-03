@@ -32,7 +32,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -120,34 +119,19 @@ public class Commands {
                 }
 
                 if (!envoy.isActive()) return;
-                Iterator<SpawnedCrate> crates = envoy.getSpawnedCrates().iterator();
-                while (crates.hasNext()) {
-                    SpawnedCrate crate = crates.next();
-                    crates.remove();
-                    crate.claim(null, envoy, false);
-                }
+                envoy.stop();
             });
         })).command(commands.literal("stopall").permission("axenvoy.command.stopall").handler(c -> Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
             for (Envoy envoy : EnvoyLoader.envoys.values()) {
                 if (!envoy.isActive()) return;
-                Iterator<SpawnedCrate> crates = envoy.getSpawnedCrates().iterator();
-                while (crates.hasNext()) {
-                    SpawnedCrate crate = crates.next();
-                    crate.claim(null, envoy, false);
-                    crates.remove();
-                }
+                envoy.stop();
             }
         }))).command(commands.literal("reload").permission("axenvoy.command.reload").handler(c -> {
             long now = System.currentTimeMillis();
             Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
                 for (Envoy envoy : EnvoyLoader.envoys.values()) {
                     if (!envoy.isActive()) continue;
-                    Iterator<SpawnedCrate> iterator = envoy.getSpawnedCrates().iterator();
-                    while (iterator.hasNext()) {
-                        SpawnedCrate next = iterator.next();
-                        next.claim(null, envoy, false);
-                        iterator.remove();
-                    }
+                    envoy.stop();
                 }
 
                 ConfigManager.reload();
