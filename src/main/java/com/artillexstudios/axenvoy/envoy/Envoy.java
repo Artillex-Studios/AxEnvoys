@@ -36,7 +36,7 @@ public class Envoy {
     private final boolean collectGlobalCooldown;
     private ObjectArrayList<Calendar> warns = new ObjectArrayList<>();
     private final String every;
-    private final Calendar next = Calendar.getInstance();
+    private Calendar next = Calendar.getInstance();
     private BukkitTask bukkitTask;
     private boolean active;
     private boolean randomSpawns;
@@ -159,6 +159,7 @@ public class Envoy {
     }
 
     public void updateNext() {
+        next = Calendar.getInstance();
         setCalendar(next, null, this.every);
         warns.clear();
         warns = updateWarns();
@@ -225,6 +226,7 @@ public class Envoy {
         }
 
         this.active = true;
+        this.updateNext();
         startTime = System.currentTimeMillis();
 
         if (predefinedSpawns) {
@@ -259,8 +261,6 @@ public class Envoy {
             }
         }
 
-        this.updateNext();
-
         if (this.timeoutTime > 0) {
             bukkitTask = Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
                 if (!active) return;
@@ -283,6 +283,7 @@ public class Envoy {
         }
 
         this.active = false;
+        this.updateNext();
         if (this.bukkitTask != null) {
             this.bukkitTask.cancel();
             this.bukkitTask = null;

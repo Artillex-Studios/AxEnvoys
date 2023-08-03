@@ -140,6 +140,7 @@ public class SpawnedCrate {
             }
 
             if (this.parent.getSpawnedCrates().isEmpty()) {
+                envoy.updateNext();
                 envoy.setActive(false);
                 if (envoy.getBukkitTask() != null) {
                     envoy.getBukkitTask().cancel();

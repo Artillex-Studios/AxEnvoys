@@ -250,15 +250,6 @@ public class Commands {
                         .replace("%crate%", String.valueOf(spawnedCrate.getHandle().getName()))
                 ));
             }
-        })).command(commands.literal("time").permission("axenvoy.command.time").argument(argument.copy()).handler(c -> {
-            String envoyName = c.get("envoy");
-            Envoy envoy = EnvoyLoader.envoys.get(envoyName);
-            if (envoy == null) {
-                c.getSender().sendMessage(StringUtils.format(String.format("%s%s", ConfigManager.getLang().getString("messages.prefix"), ConfigManager.getLang().getString("messages.no-envoy-found"))));
-                return;
-            }
-
-            c.getSender().sendMessage(Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis()));
         }));
     }
 }

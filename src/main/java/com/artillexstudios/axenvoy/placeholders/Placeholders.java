@@ -56,7 +56,7 @@ public class Placeholders extends PlaceholderExpansion {
                     return StringUtils.format(envoy.getMessage("placeholder.not-running"));
                 }
 
-                return StringUtils.format(envoy.getMessage("placeholder.remaining-time").replace("%time%", Utils.fancyTime(envoy.getStartTime() + envoy.getTimeoutTime() * 1000L)));
+                return StringUtils.format(envoy.getMessage("placeholder.remaining-time").replace("%time%", Utils.fancyTime((envoy.getStartTime() + envoy.getTimeoutTime() * 1000L) - System.currentTimeMillis())));
             }
             case "next_start" -> {
                 if (envoy.isActive() || envoy.getNext() == null) {
