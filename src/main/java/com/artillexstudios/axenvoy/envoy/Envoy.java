@@ -108,8 +108,8 @@ public class Envoy {
             }
         });
 
-        updateNext();
         if (!every.isEmpty()) {
+            updateNext();
             Bukkit.getScheduler().runTaskTimer(AxEnvoyPlugin.getInstance(), () -> {
                 if (active) return;
                 Calendar now = Calendar.getInstance();
