@@ -103,7 +103,7 @@ public class Utils {
     }
 
     @NotNull
-    public static ItemStack createItem(final Material material, final int amount, final String name, @NotNull final List<String> lore, final String id, final boolean glow, final boolean addTag) {
+    public static ItemStack createItem(final Material material, final int amount, final String name, @NotNull final List<String> lore, final String id, final boolean glow, final boolean addTag, final Integer customModelData) {
         final ItemStack item = new ItemStack(material, amount);
         final ItemMeta meta = item.getItemMeta();
 
@@ -120,6 +120,8 @@ public class Utils {
             meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         }
 
+        meta.setCustomModelData(customModelData);
+
         if (addTag) {
             NamespacedKey key = new NamespacedKey(AxEnvoyPlugin.getInstance(), "rivalsenvoy");
             meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, id);
@@ -131,6 +133,6 @@ public class Utils {
 
     @NotNull
     public static ItemStack createItem(Section section, String id) {
-        return createItem(Material.matchMaterial(section.getString("material", "stone").toLowerCase(Locale.ENGLISH)), section.getInt("amount", 1), section.getString("name", ""), section.getStringList("lore", new ArrayList<>()), id, section.getBoolean("glow", false), true);
+        return createItem(Material.matchMaterial(section.getString("material", "stone").toLowerCase(Locale.ENGLISH)), section.getInt("amount", 1), section.getString("name", ""), section.getStringList("lore", new ArrayList<>()), id, section.getBoolean("glow", false), true, section.getInt("custom-model-data", null));
     }
 }
