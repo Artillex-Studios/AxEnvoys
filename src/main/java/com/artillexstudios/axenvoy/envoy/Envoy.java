@@ -15,7 +15,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -24,12 +27,16 @@ public class Envoy {
     private final ObjectArrayList<Material> notOnMaterials = new ObjectArrayList<>();
     private final ObjectArrayList<SpawnedCrate> spawnedCrates = new ObjectArrayList<>();
     private final Object2ObjectArrayMap<Crate, Double> cratesMap = new Object2ObjectArrayMap<>();
+    private final List<String> warnList;
     private final YamlDocument document;
     private final String name;
     private final Location center;
     private final ItemStack flare;
     private final boolean broadcastCollect;
     private final boolean collectGlobalCooldown;
+    private ObjectArrayList<Calendar> warns = new ObjectArrayList<>();
+    private final String every;
+    private Calendar next;
     private BukkitTask bukkitTask;
     private boolean active;
     private boolean randomSpawns;
@@ -37,6 +44,7 @@ public class Envoy {
     private boolean flareEnabled;
     private int collectCooldown;
     private int flareCooldown;
+    private int minPlayers;
     private int timeoutTime;
     private int crateAmount;
     private int minDistance;
@@ -57,12 +65,15 @@ public class Envoy {
         this.collectGlobalCooldown = config.getBoolean("collect-global-cooldown", false);
         this.crateAmount = config.getInt("amount", 30);
         this.collectCooldown = config.getInt("collect-cooldown", 10);
+        this.minPlayers = config.getInt("min-players", 2);
         this.timeoutTime = config.getInt("timeout-time", -1);
         this.minDistance = config.getInt("random-spawn.min-distance", 20);
         this.maxDistance = config.getInt("random-spawn.max-distance", 100);
         this.minHeight = config.getInt("random-spawn.min-height", 10);
         this.maxHeight = config.getInt("random-spawn.max-height", 200);
         this.flareCooldown = config.getInt("flare.cooldown", 30);
+        this.warnList = config.getStringList("alert-times", new ArrayList<>());
+        this.every = config.getString("every", "");
 
         if (flareEnabled) {
             flare = Utils.createItem(config.getSection("flare.item"), name);
@@ -96,6 +107,39 @@ public class Envoy {
                 }
             }
         });
+
+        updateNext();
+        if (!every.isEmpty()) {
+            Bukkit.getScheduler().runTaskTimer(AxEnvoyPlugin.getInstance(), () -> {
+                if (active) return;
+                Calendar now = Calendar.getInstance();
+                now.clear(Calendar.MILLISECOND);
+
+                for (Calendar warn : warns) {
+                    Calendar timeCheck = Calendar.getInstance();
+                    timeCheck.setTimeInMillis(warn.getTimeInMillis());
+                    timeCheck.clear(Calendar.MILLISECOND);
+
+                    if (timeCheck.compareTo(now) == 0) {
+                        Bukkit.broadcastMessage(getMessage("alert-times").replace("%time%", Utils.fancyTime(next.getTimeInMillis())));
+                    }
+                }
+
+                Calendar next = Calendar.getInstance();
+                next.setTimeInMillis(this.next.getTimeInMillis());
+                next.clear(Calendar.MILLISECOND);
+
+                if (next.compareTo(now) <= 0 && !active) {
+                    if (Bukkit.getOnlinePlayers().size() < minPlayers) {
+                        updateNext();
+                        Bukkit.broadcastMessage(getMessage("not-enough-autostart"));
+                        return;
+                    }
+
+                    start(null);
+                }
+            }, 20, 20);
+        }
     }
 
     public ObjectArrayList<SpawnedCrate> getSpawnedCrates() {
@@ -112,6 +156,63 @@ public class Envoy {
 
     public Location getCenter() {
         return center;
+    }
+
+    public void updateNext() {
+        setCalendar(Calendar.getInstance(), null, this.every);
+        warns.clear();
+        warns = updateWarns();
+    }
+
+    public void setCalendar(Calendar calendar, Calendar parent, String format) {
+        if (parent != null) {
+            calendar.setTimeInMillis(parent.getTimeInMillis());
+            for (String s : format.split(" ")) {
+                if (s.contains("d")) {
+                    calendar.add(Calendar.DATE, -Integer.parseInt(s.replace("d", "")));
+                }
+                if (s.contains("h")) {
+                    calendar.add(Calendar.HOUR, -Integer.parseInt(s.replace("h", "")));
+                }
+                if (s.contains("m")) {
+                    calendar.add(Calendar.MINUTE, -Integer.parseInt(s.replace("m", "")));
+                }
+                if (s.contains("s")) {
+                    calendar.add(Calendar.SECOND, -Integer.parseInt(s.replace("s", "")));
+                }
+            }
+        } else {
+            for (String s : format.split(" ")) {
+                if (s.contains("d")) {
+                    calendar.add(Calendar.DATE, Integer.parseInt(s.replace("d", "")));
+                }
+                if (s.contains("h")) {
+                    calendar.add(Calendar.HOUR, Integer.parseInt(s.replace("h", "")));
+                }
+                if (s.contains("m")) {
+                    calendar.add(Calendar.MINUTE, Integer.parseInt(s.replace("m", "")));
+                }
+                if (s.contains("s")) {
+                    calendar.add(Calendar.SECOND, Integer.parseInt(s.replace("s", "")));
+                }
+            }
+        }
+    }
+
+    public Calendar getNext() {
+        return next;
+    }
+
+    private ObjectArrayList<Calendar> updateWarns() {
+        ObjectArrayList<Calendar> calendars = new ObjectArrayList<>();
+
+        for (String warn : this.warnList) {
+            Calendar calendar = Calendar.getInstance();
+            setCalendar(calendar, getNext(), warn);
+            calendars.add(calendar);
+        }
+
+        return calendars;
     }
 
     public boolean start(Player player) {
@@ -157,6 +258,8 @@ public class Envoy {
                 onlinePlayer.sendMessage(message);
             }
         }
+
+        this.updateNext();
 
         if (this.timeoutTime > 0) {
             bukkitTask = Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
@@ -314,11 +417,11 @@ public class Envoy {
         return startTime;
     }
 
-    public void setBukkitTask(BukkitTask bukkitTask) {
-        this.bukkitTask = bukkitTask;
-    }
-
     public BukkitTask getBukkitTask() {
         return bukkitTask;
+    }
+
+    public void setBukkitTask(BukkitTask bukkitTask) {
+        this.bukkitTask = bukkitTask;
     }
 }

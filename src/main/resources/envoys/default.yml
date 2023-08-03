@@ -9,6 +9,16 @@ collect-cooldown: 10 # Seconds
 collect-global-cooldown: false # Whether the cooldown should be for all crates of this envoy, or per-crate
 broadcast-collect: true
 timeout-time: 300 # This is in seconds
+every: "1h" # Start an envoy event every hour. To disable, leave as ""
+alert-times: # Time before every
+  - "30m"
+  - "10m"
+  - "5s"
+  - "3s"
+  - "2s"
+  - "1s"
+
+min-players: 2 # Minimum players required for autostart
 
 random-spawn:
   enabled: true # Should we use random spawning?

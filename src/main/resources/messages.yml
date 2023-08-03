@@ -13,6 +13,8 @@ messages:
   flare-disabled: "This envoy's flare is disabled!"
   reload: "Reloaded! Took: %time% ms!"
   no-envoy-found: "There is no loaded envoy named %name%!"
+  alert: "An envoy event will start in %time%! Get ready!"
+  not-enough-autostart: "There weren't enough people to auto-start an envoy event! Rescheduling!"
   editor:
     join: "You have entered the editor!"
     leave: "You have left the editor!"
