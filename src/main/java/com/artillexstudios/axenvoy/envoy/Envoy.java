@@ -266,7 +266,7 @@ public class Envoy {
                 if (!active) return;
 
                 stop();
-            }, this.timeoutTime);
+            }, this.timeoutTime * 20L);
         }
         return true;
     }

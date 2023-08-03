@@ -24,7 +24,6 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.Color;
 import java.util.ArrayList;
 
 public class SpawnedCrate {
@@ -34,6 +33,7 @@ public class SpawnedCrate {
     private Location finishLocation;
     private FallingBlock fallingBlock;
     private Hologram hologram;
+    private int tick = 0;
 
     public SpawnedCrate(@NotNull Envoy parent, @NotNull Crate handle, @NotNull Location location) {
         this.parent = parent;
@@ -90,13 +90,11 @@ public class SpawnedCrate {
     public void spawnFirework(Location location) {
         if (!this.handle.isFirework()) return;
 
-        String hex = this.handle.getFireworkHex();
         Location loc2 = location.clone();
         loc2.add(0.5, 0.5, 0.5);
         Firework fw = (Firework) location.getWorld().spawnEntity(loc2, EntityType.FIREWORK);
         FireworkMeta meta = fw.getFireworkMeta();
-        Color color = new Color(Integer.valueOf(hex.substring(1, 3), 16), Integer.valueOf(hex.substring(3, 5), 16), Integer.valueOf(hex.substring(5, 7), 16));
-        meta.addEffect(FireworkEffect.builder().with(this.handle.getFireworkType()).withColor(org.bukkit.Color.fromRGB(color.getRed(), color.getGreen(), color.getBlue())).build());
+        meta.addEffect(FireworkEffect.builder().with(this.handle.getFireworkType()).withColor(org.bukkit.Color.fromRGB(this.handle.getFireworkColor().getRed(), this.handle.getFireworkColor().getGreen(), this.handle.getFireworkColor().getBlue())).build());
         meta.setPower(0);
         fw.setFireworkMeta(meta);
         fw.getPersistentDataContainer().set(FIREWORK_KEY, PersistentDataType.BYTE, (byte) 0);
@@ -151,6 +149,25 @@ public class SpawnedCrate {
                     onlinePlayer.sendMessage(message);
                 }
             }
+        }
+    }
+
+    public void tickFlare() {
+        if (this.handle.getFlareTicks() == 0) return;
+        tick++;
+
+        if (tick == this.handle.getFlareTicks()) {
+            if (!getFinishLocation().getWorld().isChunkLoaded(getFinishLocation().getChunk())) return;
+            Location loc2 = finishLocation.clone();
+            loc2.add(0.5, 0.5, 0.5);
+            Firework fw = (Firework) loc2.getWorld().spawnEntity(loc2, EntityType.FIREWORK);
+            FireworkMeta meta = fw.getFireworkMeta();
+            meta.addEffect(FireworkEffect.builder().with(this.handle.getFlareFireworkType()).withColor(org.bukkit.Color.fromRGB(this.handle.getFlareFireworkColor().getRed(), this.handle.getFlareFireworkColor().getGreen(), this.handle.getFlareFireworkColor().getBlue())).build());
+            meta.setPower(0);
+            fw.setFireworkMeta(meta);
+            fw.getPersistentDataContainer().set(FIREWORK_KEY, PersistentDataType.BYTE, (byte) 0);
+            fw.detonate();
+            tick = 0;
         }
     }
 

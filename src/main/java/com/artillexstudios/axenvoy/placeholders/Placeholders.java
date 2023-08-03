@@ -51,14 +51,14 @@ public class Placeholders extends PlaceholderExpansion {
 
                 return StringUtils.format(envoy.getMessage("placeholder.remaining").replace("%remaining%", String.valueOf(envoy.getSpawnedCrates().size())));
             }
-            case "time_left" -> {
+            case "timeleft" -> {
                 if (!envoy.isActive()) {
                     return StringUtils.format(envoy.getMessage("placeholder.not-running"));
                 }
 
                 return StringUtils.format(envoy.getMessage("placeholder.remaining-time").replace("%time%", Utils.fancyTime((envoy.getStartTime() + envoy.getTimeoutTime() * 1000L) - System.currentTimeMillis())));
             }
-            case "next_start" -> {
+            case "nextstart" -> {
                 if (envoy.isActive() || envoy.getNext() == null) {
                     return StringUtils.format(envoy.getMessage("placeholder.running"));
                 }

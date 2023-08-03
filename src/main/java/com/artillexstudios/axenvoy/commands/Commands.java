@@ -65,7 +65,9 @@ public class Commands {
     }
 
     private void register() {
-        Command.Builder<CommandSender> commands = this.manager.commandBuilder("envoy", "axenvoy");
+        Command.Builder<CommandSender> commands = this.manager.commandBuilder("envoy", "axenvoy").handler(c -> {
+            c.getSender().sendMessage(StringUtils.format("&cUnknown subcommand! &7Usage: &f /envoy center | coords | definedspawn | editor | flare | reload | start | stop | stopall"));
+        });
 
         CommandArgument<CommandSender, String> argument = StringArgument.<CommandSender>builder("envoy").withSuggestionsProvider((context, string) -> EnvoyLoader.envoys.keySet().stream().toList()).build();
         CommandArgument<CommandSender, String> optional = StringArgument.<CommandSender>builder("envoy").withSuggestionsProvider((context, string) -> EnvoyLoader.envoys.keySet().stream().toList()).asOptional().build();
@@ -198,6 +200,7 @@ public class Commands {
                 }
 
                 user.setEditor(null);
+                sender.getInventory().remove(new ItemStack(Material.DIAMOND_BLOCK, 1));
                 sender.sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("editor.leave")));
                 return;
             }
@@ -216,6 +219,7 @@ public class Commands {
                     }
 
                     user.setEditor(null);
+                    sender.getInventory().remove(new ItemStack(Material.DIAMOND_BLOCK, 1));
                     sender.sendMessage(String.format("%s%s", envoy.getMessage("prefix"), envoy.getMessage("editor.leave")));
 
                     return;

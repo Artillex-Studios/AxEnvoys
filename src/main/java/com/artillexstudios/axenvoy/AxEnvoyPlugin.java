@@ -4,6 +4,7 @@ import com.artillexstudios.axenvoy.commands.Commands;
 import com.artillexstudios.axenvoy.config.ConfigManager;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.EnvoyLoader;
+import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import com.artillexstudios.axenvoy.listeners.ActivateFlare;
 import com.artillexstudios.axenvoy.listeners.BlockPhysicsListener;
 import com.artillexstudios.axenvoy.listeners.CollectionListener;
@@ -44,6 +45,17 @@ public final class AxEnvoyPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new FireworkDamageListener(), this);
         Bukkit.getPluginManager().registerEvents(new EditorListener(), this);
         new Metrics(this, 19146);
+
+        Bukkit.getScheduler().runTaskTimer(this, () -> {
+            EnvoyLoader.envoys.forEach((name, envoy) -> {
+                if (envoy.isActive()) return;
+
+                for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
+                    if (spawnedCrate.getHandle().getFlareTicks() == 0) continue;
+                    spawnedCrate.tickFlare();
+                }
+            });
+        }, 0, 0);
     }
 
     @Override

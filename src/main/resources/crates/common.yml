@@ -12,6 +12,18 @@ falling-block:
   block: end_rod # The type of the block that is falling
   speed: -1 # The speed at which the block will fall (blocks per second)
 
+firework:
+  enabled: true
+  color: #ff0000
+  type: ball
+
+flare:
+  enabled: true
+  every: 200 # ticks, 20 ticks is 1 second
+  firework:
+    color: #ff0000
+    type: ball
+
 rewards:
   - chance: 10.0
     commands:
