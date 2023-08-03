@@ -26,6 +26,8 @@ flare:
 
 rewards:
   - chance: 10.0
+    messages:
+      - "&7Wow!"
     commands:
       - "eco give %player% 1000"
   - chance: 30.0

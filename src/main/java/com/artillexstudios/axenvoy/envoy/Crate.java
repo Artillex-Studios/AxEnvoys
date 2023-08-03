@@ -1,7 +1,7 @@
 package com.artillexstudios.axenvoy.envoy;
 
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
-import com.artillexstudios.axenvoy.rewards.CommandReward;
+import com.artillexstudios.axenvoy.rewards.Reward;
 import com.artillexstudios.axenvoy.utils.StringUtils;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -13,12 +13,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 public class Crate {
-    private final ObjectArrayList<CommandReward> rewards = new ObjectArrayList<>();
+    private final ObjectArrayList<Reward> rewards = new ObjectArrayList<>();
     private final List<String> hologramLines;
     private final String name;
     private final String fireworkHex;
@@ -73,12 +74,22 @@ public class Crate {
         this.flareEnabled = config.getBoolean("flare.enabled", true);
         this.flareTicks = config.getInt("flare.every", 0);
 
+        List<Map<String, Object>> list = new ArrayList<>();
         for (Map<?, ?> map : config.getMapList("rewards")) {
-            this.rewards.add(new CommandReward((double) map.get("chance"), (List<String>) map.get("commands")));
+            HashMap<String, Object> hashMap = new HashMap<>();
+            map.forEach((key, value) -> {
+                hashMap.put((String) key, value);
+            });
+
+            list.add(hashMap);
+        }
+
+        for (Map<String, Object> map : list) {
+            this.rewards.add(new Reward((double) map.get("chance"), (List<String>) map.getOrDefault("commands", new ArrayList<String>()), (List<String>) map.getOrDefault("messages", new ArrayList<String>())));
         }
     }
 
-    public ObjectArrayList<CommandReward> getRewards() {
+    public ObjectArrayList<Reward> getRewards() {
         return rewards;
     }
 

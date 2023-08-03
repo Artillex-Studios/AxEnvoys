@@ -29,6 +29,8 @@ rewards:
     commands:
       - "eco give %player% 100"
   - chance: 10.0
+    messages:
+      - "&7Wow!"
     commands:
       - "eco give %player% 500"
   - chance: 0.3

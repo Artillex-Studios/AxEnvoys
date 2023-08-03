@@ -1,6 +1,7 @@
 package com.artillexstudios.axenvoy.rewards;
 
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.utils.StringUtils;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public record CommandReward(double chance, List<String> commands) {
+public record Reward(double chance, List<String> commands, List<String> messages) {
 
     public void execute(@NotNull Player player) {
         for (String command : this.commands) {
@@ -18,6 +19,15 @@ public record CommandReward(double chance, List<String> commands) {
             }
 
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        }
+
+        for (String message : this.messages) {
+            message = message.replace("%player%", player.getName()).replace("%player_name%", player.getName());
+            if (AxEnvoyPlugin.getInstance().isPlaceholderApi()) {
+                message = PlaceholderAPI.setPlaceholders(player, message);
+            }
+
+            player.sendMessage(StringUtils.format(message));
         }
     }
 }

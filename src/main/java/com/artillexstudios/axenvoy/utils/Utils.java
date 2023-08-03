@@ -3,7 +3,7 @@ package com.artillexstudios.axenvoy.utils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Crate;
 import com.artillexstudios.axenvoy.envoy.Envoy;
-import com.artillexstudios.axenvoy.rewards.CommandReward;
+import com.artillexstudios.axenvoy.rewards.Reward;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.block.implementation.Section;
 import io.papermc.lib.PaperLib;
@@ -56,13 +56,13 @@ public class Utils {
         return e.sample();
     }
 
-    public static CommandReward randomReward(@NotNull List<CommandReward> rewards) {
-        List<Pair<CommandReward, Double>> list = new ArrayList<>();
-        for (CommandReward reward : rewards) {
+    public static Reward randomReward(@NotNull List<Reward> rewards) {
+        List<Pair<Reward, Double>> list = new ArrayList<>();
+        for (Reward reward : rewards) {
             list.add(new Pair<>(reward, reward.chance()));
         }
 
-        EnumeratedDistribution<CommandReward> e = new EnumeratedDistribution<>(list);
+        EnumeratedDistribution<Reward> e = new EnumeratedDistribution<>(list);
 
         return e.sample();
     }

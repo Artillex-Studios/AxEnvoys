@@ -1,7 +1,7 @@
 package com.artillexstudios.axenvoy.envoy;
 
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
-import com.artillexstudios.axenvoy.rewards.CommandReward;
+import com.artillexstudios.axenvoy.rewards.Reward;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.StringUtils;
 import com.artillexstudios.axenvoy.utils.Utils;
@@ -109,7 +109,7 @@ public class SpawnedCrate {
         }
 
         if (player != null) {
-            CommandReward reward = Utils.randomReward(this.handle.getRewards());
+            Reward reward = Utils.randomReward(this.handle.getRewards());
             reward.execute(player);
         }
 

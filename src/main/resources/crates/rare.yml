@@ -29,6 +29,8 @@ rewards:
     commands:
       - "give %player% diamond 1"
   - chance: 20.0
+    messages:
+      - "&7Wow!"
     commands:
       - "give %player% diamond 6"
   - chance: 4.0
