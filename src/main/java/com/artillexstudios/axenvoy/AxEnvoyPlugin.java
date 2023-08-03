@@ -48,7 +48,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             EnvoyLoader.envoys.forEach((name, envoy) -> {
-                if (envoy.isActive()) return;
+                if (!envoy.isActive()) return;
 
                 for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
                     if (spawnedCrate.getHandle().getFlareTicks() == 0) continue;
