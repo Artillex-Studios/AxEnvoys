@@ -49,7 +49,7 @@ public class SpawnedCrate {
             }
 
             Location spawnAt = location.clone();
-            spawnAt.add(0, this.handle.getFallingBlockHeight(), 0);
+            spawnAt.add(0.5, this.handle.getFallingBlockHeight(), 0.5);
             fallingBlock = location.getWorld().spawnFallingBlock(spawnAt, this.handle.getFallingBlockType().createBlockData());
             fallingBlock.setDropItem(false);
             fallingBlock.setPersistent(false);
