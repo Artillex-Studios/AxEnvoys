@@ -29,9 +29,8 @@ public class FallingBlockChecker {
                     next.setFallingBlock(null);
                     next.setVex(null);
                     Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
-                        vex.removePassenger(fallingBlock);
-                        vex.remove();
                         fallingBlock.remove();
+                        vex.remove();
                         next.land(next.getFinishLocation());
                     });
                 }

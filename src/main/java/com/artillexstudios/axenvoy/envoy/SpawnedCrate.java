@@ -15,6 +15,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Firework;
@@ -44,11 +45,12 @@ public class SpawnedCrate {
         this.parent = parent;
         this.handle = handle;
         this.finishLocation = location;
+        this.parent.getSpawnedCrates().add(this);
 
         PaperLib.getChunkAtAsync(location).thenAccept(chunk -> {
-            this.parent.getSpawnedCrates().add(this);
+            List<Entity> nearby = location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).stream().filter(entity -> entity.getType() == EntityType.PLAYER).toList();
 
-            if (!handle.isFallingBlock() || location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).isEmpty()) {
+            if (!handle.isFallingBlock() || nearby.isEmpty()) {
                 land(location);
                 return;
             }

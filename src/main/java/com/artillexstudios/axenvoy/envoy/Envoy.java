@@ -206,6 +206,7 @@ public class Envoy {
         if (predefinedSpawns) {
             for (String s : this.document.getStringList("pre-defined-spawns.locations")) {
                 Location location = Utils.deserializeLocation(s);
+
                 new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
             }
         }
@@ -218,11 +219,11 @@ public class Envoy {
                     tries++;
                     location = Utils.getNextLocation(this, center.clone());
                 }
-
                 new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
             }
         }
 
+        System.out.println(spawnedCrates.size());
         if (player == null) {
             String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start").replace("%amount%", String.valueOf(spawnedCrates.size())));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {

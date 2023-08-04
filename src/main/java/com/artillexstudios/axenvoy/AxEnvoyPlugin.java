@@ -14,6 +14,7 @@ import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.EditorListener;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.Utils;
+import eu.decentsoftware.holograms.plugin.DecentHologramsPlugin;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
@@ -41,7 +42,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        this.decentHolograms = Bukkit.getPluginManager().isPluginEnabled("DecentHolograms");
+        this.decentHolograms = Bukkit.getPluginManager().isPluginEnabled(DecentHologramsPlugin.getProvidingPlugin(DecentHologramsPlugin.class));
         this.placeholderApi = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
         ConfigManager.reload();
         new Commands(this);
