@@ -7,7 +7,6 @@ import com.artillexstudios.axenvoy.utils.Utils;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -114,45 +113,6 @@ public class Envoy {
 
         if (!every.isEmpty()) {
             updateNext();
-            Bukkit.getScheduler().runTaskTimerAsynchronously(AxEnvoyPlugin.getInstance(), () -> {
-                if (active) return;
-                Calendar now = Calendar.getInstance();
-                now.clear(Calendar.MILLISECOND);
-
-                ObjectListIterator<Calendar> iterator = warns.iterator();
-                while (iterator.hasNext()) {
-                    Calendar warn = iterator.next();
-                    Calendar timeCheck = Calendar.getInstance();
-                    timeCheck.setTimeInMillis(warn.getTimeInMillis());
-                    timeCheck.clear(Calendar.MILLISECOND);
-
-                    if (timeCheck.compareTo(now) == 0) {
-                       iterator.remove();
-                        Bukkit.broadcastMessage(getMessage("alert").replace("%time%", Utils.fancyTime(next.getTimeInMillis() - Calendar.getInstance().getTimeInMillis())));
-                    }
-                }
-
-                Calendar next = Calendar.getInstance();
-                next.setTimeInMillis(this.next.getTimeInMillis());
-                next.clear(Calendar.MILLISECOND);
-
-                if (next.compareTo(now) <= 0) {
-                    if (Bukkit.getOnlinePlayers().size() < minPlayers) {
-                        updateNext();
-                        Bukkit.broadcastMessage(getMessage("not-enough-autostart"));
-                        return;
-                    }
-
-                    if (active) {
-                        updateNext();
-                        return;
-                    }
-
-                    Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
-                        start(null);
-                    });
-                }
-            }, 0, 5);
         }
     }
 
@@ -239,7 +199,7 @@ public class Envoy {
             return false;
         }
 
-        this.active = true;
+        active = true;
         this.updateNext();
         startTime = System.currentTimeMillis();
 
@@ -287,7 +247,6 @@ public class Envoy {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
 
         if (this.timeoutTime > 0) {
             bukkitTask = Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
@@ -457,5 +416,21 @@ public class Envoy {
 
     public boolean isUseRewardPrefix() {
         return useRewardPrefix;
+    }
+
+    public int getMinPlayers() {
+        return minPlayers;
+    }
+
+    public String getEvery() {
+        return every;
+    }
+
+    public ObjectArrayList<Calendar> getWarns() {
+        return warns;
+    }
+
+    public List<String> getWarnList() {
+        return warnList;
     }
 }

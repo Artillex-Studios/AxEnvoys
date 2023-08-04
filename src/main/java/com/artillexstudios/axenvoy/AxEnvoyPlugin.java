@@ -14,6 +14,7 @@ import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.EditorListener;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.Utils;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,7 +23,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public final class AxEnvoyPlugin extends JavaPlugin {
     private static AxEnvoyPlugin instance;
@@ -72,6 +76,49 @@ public final class AxEnvoyPlugin extends JavaPlugin {
                 throw new RuntimeException(e);
             }
         });
+
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            EnvoyLoader.envoys.forEach((string, envoy) -> {
+                if (envoy.getEvery().isEmpty()) return;
+                if (envoy.isActive()) return;
+                Calendar now = Calendar.getInstance();
+                now.clear(Calendar.MILLISECOND);
+
+                ObjectListIterator<Calendar> iterator = envoy.getWarns().iterator();
+                while (iterator.hasNext()) {
+                    Calendar warn = iterator.next();
+                    Calendar timeCheck = Calendar.getInstance();
+                    timeCheck.setTimeInMillis(warn.getTimeInMillis());
+                    timeCheck.clear(Calendar.MILLISECOND);
+
+                    if (timeCheck.compareTo(now) == 0) {
+                        iterator.remove();
+                        Bukkit.broadcastMessage(envoy.getMessage("alert").replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis())));
+                    }
+                }
+
+                Calendar next = Calendar.getInstance();
+                next.setTimeInMillis(envoy.getNext().getTimeInMillis());
+                next.clear(Calendar.MILLISECOND);
+
+                if (next.compareTo(now) <= 0) {
+                    if (Bukkit.getOnlinePlayers().size() < envoy.getMinPlayers()) {
+                        envoy.updateNext();
+                        Bukkit.broadcastMessage(envoy.getMessage("not-enough-autostart"));
+                        return;
+                    }
+
+                    if (envoy.isActive()) {
+                        envoy.updateNext();
+                        return;
+                    }
+
+                    Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
+                        envoy.start(null);
+                    });
+                }
+            });
+        }, 0, 200, TimeUnit.MILLISECONDS);
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
             EnvoyLoader.envoys.forEach((name, envoy) -> {
