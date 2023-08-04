@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -34,8 +35,10 @@ public class Envoy {
     private final ItemStack flare;
     private final boolean broadcastCollect;
     private final boolean collectGlobalCooldown;
-    private ObjectArrayList<Calendar> warns = new ObjectArrayList<>();
     private final String every;
+    private final boolean useRewardPrefix;
+    private final int minPlayers;
+    private ObjectArrayList<Calendar> warns = new ObjectArrayList<>();
     private Calendar next = Calendar.getInstance();
     private BukkitTask bukkitTask;
     private boolean active;
@@ -44,7 +47,6 @@ public class Envoy {
     private boolean flareEnabled;
     private int collectCooldown;
     private int flareCooldown;
-    private int minPlayers;
     private int timeoutTime;
     private int crateAmount;
     private int minDistance;
@@ -63,6 +65,7 @@ public class Envoy {
         this.flareEnabled = config.getBoolean("flare.enabled", false);
         this.broadcastCollect = config.getBoolean("broadcast-collect", false);
         this.collectGlobalCooldown = config.getBoolean("collect-global-cooldown", false);
+        this.useRewardPrefix = config.getBoolean("rewards.use-prefix", true);
         this.crateAmount = config.getInt("amount", 30);
         this.collectCooldown = config.getInt("collect-cooldown", 10);
         this.minPlayers = config.getInt("min-players", 2);
@@ -110,7 +113,7 @@ public class Envoy {
 
         if (!every.isEmpty()) {
             updateNext();
-            Bukkit.getScheduler().runTaskTimer(AxEnvoyPlugin.getInstance(), () -> {
+            Bukkit.getScheduler().runTaskTimerAsynchronously(AxEnvoyPlugin.getInstance(), () -> {
                 if (active) return;
                 Calendar now = Calendar.getInstance();
                 now.clear(Calendar.MILLISECOND);
@@ -121,6 +124,7 @@ public class Envoy {
                     timeCheck.clear(Calendar.MILLISECOND);
 
                     if (timeCheck.compareTo(now) == 0) {
+                        warns.remove(warn);
                         Bukkit.broadcastMessage(getMessage("alert").replace("%time%", Utils.fancyTime(next.getTimeInMillis() - Calendar.getInstance().getTimeInMillis())));
                     }
                 }
@@ -136,9 +140,11 @@ public class Envoy {
                         return;
                     }
 
-                    start(null);
+                    Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
+                        start(null);
+                    });
                 }
-            }, 20, 20);
+            }, 0, 5);
         }
     }
 
@@ -217,6 +223,7 @@ public class Envoy {
     }
 
     public boolean start(Player player) {
+        long now = System.currentTimeMillis();
         if (center == null) {
             return false;
         }
@@ -261,6 +268,20 @@ public class Envoy {
             }
         }
 
+        List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", this.getName()), new ArrayList<>());
+        for (SpawnedCrate spawnedCrate : this.spawnedCrates) {
+            locations.add(Utils.serializeLocation(spawnedCrate.getFinishLocation()));
+        }
+
+        ConfigManager.getTempData().set(String.format("%s.locations", this.getName()), locations);
+
+        try {
+            ConfigManager.getTempData().save();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
         if (this.timeoutTime > 0) {
             bukkitTask = Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
                 if (!active) return;
@@ -268,6 +289,7 @@ public class Envoy {
                 stop();
             }, this.timeoutTime * 20L);
         }
+
         return true;
     }
 
@@ -424,5 +446,9 @@ public class Envoy {
 
     public void setBukkitTask(BukkitTask bukkitTask) {
         this.bukkitTask = bukkitTask;
+    }
+
+    public boolean isUseRewardPrefix() {
+        return useRewardPrefix;
     }
 }

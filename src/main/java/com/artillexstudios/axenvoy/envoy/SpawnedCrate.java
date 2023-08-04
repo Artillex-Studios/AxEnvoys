@@ -1,6 +1,7 @@
 package com.artillexstudios.axenvoy.envoy;
 
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.config.ConfigManager;
 import com.artillexstudios.axenvoy.rewards.Reward;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.StringUtils;
@@ -24,7 +25,9 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class SpawnedCrate {
     public static final NamespacedKey FIREWORK_KEY = new NamespacedKey(AxEnvoyPlugin.getInstance(), "axenvoy_firework");
@@ -110,7 +113,7 @@ public class SpawnedCrate {
 
         if (player != null) {
             Reward reward = Utils.randomReward(this.handle.getRewards());
-            reward.execute(player);
+            reward.execute(player, envoy);
         }
 
         finishLocation.getWorld().getBlockAt(finishLocation).setType(Material.AIR);
@@ -137,6 +140,10 @@ public class SpawnedCrate {
                 }
             }
 
+            List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", parent.getName()), new ArrayList<>());
+            locations.remove(Utils.serializeLocation(finishLocation));
+            ConfigManager.getTempData().set(String.format("%s.locations", parent.getName()), locations);
+
             if (this.parent.getSpawnedCrates().isEmpty()) {
                 envoy.updateNext();
                 envoy.setActive(false);
@@ -147,6 +154,12 @@ public class SpawnedCrate {
                 String message = String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("ended"));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
+                }
+
+                try {
+                    ConfigManager.getTempData().save();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }

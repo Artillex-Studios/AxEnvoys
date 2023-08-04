@@ -40,6 +40,9 @@ random-spawn:
 messages:
   prefix: "<#00FFAA>&lAxEnvoy &7» "
 
+rewards:
+  use-prefix: true # If we should use prefix for message rewards of this envoy
+
 flare:
   enabled: true
   cooldown: 30 # Cooldown in seconds

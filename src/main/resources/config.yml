@@ -1,0 +1,6 @@
+# Enable this, if you want to prevent the crates from changing their surrounding blocks.
+# Examples:
+# If a crate spawns on a 'dirt path' block, that block will become dirt, if this feature is disabled.
+# Warning: This will probably tank your performance at crate spawning, if lots of crates spawn (lots = hundreds)
+# Changing this requires a restart!
+listen-to-block-physics: false

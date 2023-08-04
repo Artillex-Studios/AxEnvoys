@@ -10,10 +10,14 @@ import java.io.File;
 
 public class ConfigManager {
     private static YamlDocument lang;
+    private static YamlDocument config;
+    private static YamlDocument tempData;
 
     public static void reload() {
         try {
             lang = YamlDocument.create(new File(FileUtils.MAIN_DIRECTORY.toFile(), "messages.yml"), FileUtils.getResource("messages.yml"));
+            config = YamlDocument.create(new File(FileUtils.MAIN_DIRECTORY.toFile(), "config.yml"), FileUtils.getResource("config.yml"));
+            tempData = YamlDocument.create(new File(FileUtils.MAIN_DIRECTORY.toFile(), "data.yml"));
         } catch (Exception exception) {
             ConfigUtils.testFile(new File(FileUtils.MAIN_DIRECTORY.toFile(), "messages.yml"));
         }
@@ -27,5 +31,13 @@ public class ConfigManager {
 
     public static YamlDocument getLang() {
         return lang;
+    }
+
+    public static YamlDocument getTempData() {
+        return tempData;
+    }
+
+    public static YamlDocument getConfig() {
+        return config;
     }
 }
