@@ -7,6 +7,7 @@ import com.artillexstudios.axenvoy.utils.Utils;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -118,13 +119,15 @@ public class Envoy {
                 Calendar now = Calendar.getInstance();
                 now.clear(Calendar.MILLISECOND);
 
-                for (Calendar warn : warns) {
+                ObjectListIterator<Calendar> iterator = warns.iterator();
+                while (iterator.hasNext()) {
+                    Calendar warn = iterator.next();
                     Calendar timeCheck = Calendar.getInstance();
                     timeCheck.setTimeInMillis(warn.getTimeInMillis());
                     timeCheck.clear(Calendar.MILLISECOND);
 
                     if (timeCheck.compareTo(now) == 0) {
-                        warns.remove(warn);
+                       iterator.remove();
                         Bukkit.broadcastMessage(getMessage("alert").replace("%time%", Utils.fancyTime(next.getTimeInMillis() - Calendar.getInstance().getTimeInMillis())));
                     }
                 }
