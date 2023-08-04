@@ -6,7 +6,6 @@ import com.artillexstudios.axenvoy.utils.StringUtils;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.kyori.adventure.util.TriState;
-import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +49,7 @@ public class Crate {
         this.material = Material.matchMaterial(config.getString("block", "stone"));
         this.collectionCooldown = config.getInt("collect-cooldown", 10);
         this.hasCollectionCooldown = config.getOptional("collect-cooldown").isPresent();
-        if (Bukkit.getPluginManager().isPluginEnabled("DecentHolograms")) {
+        if (AxEnvoyPlugin.getInstance().isDecentHolograms()) {
             this.hologram = config.getBoolean("hologram.enabled", true);
         } else {
             AxEnvoyPlugin.getInstance().getLogger().warning(StringUtils.format("<color:#ff0000>Disabling hologram due to DecentHolograms not being loaded!"));

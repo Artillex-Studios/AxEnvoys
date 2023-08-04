@@ -19,6 +19,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vex;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
@@ -35,6 +36,7 @@ public class SpawnedCrate {
     private final Crate handle;
     private Location finishLocation;
     private FallingBlock fallingBlock;
+    private Vex vex;
     private Hologram hologram;
     private int tick = 0;
 
@@ -53,11 +55,25 @@ public class SpawnedCrate {
 
             Location spawnAt = location.clone();
             spawnAt.add(0.5, this.handle.getFallingBlockHeight(), 0.5);
+            vex = location.getWorld().spawn(spawnAt, Vex.class, ent -> {
+                ent.setInvisible(true);
+                ent.setSilent(true);
+                ent.setInvulnerable(true);
+                ent.setGravity(true);
+                ent.setAware(false);
+                ent.setPersistent(false);
+                if (ent.getEquipment() != null) {
+                    ent.getEquipment().clear();
+                }
+            });
+
+            vex.setGravity(true);
+
             fallingBlock = location.getWorld().spawnFallingBlock(spawnAt, this.handle.getFallingBlockType().createBlockData());
-            fallingBlock.setDropItem(false);
+            vex.addPassenger(fallingBlock);
             fallingBlock.setPersistent(false);
             FallingBlockChecker.addToCheck(this);
-            fallingBlock.setVelocity(new Vector(0, handle.getFallingBlockSpeed(), 0));
+            vex.setVelocity(new Vector(0, handle.getFallingBlockSpeed(), 0));
         });
     }
 
@@ -182,6 +198,14 @@ public class SpawnedCrate {
             fw.detonate();
             tick = 0;
         }
+    }
+
+    public Vex getVex() {
+        return vex;
+    }
+
+    public void setVex(Vex vex) {
+        this.vex = vex;
     }
 
     public Crate getHandle() {

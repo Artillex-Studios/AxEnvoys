@@ -27,6 +27,7 @@ import java.util.List;
 public final class AxEnvoyPlugin extends JavaPlugin {
     private static AxEnvoyPlugin instance;
     private boolean placeholderApi;
+    private boolean decentHolograms;
 
     public static AxEnvoyPlugin getInstance() {
         return instance;
@@ -36,9 +37,10 @@ public final class AxEnvoyPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
+        this.decentHolograms = Bukkit.getPluginManager().isPluginEnabled("DecentHolograms");
+        this.placeholderApi = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
         ConfigManager.reload();
         new Commands(this);
-        this.placeholderApi = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
         if (placeholderApi) {
             new Placeholders().register();
         }
@@ -93,5 +95,9 @@ public final class AxEnvoyPlugin extends JavaPlugin {
 
     public boolean isPlaceholderApi() {
         return this.placeholderApi;
+    }
+
+    public boolean isDecentHolograms() {
+        return decentHolograms;
     }
 }

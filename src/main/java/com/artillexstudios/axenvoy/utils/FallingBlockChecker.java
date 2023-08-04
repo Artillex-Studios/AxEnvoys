@@ -19,14 +19,18 @@ public class FallingBlockChecker {
             while (crateIterator.hasNext()) {
                 SpawnedCrate next = crateIterator.next();
                 Entity fallingBlock = next.getFallingBlock();
-                if (fallingBlock == null) continue;
+                Entity vex = next.getVex();
+                if (fallingBlock == null || vex == null) continue;
                 Location finishLocation = next.getFinishLocation();
-                Location currentLocation = fallingBlock.getLocation();
+                Location currentLocation = vex.getLocation();
 
-                if (next.getFallingBlock() != null && (finishLocation.getWorld().equals(currentLocation.getWorld()) && finishLocation.getBlockX() == currentLocation.getBlockX() && finishLocation.getBlockY() == currentLocation.getBlockY() && finishLocation.getBlockZ() == currentLocation.getBlockZ())) {
+                if (next.getVex() != null && (finishLocation.getWorld().equals(currentLocation.getWorld()) && finishLocation.getBlockX() == currentLocation.getBlockX() && finishLocation.getBlockY() == currentLocation.getBlockY() && finishLocation.getBlockZ() == currentLocation.getBlockZ())) {
                     crateIterator.remove();
                     next.setFallingBlock(null);
+                    next.setVex(null);
                     Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
+                        vex.removePassenger(fallingBlock);
+                        vex.remove();
                         fallingBlock.remove();
                         next.land(next.getFinishLocation());
                     });

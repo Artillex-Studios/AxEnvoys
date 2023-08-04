@@ -67,6 +67,7 @@ public class EditorListener implements Listener {
 
         Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
             User.USER_MAP.forEach(((uuid, user1) -> {
+                if (user1.getEditor() == null) return;
                 if (user1.getEditor().equals(editor)) {
                     user1.getPlayer().sendBlockChange(event.getBlock().getLocation(), Material.DIAMOND_BLOCK.createBlockData());
                 }

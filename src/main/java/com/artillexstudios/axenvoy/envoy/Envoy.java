@@ -136,10 +136,15 @@ public class Envoy {
                 next.setTimeInMillis(this.next.getTimeInMillis());
                 next.clear(Calendar.MILLISECOND);
 
-                if (next.compareTo(now) <= 0 && !active) {
+                if (next.compareTo(now) <= 0) {
                     if (Bukkit.getOnlinePlayers().size() < minPlayers) {
                         updateNext();
                         Bukkit.broadcastMessage(getMessage("not-enough-autostart"));
+                        return;
+                    }
+
+                    if (active) {
+                        updateNext();
                         return;
                     }
 
@@ -226,7 +231,6 @@ public class Envoy {
     }
 
     public boolean start(Player player) {
-        long now = System.currentTimeMillis();
         if (center == null) {
             return false;
         }
@@ -242,7 +246,7 @@ public class Envoy {
         if (predefinedSpawns) {
             for (String s : this.document.getStringList("pre-defined-spawns.locations")) {
                 Location location = Utils.deserializeLocation(s);
-                new SpawnedCrate(this, Utils.randomCrate(cratesMap), Utils.topBlock(location));
+                new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
             }
         }
 
