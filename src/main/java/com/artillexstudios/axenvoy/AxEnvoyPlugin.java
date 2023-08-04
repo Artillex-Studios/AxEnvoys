@@ -49,13 +49,11 @@ public final class AxEnvoyPlugin extends JavaPlugin {
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             getLogger().info("Enabled PlaceholderAPI hook!");
             this.placeholderApi = true;
+            new Placeholders().register();
         }
 
         ConfigManager.reload();
         new Commands(this);
-        if (placeholderApi) {
-            new Placeholders().register();
-        }
 
         Bukkit.getOnlinePlayers().forEach(User::new);
         User.listen();
