@@ -19,14 +19,12 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -43,14 +41,16 @@ public final class AxEnvoyPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-            if (plugin.getName().toLowerCase(Locale.ENGLISH).equals("decentholograms")) {
-                getLogger().info("Enabled DecentHolograms hook!");
-                this.decentHolograms = true;
-            }
+        if (Bukkit.getPluginManager().getPlugin("DecentHolograms") != null) {
+            getLogger().info("Enabled DecentHolograms hook!");
+            this.decentHolograms = true;
         }
 
-        this.placeholderApi = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            getLogger().info("Enabled PlaceholderAPI hook!");
+            this.placeholderApi = true;
+        }
+
         ConfigManager.reload();
         new Commands(this);
         if (placeholderApi) {
