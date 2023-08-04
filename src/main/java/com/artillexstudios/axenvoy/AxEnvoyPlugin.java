@@ -14,18 +14,19 @@ import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.EditorListener;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.Utils;
-import eu.decentsoftware.holograms.plugin.DecentHologramsPlugin;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +43,13 @@ public final class AxEnvoyPlugin extends JavaPlugin {
     public void onEnable() {
         instance = this;
 
-        this.decentHolograms = Bukkit.getPluginManager().isPluginEnabled(DecentHologramsPlugin.getProvidingPlugin(DecentHologramsPlugin.class));
+        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+            if (plugin.getName().toLowerCase(Locale.ENGLISH).equals("decentholograms")) {
+                getLogger().info("Enabled DecentHolograms hook!");
+                this.decentHolograms = true;
+            }
+        }
+
         this.placeholderApi = Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI");
         ConfigManager.reload();
         new Commands(this);
