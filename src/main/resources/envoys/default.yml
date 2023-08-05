@@ -5,6 +5,8 @@ crates:
   rare: 20
 
 amount: 30
+limit-predefined: true # The amount cap will be used for predefined spawns aswell
+
 collect-cooldown: 10 # Seconds
 collect-global-cooldown: false # Whether the cooldown should be for all crates of this envoy, or per-crate
 broadcast-collect: true

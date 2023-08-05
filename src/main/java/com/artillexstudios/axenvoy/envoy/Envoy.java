@@ -21,6 +21,7 @@ import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +46,7 @@ public class Envoy {
     private boolean randomSpawns;
     private boolean predefinedSpawns;
     private boolean flareEnabled;
+    private boolean limitPredefined;
     private int collectCooldown;
     private int flareCooldown;
     private int timeoutTime;
@@ -66,6 +68,7 @@ public class Envoy {
         this.broadcastCollect = config.getBoolean("broadcast-collect", false);
         this.collectGlobalCooldown = config.getBoolean("collect-global-cooldown", false);
         this.useRewardPrefix = config.getBoolean("rewards.use-prefix", true);
+        this.limitPredefined = config.getBoolean("limit-predefined", true);
         this.crateAmount = config.getInt("amount", 30);
         this.collectCooldown = config.getInt("collect-cooldown", 10);
         this.minPlayers = config.getInt("min-players", 2);
@@ -204,15 +207,25 @@ public class Envoy {
         startTime = System.currentTimeMillis();
 
         if (predefinedSpawns) {
-            for (String s : this.document.getStringList("pre-defined-spawns.locations")) {
-                Location location = Utils.deserializeLocation(s);
+            List<Location> locations = new ArrayList<>(this.document.getStringList("pre-defined-spawns.locations").stream().map(Utils::deserializeLocation).toList());
 
-                new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+            if (limitPredefined) {
+                for (int i = 0; i < crateAmount; i++) {
+                    Location location = locations.get(ThreadLocalRandom.current().nextInt(locations.size()));
+
+                    new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+                    locations.remove(location);
+                }
+            } else {
+                for (Location location : locations) {
+                    new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+                }
             }
         }
 
         if (randomSpawns) {
-            for (int i = 0; i < crateAmount; i++) {
+            int count = crateAmount - this.spawnedCrates.size();
+            for (int i = 0; i < count; i++) {
                 Location location = null;
                 int tries = 0;
                 while (location == null || tries < 500) {
