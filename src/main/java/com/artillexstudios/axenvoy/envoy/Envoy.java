@@ -249,18 +249,18 @@ public class Envoy {
             }
         }
 
-        List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", this.getName()), new ArrayList<>());
-        for (SpawnedCrate spawnedCrate : this.spawnedCrates) {
-            locations.add(Utils.serializeLocation(spawnedCrate.getFinishLocation()));
-        }
-
-        ConfigManager.getTempData().set(String.format("%s.locations", this.getName()), locations);
-
-        try {
-            ConfigManager.getTempData().save();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        //List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", this.getName()), new ArrayList<>());
+        // for (SpawnedCrate spawnedCrate : this.spawnedCrates) {
+        //locations.add(Utils.serializeLocation(spawnedCrate.getFinishLocation()));
+        //    }
+//
+        //    ConfigManager.getTempData().set(String.format("%s.locations", this.getName()), locations);
+//
+        //       try {
+            //ConfigManager.getTempData().save();
+            //} catch (IOException e) {
+            // throw new RuntimeException(e);
+            //}
 
         if (this.timeoutTime > 0) {
             bukkitTask = Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {

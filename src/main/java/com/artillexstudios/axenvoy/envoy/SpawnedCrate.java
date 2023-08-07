@@ -1,7 +1,6 @@
 package com.artillexstudios.axenvoy.envoy;
 
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
-import com.artillexstudios.axenvoy.config.ConfigManager;
 import com.artillexstudios.axenvoy.rewards.Reward;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.StringUtils;
@@ -27,7 +26,6 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -158,9 +156,9 @@ public class SpawnedCrate {
                 }
             }
 
-            List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", parent.getName()), new ArrayList<>());
-            locations.remove(Utils.serializeLocation(finishLocation));
-            ConfigManager.getTempData().set(String.format("%s.locations", parent.getName()), locations);
+            //List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", parent.getName()), new ArrayList<>());
+            //locations.remove(Utils.serializeLocation(finishLocation));
+            //ConfigManager.getTempData().set(String.format("%s.locations", parent.getName()), locations);
 
             if (this.parent.getSpawnedCrates().isEmpty()) {
                 envoy.updateNext();
@@ -174,11 +172,11 @@ public class SpawnedCrate {
                     onlinePlayer.sendMessage(message);
                 }
 
-                try {
-                    ConfigManager.getTempData().save();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+                //try {
+                // ConfigManager.getTempData().save();
+                //} catch (IOException e) {
+                //    throw new RuntimeException(e);
+                //  }
             }
         }
     }

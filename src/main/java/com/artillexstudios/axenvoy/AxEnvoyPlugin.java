@@ -52,8 +52,8 @@ public final class AxEnvoyPlugin extends JavaPlugin {
             new Placeholders().register();
         }
 
-        ConfigManager.reload();
         new Commands(this);
+        ConfigManager.reload();
 
         Bukkit.getOnlinePlayers().forEach(User::new);
         User.listen();
@@ -67,21 +67,21 @@ public final class AxEnvoyPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EditorListener(), this);
         new Metrics(this, 19146);
 
-        ConfigManager.getTempData().getKeys().forEach(key -> {
-            List<String> remainingCrates = ConfigManager.getTempData().getStringList(String.format("%s.locations", key), new ArrayList<>());
-            if (remainingCrates.isEmpty()) return;
-            for (String remainingCrate : remainingCrates) {
-                Location location = Utils.deserializeLocation(remainingCrate);
-                location.getBlock().setType(Material.AIR);
-            }
-
-            ConfigManager.getTempData().remove(key.toString());
-            try {
-                ConfigManager.getTempData().save();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        //ConfigManager.getTempData().getKeys().forEach(key -> {
+//            List<String> remainingCrates = ConfigManager.getTempData().getStringList(String.format("%s.locations", key), new ArrayList<>());
+//            if (remainingCrates.isEmpty()) return;
+//            for (String remainingCrate : remainingCrates) {
+//                Location location = Utils.deserializeLocation(remainingCrate);
+//                location.getBlock().setType(Material.AIR);
+//            }
+//
+//            ConfigManager.getTempData().remove(key.toString());
+//            try {
+//                ConfigManager.getTempData().save();
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        });
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             EnvoyLoader.envoys.forEach((string, envoy) -> {
