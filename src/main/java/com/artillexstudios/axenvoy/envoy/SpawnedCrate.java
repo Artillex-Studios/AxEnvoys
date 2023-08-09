@@ -149,7 +149,7 @@ public class SpawnedCrate {
                 broadcast = this.handle.isBroadcastCollect().name().equalsIgnoreCase("TRUE");
             }
 
-            if (broadcast && player != null) {
+            if (broadcast && player != null && !this.parent.getSpawnedCrates().isEmpty()) {
                 String message = String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("collect", player).replace("%crate%", StringUtils.format(this.handle.getDisplayName())).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
