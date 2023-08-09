@@ -6,7 +6,7 @@
 
     <groupId>com.artillexstudios.axenvoy</groupId>
     <artifactId>AxEnvoy</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <packaging>jar</packaging>
 
     <name>AxEnvoy</name>
@@ -108,6 +108,12 @@
             <groupId>dev.dejvokep</groupId>
             <artifactId>boosted-yaml</artifactId>
             <version>1.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.yaml</groupId>
+                    <artifactId>snakeyaml</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>me.clip</groupId>

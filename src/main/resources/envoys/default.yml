@@ -12,6 +12,7 @@ collect-global-cooldown: false # Whether the cooldown should be for all crates o
 broadcast-collect: true
 timeout-time: 300 # This is in seconds
 every: "1h" # Start an envoy event every hour. To disable, leave as ""
+send-spawn-message: false
 alert-times: # Time before every
   - "30m"
   - "10m"

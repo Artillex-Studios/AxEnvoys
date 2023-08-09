@@ -12,10 +12,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -39,6 +39,8 @@ public class Envoy {
     private final String every;
     private final boolean useRewardPrefix;
     private final int minPlayers;
+    private final boolean limitPredefined;
+    private final boolean sendSpawnMessage;
     private ObjectArrayList<Calendar> warns = new ObjectArrayList<>();
     private Calendar next = Calendar.getInstance();
     private BukkitTask bukkitTask;
@@ -46,7 +48,6 @@ public class Envoy {
     private boolean randomSpawns;
     private boolean predefinedSpawns;
     private boolean flareEnabled;
-    private boolean limitPredefined;
     private int collectCooldown;
     private int flareCooldown;
     private int timeoutTime;
@@ -69,6 +70,7 @@ public class Envoy {
         this.collectGlobalCooldown = config.getBoolean("collect-global-cooldown", false);
         this.useRewardPrefix = config.getBoolean("rewards.use-prefix", true);
         this.limitPredefined = config.getBoolean("limit-predefined", true);
+        this.sendSpawnMessage = config.getBoolean("send-spawn-message", false);
         this.crateAmount = config.getInt("amount", 30);
         this.collectCooldown = config.getInt("collect-cooldown", 10);
         this.minPlayers = config.getInt("min-players", 2);
@@ -207,7 +209,7 @@ public class Envoy {
         startTime = System.currentTimeMillis();
 
         if (predefinedSpawns) {
-            List<Location> locations = new ArrayList<>(this.document.getStringList("pre-defined-spawns.locations").stream().map(Utils::deserializeLocation).toList());
+            List<Location> locations = new ArrayList<>(this.document.getStringList("pre-defined-spawns.locations", new ArrayList<>()).stream().map(Utils::deserializeLocation).toList());
 
             if (limitPredefined) {
                 for (int i = 0; i < crateAmount; i++) {
@@ -215,6 +217,10 @@ public class Envoy {
 
                     new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
                     locations.remove(location);
+
+                    if (locations.isEmpty()) {
+                        break;
+                    }
                 }
             } else {
                 for (Location location : locations) {
@@ -225,42 +231,69 @@ public class Envoy {
 
         if (randomSpawns) {
             int count = crateAmount - this.spawnedCrates.size();
-            for (int i = 0; i < count; i++) {
-                Location location = null;
-                int tries = 0;
-                while (location == null || tries < 500) {
-                    tries++;
-                    location = Utils.getNextLocation(this, center.clone());
+            if (count > 0) {
+                for (int i = 0; i < count; i++) {
+                    Location location = null;
+                    int tries = 0;
+                    while (location == null || tries < 500) {
+                        tries++;
+                        location = Utils.getNextLocation(this, center.clone());
+                    }
+                    new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
                 }
-                new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
             }
         }
 
-        System.out.println(spawnedCrates.size());
         if (player == null) {
-            String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start").replace("%amount%", String.valueOf(spawnedCrates.size())));
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                onlinePlayer.sendMessage(message);
+            if (crateAmount > 1) {
+                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start.multiple").replace("%world%", getCenter().getWorld().getName())).replace("%x%", String.valueOf(getCenter().getBlockX())).replace("%y%", String.valueOf(getCenter().getBlockY())).replace("%z%", String.valueOf(getCenter().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", getCenter().getWorld().getName()).replace("%x%", String.valueOf(getCenter().getBlockX())).replace("%y%", String.valueOf(getCenter().getBlockY())).replace("%z%", String.valueOf(getCenter().getBlockZ())));
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    onlinePlayer.sendMessage(message);
+                }
+            } else {
+                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start.one").replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    onlinePlayer.sendMessage(message);
+                }
             }
         } else {
-            String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("flare-start", player).replace("%player%", player.getName()).replace("%amount%", String.valueOf(spawnedCrates.size())));
-            for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                onlinePlayer.sendMessage(message);
+            if (crateAmount > 1) {
+                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("flare-start.multiple").replace("%world%", getCenter().getWorld().getName())).replace("%x%", String.valueOf(getCenter().getBlockX())).replace("%y%", String.valueOf(getCenter().getBlockY())).replace("%z%", String.valueOf(getCenter().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", getCenter().getWorld().getName()).replace("%x%", String.valueOf(getCenter().getBlockX())).replace("%y%", String.valueOf(getCenter().getBlockY())).replace("%z%", String.valueOf(getCenter().getBlockZ())));
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    onlinePlayer.sendMessage(message);
+                }
+            } else {
+                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("flare-start.one").replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    onlinePlayer.sendMessage(message);
+                }
             }
         }
 
-        //List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", this.getName()), new ArrayList<>());
-        // for (SpawnedCrate spawnedCrate : this.spawnedCrates) {
-        //locations.add(Utils.serializeLocation(spawnedCrate.getFinishLocation()));
-        //    }
+//        List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", this.getName()), new ArrayList<>());
+//        for (SpawnedCrate spawnedCrate : this.spawnedCrates) {
+//            locations.add(Utils.serializeLocation(spawnedCrate.getFinishLocation()));
+//        }
 //
-        //    ConfigManager.getTempData().set(String.format("%s.locations", this.getName()), locations);
+//        ConfigManager.getTempData().set(String.format("%s.locations", this.getName()), locations);
 //
-        //       try {
-            //ConfigManager.getTempData().save();
-            //} catch (IOException e) {
-            // throw new RuntimeException(e);
-            //}
+//        try {
+//            ConfigManager.getTempData().save();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        if (this.isSendSpawnMessage()) {
+            for (SpawnedCrate spawnedCrate : spawnedCrates) {
+                String message = String.format("%s%s", this.getMessage("prefix"), this.getMessage("crate-spawn-message").replace("%location%", this.getMessage("location-format").replace("%world%", spawnedCrate.getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrate.getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrate.getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrate.getFinishLocation().getBlockZ()))));
+
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
+                        onlinePlayer.sendMessage(StringUtils.format(message));
+                    }
+                }
+            }
+        }
 
         if (this.timeoutTime > 0) {
             bukkitTask = Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
@@ -446,5 +479,9 @@ public class Envoy {
 
     public List<String> getWarnList() {
         return warnList;
+    }
+
+    public boolean isSendSpawnMessage() {
+        return sendSpawnMessage;
     }
 }

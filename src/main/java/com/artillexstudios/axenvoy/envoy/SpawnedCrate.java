@@ -152,13 +152,15 @@ public class SpawnedCrate {
             if (broadcast && player != null) {
                 String message = String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("collect", player).replace("%crate%", StringUtils.format(this.handle.getDisplayName())).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    onlinePlayer.sendMessage(message);
+                    if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
+                        onlinePlayer.sendMessage(message);
+                    }
                 }
             }
 
-            //List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", parent.getName()), new ArrayList<>());
-            //locations.remove(Utils.serializeLocation(finishLocation));
-            //ConfigManager.getTempData().set(String.format("%s.locations", parent.getName()), locations);
+//            List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", parent.getName()), new ArrayList<>());
+//            locations.remove(Utils.serializeLocation(finishLocation));
+//            ConfigManager.getTempData().set(String.format("%s.locations", parent.getName()), locations);
 
             if (this.parent.getSpawnedCrates().isEmpty()) {
                 envoy.updateNext();
@@ -172,11 +174,11 @@ public class SpawnedCrate {
                     onlinePlayer.sendMessage(message);
                 }
 
-                //try {
-                // ConfigManager.getTempData().save();
-                //} catch (IOException e) {
-                //    throw new RuntimeException(e);
-                //  }
+//                try {
+//                    ConfigManager.getTempData().save();
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
             }
         }
     }

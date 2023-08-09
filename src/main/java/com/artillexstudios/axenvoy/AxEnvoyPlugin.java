@@ -17,19 +17,16 @@ import com.artillexstudios.axenvoy.utils.Utils;
 import it.unimi.dsi.fastutil.objects.ObjectListIterator;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public final class AxEnvoyPlugin extends JavaPlugin {
     private static AxEnvoyPlugin instance;
+    public static NamespacedKey MESSAGE_KEY;
     private boolean placeholderApi;
     private boolean decentHolograms;
 
@@ -40,6 +37,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         instance = this;
+        MESSAGE_KEY = new NamespacedKey(this, "envoy_messages");
 
         if (Bukkit.getPluginManager().getPlugin("DecentHolograms") != null) {
             getLogger().info("Enabled DecentHolograms hook!");
@@ -67,7 +65,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new EditorListener(), this);
         new Metrics(this, 19146);
 
-        //ConfigManager.getTempData().getKeys().forEach(key -> {
+//        ConfigManager.getTempData().getKeys().forEach(key -> {
 //            List<String> remainingCrates = ConfigManager.getTempData().getStringList(String.format("%s.locations", key), new ArrayList<>());
 //            if (remainingCrates.isEmpty()) return;
 //            for (String remainingCrate : remainingCrates) {

@@ -29,6 +29,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -253,6 +254,16 @@ public class Commands {
                         .replace("%crate%", String.valueOf(spawnedCrate.getHandle().getName()))
                 ));
             }
+        })).command(commands.literal("toggle").permission("axenvoy.command.toggle").senderType(Player.class).handler(c -> {
+            Player sender = (Player) c.getSender();
+            if (sender.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
+                sender.getPersistentDataContainer().remove(AxEnvoyPlugin.MESSAGE_KEY);
+                sender.sendMessage(StringUtils.format(String.format("%s%s", ConfigManager.getLang().getString("messages.prefix"), ConfigManager.getLang().getString("messages.toggle.on"))));
+                return;
+            }
+
+            sender.getPersistentDataContainer().set(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE, (byte) 0);
+            sender.sendMessage(StringUtils.format(String.format("%s%s", ConfigManager.getLang().getString("messages.prefix"), ConfigManager.getLang().getString("messages.toggle.off"))));
         }));
     }
 }
