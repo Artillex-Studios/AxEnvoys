@@ -31,12 +31,12 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
 
-    @NotNull
+    @Nullable
     public static Location deserializeLocation(@NotNull YamlDocument file, String path) {
-        return deserializeLocation(file.getString(path, "world;0;0;0"));
+        return deserializeLocation(file.getString(path));
     }
 
-    @NotNull
+    @Nullable
     public static Location deserializeLocation(@NotNull String locationString) {
         String[] split = locationString.split(";");
         World world = Bukkit.getWorld(split[0]);

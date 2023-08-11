@@ -62,7 +62,7 @@ public class Envoy {
         this.document = config;
         this.active = false;
         this.name = config.getFile().getName().replace(".yml", "").replace(".yaml", "");
-        this.center = Utils.deserializeLocation(config, "random-spawn.center");
+        this.center = Utils.deserializeLocation(config, "random-spawn.center") != null ? Utils.deserializeLocation(config, "random-spawn.center") : new ArrayList<>(this.document.getStringList("pre-defined-spawns.locations", new ArrayList<>()).stream().map(Utils::deserializeLocation).toList()).stream().findFirst().get();
         this.randomSpawns = config.getBoolean("random-spawn.enabled", false);
         this.predefinedSpawns = config.getBoolean("pre-defined-spawns.enabled", false);
         this.flareEnabled = config.getBoolean("flare.enabled", false);
@@ -246,7 +246,7 @@ public class Envoy {
 
         if (player == null) {
             if (crateAmount > 1) {
-                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start.multiple").replace("%world%", getCenter().getWorld().getName())).replace("%x%", String.valueOf(getCenter().getBlockX())).replace("%y%", String.valueOf(getCenter().getBlockY())).replace("%z%", String.valueOf(getCenter().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", getCenter().getWorld().getName()).replace("%x%", String.valueOf(getCenter().getBlockX())).replace("%y%", String.valueOf(getCenter().getBlockY())).replace("%z%", String.valueOf(getCenter().getBlockZ())));
+                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start.multiple").replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }
@@ -258,7 +258,7 @@ public class Envoy {
             }
         } else {
             if (crateAmount > 1) {
-                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("flare-start.multiple").replace("%world%", getCenter().getWorld().getName())).replace("%x%", String.valueOf(getCenter().getBlockX())).replace("%y%", String.valueOf(getCenter().getBlockY())).replace("%z%", String.valueOf(getCenter().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", getCenter().getWorld().getName()).replace("%x%", String.valueOf(getCenter().getBlockX())).replace("%y%", String.valueOf(getCenter().getBlockY())).replace("%z%", String.valueOf(getCenter().getBlockZ())));
+                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("flare-start.multiple").replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }
