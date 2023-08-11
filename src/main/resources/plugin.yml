@@ -5,4 +5,4 @@ api-version: 1.18
 softdepend:
   - DecentHolograms
   - PlaceholderAPI
-  - MultiverseCore
+  - Multiverse-Core
