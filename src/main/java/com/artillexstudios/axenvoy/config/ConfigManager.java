@@ -28,6 +28,10 @@ public class ConfigManager {
             exception.printStackTrace();
         }
 
+        load();
+    }
+
+    public static void load() {
         FileUtils.copyFromResource("crates");
         FileUtils.copyFromResource("envoys");
 

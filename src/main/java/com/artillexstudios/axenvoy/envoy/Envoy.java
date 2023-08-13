@@ -89,6 +89,9 @@ public class Envoy {
             flare = null;
         }
 
+        System.out.println("Loaded envoy " + name + " with center: ");
+        System.out.println(center);
+
         for (Object crates : config.getSection("crates").getKeys()) {
             for (Crate crate : CrateLoader.crates) {
                 if (!crate.getName().equals(crates)) continue;

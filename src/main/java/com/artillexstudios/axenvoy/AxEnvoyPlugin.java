@@ -9,6 +9,7 @@ import com.artillexstudios.axenvoy.listeners.ActivateFlare;
 import com.artillexstudios.axenvoy.listeners.BlockPhysicsListener;
 import com.artillexstudios.axenvoy.listeners.CollectionListener;
 import com.artillexstudios.axenvoy.listeners.FireworkDamageListener;
+import com.artillexstudios.axenvoy.listeners.WorldLoadListener;
 import com.artillexstudios.axenvoy.placeholders.Placeholders;
 import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.EditorListener;
@@ -29,6 +30,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
     public static NamespacedKey MESSAGE_KEY;
     private boolean placeholderApi;
     private boolean decentHolograms;
+    private boolean startup;
 
     public static AxEnvoyPlugin getInstance() {
         return instance;
@@ -49,7 +51,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
             this.placeholderApi = true;
             new Placeholders().register();
         }
-
+        startup = true;
         new Commands(this);
         ConfigManager.reload();
 
@@ -63,7 +65,9 @@ public final class AxEnvoyPlugin extends JavaPlugin {
         Bukkit.getPluginManager().registerEvents(new CollectionListener(), this);
         Bukkit.getPluginManager().registerEvents(new FireworkDamageListener(), this);
         Bukkit.getPluginManager().registerEvents(new EditorListener(), this);
+        Bukkit.getPluginManager().registerEvents(new WorldLoadListener(), this);
         new Metrics(this, 19146);
+        Bukkit.getScheduler().runTaskLater(this, () -> startup = false, 1200L);
 
 //        ConfigManager.getTempData().getKeys().forEach(key -> {
 //            List<String> remainingCrates = ConfigManager.getTempData().getStringList(String.format("%s.locations", key), new ArrayList<>());
@@ -150,5 +154,13 @@ public final class AxEnvoyPlugin extends JavaPlugin {
 
     public boolean isDecentHolograms() {
         return decentHolograms;
+    }
+
+    public boolean isStartup() {
+        return startup;
+    }
+
+    public void setStartup(boolean startup) {
+        this.startup = startup;
     }
 }

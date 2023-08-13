@@ -13,6 +13,10 @@ public class EnvoyLoader {
     public static final Object2ObjectArrayMap<String, Envoy> envoys = new Object2ObjectArrayMap<>();
 
     public static void loadAll() {
+        for (Envoy value : envoys.values()) {
+            value.stop();
+        }
+
         envoys.clear();
         File[] files = new File(FileUtils.MAIN_DIRECTORY.toFile(), "envoys/").listFiles();
         if (files == null) return;
