@@ -13,3 +13,6 @@ dependencies:
     Multiverse-Core:
       required: false
       load: BEFORE
+    WorldGuard:
+      required: false
+      load: BEFORE

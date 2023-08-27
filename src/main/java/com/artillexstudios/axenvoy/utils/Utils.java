@@ -4,6 +4,10 @@ import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Crate;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.rewards.Reward;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import dev.dejvokep.boostedyaml.YamlDocument;
 import dev.dejvokep.boostedyaml.block.implementation.Section;
 import io.papermc.lib.PaperLib;
@@ -74,6 +78,13 @@ public class Utils {
         loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getMaxDistance() * -1, envoy.getMaxDistance()));
 
         if (!PaperLib.isChunkGenerated(loc)) return null;
+        if (envoy.isOnlyInGlobal() && AxEnvoyPlugin.getInstance().isWorldGuard()) {
+            ApplicableRegionSet regions = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(loc.getWorld())).getApplicableRegions(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ()));
+            if (!regions.getRegions().isEmpty()) {
+                return null;
+            }
+        }
+
         Location loc2 = topBlock(loc);
         Location tempLoc = loc2.clone();
         if (envoy.getNotOnMaterials().contains(tempLoc.add(0, -1, 0).getBlock().getType())) return null;

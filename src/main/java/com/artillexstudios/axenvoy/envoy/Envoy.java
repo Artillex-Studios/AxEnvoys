@@ -41,6 +41,7 @@ public class Envoy {
     private final int minPlayers;
     private final boolean limitPredefined;
     private final boolean sendSpawnMessage;
+    private final boolean onlyInGlobal;
     private ObjectArrayList<Calendar> warns = new ObjectArrayList<>();
     private Calendar next = Calendar.getInstance();
     private BukkitTask bukkitTask;
@@ -71,6 +72,7 @@ public class Envoy {
         this.useRewardPrefix = config.getBoolean("rewards.use-prefix", true);
         this.limitPredefined = config.getBoolean("limit-predefined", true);
         this.sendSpawnMessage = config.getBoolean("send-spawn-message", false);
+        this.onlyInGlobal = config.getBoolean("only-in-global", false);
         this.crateAmount = config.getInt("amount", 30);
         this.collectCooldown = config.getInt("collect-cooldown", 10);
         this.minPlayers = config.getInt("min-players", 2);
@@ -486,5 +488,9 @@ public class Envoy {
 
     public boolean isSendSpawnMessage() {
         return sendSpawnMessage;
+    }
+
+    public boolean isOnlyInGlobal() {
+        return onlyInGlobal;
     }
 }

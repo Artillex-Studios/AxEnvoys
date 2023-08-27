@@ -21,6 +21,9 @@ alert-times: # Time before every
   - "2s"
   - "1s"
 
+# If there are other regions at that location other than __global__ an envoy can't spawn there
+only-in-global: false
+
 min-players: 2 # Minimum players required for autostart
 
 random-spawn:

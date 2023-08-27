@@ -29,6 +29,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
     private static AxEnvoyPlugin instance;
     public static NamespacedKey MESSAGE_KEY;
     private boolean placeholderApi;
+    private boolean worldGuard;
     private boolean decentHolograms;
     private boolean startup;
 
@@ -50,6 +51,11 @@ public final class AxEnvoyPlugin extends JavaPlugin {
             getLogger().info("Enabled PlaceholderAPI hook!");
             this.placeholderApi = true;
             new Placeholders().register();
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
+            getLogger().info("Enabled WorldGuard hook!");
+            this.worldGuard = true;
         }
         startup = true;
         new Commands(this);
@@ -162,5 +168,9 @@ public final class AxEnvoyPlugin extends JavaPlugin {
 
     public void setStartup(boolean startup) {
         this.startup = startup;
+    }
+
+    public boolean isWorldGuard() {
+        return worldGuard;
     }
 }
