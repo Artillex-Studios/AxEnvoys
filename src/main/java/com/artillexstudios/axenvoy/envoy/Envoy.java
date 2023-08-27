@@ -88,8 +88,7 @@ public class Envoy {
         this.every = config.getString("every", "");
 
         if (!config.getString("amount").contains("-")) {
-            this.minCrateAmount = config.getInt("amount", 30);
-            this.maxCrateAmount = config.getInt("amount", 30);
+            this.minCrateAmount = this.maxCrateAmount = config.getInt("amount", 30);
         } else {
             String[] s = config.getString("amount").split("-");
             this.minCrateAmount = Integer.parseInt(s[0]);
