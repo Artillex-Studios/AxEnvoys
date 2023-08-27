@@ -73,6 +73,7 @@ public class Utils {
         loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getMaxDistance() * -1, envoy.getMaxDistance()));
         loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getMaxDistance() * -1, envoy.getMaxDistance()));
 
+        if (!PaperLib.isChunkGenerated(loc)) return null;
         Location loc2 = topBlock(loc);
         Location tempLoc = loc2.clone();
         if (envoy.getNotOnMaterials().contains(tempLoc.add(0, -1, 0).getBlock().getType())) return null;
