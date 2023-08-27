@@ -53,6 +53,8 @@ public class Envoy {
     private int flareCooldown;
     private int timeoutTime;
     private int crateAmount;
+    private final int minCrateAmount;
+    private final int maxCrateAmount;
     private int minDistance;
     private int maxDistance;
     private int minHeight;
@@ -84,6 +86,15 @@ public class Envoy {
         this.flareCooldown = config.getInt("flare.cooldown", 30);
         this.warnList = config.getStringList("alert-times", new ArrayList<>());
         this.every = config.getString("every", "");
+
+        if (!config.getString("amount").contains("-")) {
+            this.minCrateAmount = config.getInt("amount", 30);
+            this.maxCrateAmount = config.getInt("amount", 30);
+        } else {
+            String[] s = config.getString("amount").split("-");
+            this.minCrateAmount = Integer.parseInt(s[0]);
+            this.maxCrateAmount = Integer.parseInt(s[1]);
+        }
 
         if (flareEnabled) {
             flare = Utils.createItem(config.getSection("flare.item"), name);
@@ -212,6 +223,7 @@ public class Envoy {
         active = true;
         this.updateNext();
         startTime = System.currentTimeMillis();
+        this.crateAmount = ThreadLocalRandom.current().nextInt(minCrateAmount, maxCrateAmount + 1);
 
         if (predefinedSpawns) {
             List<Location> locations = new ArrayList<>(this.document.getStringList("pre-defined-spawns.locations", new ArrayList<>()).stream().map(Utils::deserializeLocation).toList());

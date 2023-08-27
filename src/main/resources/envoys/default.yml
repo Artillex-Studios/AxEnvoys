@@ -4,7 +4,8 @@ crates:
   legendary: 30
   rare: 20
 
-amount: 30
+
+amount: 30 # you can also define a range, for example: 30-50
 limit-predefined: true # The amount cap will be used for predefined spawns aswell
 
 collect-cooldown: 10 # Seconds
