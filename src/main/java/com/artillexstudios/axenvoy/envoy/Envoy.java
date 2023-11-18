@@ -60,6 +60,7 @@ public class Envoy {
     private int minHeight;
     private int maxHeight;
     private long startTime;
+    private int minDistanceBetweenCrates;
 
     public Envoy(@NotNull YamlDocument config) {
         this.document = config;
@@ -86,6 +87,7 @@ public class Envoy {
         this.flareCooldown = config.getInt("flare.cooldown", 30);
         this.warnList = config.getStringList("alert-times", new ArrayList<>());
         this.every = config.getString("every", "");
+        this.minDistanceBetweenCrates = config.getInt("min-distance-between-crates", 0);
 
         if (!config.getString("amount").contains("-")) {
             this.minCrateAmount = this.maxCrateAmount = config.getInt("amount", 30);
@@ -491,6 +493,10 @@ public class Envoy {
 
     public ObjectArrayList<Calendar> getWarns() {
         return warns;
+    }
+
+    public int getMinDistanceBetweenCrates() {
+        return minDistanceBetweenCrates;
     }
 
     public List<String> getWarnList() {

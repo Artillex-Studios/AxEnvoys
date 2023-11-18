@@ -3,6 +3,7 @@ package com.artillexstudios.axenvoy.utils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Crate;
 import com.artillexstudios.axenvoy.envoy.Envoy;
+import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import com.artillexstudios.axenvoy.rewards.Reward;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -85,6 +86,11 @@ public class Utils {
             }
         }
 
+        if (envoy.getMinDistanceBetweenCrates() > 0) {
+            for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
+                if (spawnedCrate.getFinishLocation().distanceSquared(loc) < envoy.getMinDistanceBetweenCrates() * envoy.getMinDistanceBetweenCrates()) return null;
+            }
+        }
         Location loc2 = topBlock(loc);
         Location tempLoc = loc2.clone();
         if (envoy.getNotOnMaterials().contains(tempLoc.add(0, -1, 0).getBlock().getType())) return null;
