@@ -34,7 +34,7 @@ random-spawn:
   max-distance: 100 # The maximum distance from the center an envoy may spawn
   min-height: 10 # The minimum height at which an envoy may spawn
   max-height: 200 # The maximum height at which an envoy may spawn
-  min-distance-between-crates: 2 # The minimum distance that can be between crates
+  min-distance-between-crates: 0 # The minimum distance that can be between crates
 
   # You can use RegEx here, to match the name of the block
   # For a list of materials, visit: https://jd.papermc.io/paper/1.20/org/bukkit/Material.html
