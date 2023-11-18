@@ -6,7 +6,7 @@
 
     <groupId>com.artillexstudios.axenvoy</groupId>
     <artifactId>AxEnvoy</artifactId>
-    <version>1.0.9</version>
+    <version>1.0.10</version>
     <packaging>jar</packaging>
 
     <name>AxEnvoy</name>
