@@ -13,7 +13,6 @@ import net.kyori.adventure.util.TriState;
 import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -139,7 +138,7 @@ public class SpawnedCrate {
             reward.execute(player, envoy);
         }
 
-        finishLocation.getWorld().getBlockAt(finishLocation).setType(Material.AIR);
+        BlockIntegration.Companion.remove("air", finishLocation);
         if (hologram != null) {
             hologram.delete();
         }

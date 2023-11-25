@@ -25,5 +25,15 @@ public interface BlockIntegration {
                 defaultIntegration.place(id, location);
             }
         }
+
+        public static void remove(String id, Location location) {
+            if (id.startsWith("itemsadder:")) {
+                itemsAdderIntegration.remove(location);
+            } else if (id.startsWith("oraxen:")) {
+                oraxenIntegration.remove(location);
+            } else {
+                defaultIntegration.remove(location);
+            }
+        }
     }
 }
