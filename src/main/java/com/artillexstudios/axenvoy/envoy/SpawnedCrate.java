@@ -138,7 +138,7 @@ public class SpawnedCrate {
             reward.execute(player, envoy);
         }
 
-        BlockIntegration.Companion.remove("air", finishLocation);
+        BlockIntegration.Companion.remove(getHandle().getMaterial(), finishLocation);
         if (hologram != null) {
             hologram.delete();
         }
