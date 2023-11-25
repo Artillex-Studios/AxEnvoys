@@ -24,7 +24,7 @@ public class Crate {
     private final String fireworkHex;
     private final String flareFireworkHex;
     private final String displayName;
-    private final Material material;
+    private final String material;
     private final Material fallingBlockType;
     private final boolean hasCollectionCooldown;
     private final boolean fallingBlock;
@@ -46,7 +46,7 @@ public class Crate {
     public Crate(@NotNull YamlDocument config) {
         this.document = config;
         this.name = config.getFile().getName().replace(".yml", "").replace(".yaml", "");
-        this.material = Material.matchMaterial(config.getString("block", "stone"));
+        this.material = config.getString("block", "stone");
         this.collectionCooldown = config.getInt("collect-cooldown", 10);
         this.hasCollectionCooldown = config.getOptional("collect-cooldown").isPresent();
         if (AxEnvoyPlugin.getInstance().isDecentHolograms()) {
@@ -92,7 +92,7 @@ public class Crate {
         return rewards;
     }
 
-    public Material getMaterial() {
+    public String getMaterial() {
         return material;
     }
 

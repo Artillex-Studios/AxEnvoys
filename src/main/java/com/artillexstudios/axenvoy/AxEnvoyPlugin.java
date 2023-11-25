@@ -5,6 +5,7 @@ import com.artillexstudios.axenvoy.config.ConfigManager;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.EnvoyLoader;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
+import com.artillexstudios.axenvoy.integrations.blocks.BlockIntegration;
 import com.artillexstudios.axenvoy.listeners.ActivateFlare;
 import com.artillexstudios.axenvoy.listeners.BlockPhysicsListener;
 import com.artillexstudios.axenvoy.listeners.CollectionListener;
@@ -26,8 +27,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public final class AxEnvoyPlugin extends JavaPlugin {
-    private static AxEnvoyPlugin instance;
     public static NamespacedKey MESSAGE_KEY;
+    private static AxEnvoyPlugin instance;
+    private static BlockIntegration blockIntegration;
     private boolean placeholderApi;
     private boolean worldGuard;
     private boolean decentHolograms;
@@ -57,6 +59,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
             getLogger().info("Enabled WorldGuard hook!");
             this.worldGuard = true;
         }
+
         startup = true;
         new Commands(this);
         ConfigManager.reload();
@@ -172,5 +175,9 @@ public final class AxEnvoyPlugin extends JavaPlugin {
 
     public boolean isWorldGuard() {
         return worldGuard;
+    }
+
+    public static BlockIntegration getBlockIntegration() {
+        return blockIntegration;
     }
 }

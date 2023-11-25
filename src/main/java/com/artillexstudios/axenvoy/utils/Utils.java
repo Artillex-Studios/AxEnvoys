@@ -91,6 +91,9 @@ public class Utils {
                 if (spawnedCrate.getFinishLocation().distanceSquared(loc) < envoy.getMinDistanceBetweenCrates() * envoy.getMinDistanceBetweenCrates()) return null;
             }
         }
+
+        if (!loc.getChunk().isLoaded() && !loc.getChunk().load()) return null;
+
         Location loc2 = topBlock(loc);
         Location tempLoc = loc2.clone();
         if (envoy.getNotOnMaterials().contains(tempLoc.add(0, -1, 0).getBlock().getType())) return null;
@@ -103,7 +106,7 @@ public class Utils {
 
     @NotNull
     public static Location topBlock(@NotNull Location loc) {
-        PaperLib.getChunkAtAsync(loc, false).thenAccept(chunk -> loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 1));
+        loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 1);
         return loc;
     }
 

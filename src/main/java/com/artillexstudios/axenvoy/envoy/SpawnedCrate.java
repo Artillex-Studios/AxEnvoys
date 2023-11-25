@@ -1,6 +1,7 @@
 package com.artillexstudios.axenvoy.envoy;
 
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.integrations.blocks.BlockIntegration;
 import com.artillexstudios.axenvoy.rewards.Reward;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.StringUtils;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class SpawnedCrate {
@@ -46,7 +48,12 @@ public class SpawnedCrate {
         this.parent.getSpawnedCrates().add(this);
 
         PaperLib.getChunkAtAsync(location).thenAccept(chunk -> {
-            List<Entity> nearby = location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).stream().filter(entity -> entity.getType() == EntityType.PLAYER).toList();
+            List<Entity> nearby;
+            if (handle.isFallingBlock()) {
+                nearby = location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).stream().filter(entity -> entity.getType() == EntityType.PLAYER).toList();
+            } else {
+                nearby = Collections.emptyList();
+            }
 
             if (!handle.isFallingBlock() || nearby.isEmpty()) {
                 land(location);
@@ -79,7 +86,7 @@ public class SpawnedCrate {
 
     public void land(@NotNull Location location) {
         this.finishLocation = location;
-        location.getWorld().getBlockAt(location).setType(this.handle.getMaterial());
+        BlockIntegration.Companion.place(getHandle().getMaterial(), location);
         this.spawnHologram(location);
         this.spawnFirework(location);
     }
