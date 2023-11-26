@@ -56,13 +56,13 @@ public class AbstractConfig {
 
         Logger logger = LoggerFactory.getLogger(clazz);
 
-        if (!FileUtils.getSuggestions(path.toFile(), logger)) {
-            return;
-        }
-
         try {
             getConfig().createOrLoadWithComments();
         } catch (Exception exception) {
+            if (!FileUtils.getSuggestions(path.toFile(), logger)) {
+                return;
+            }
+
             logger.error("Could not load yaml file: {}", path.toFile(), exception);
             return;
         }
