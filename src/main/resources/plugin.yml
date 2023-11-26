@@ -7,3 +7,5 @@ softdepend:
   - PlaceholderAPI
   - Multiverse-Core
   - WorldGuard
+  - ItemsAdder
+  - Oraxen

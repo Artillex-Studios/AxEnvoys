@@ -3,6 +3,7 @@ package com.artillexstudios.axenvoy.integrations.blocks.impl;
 import com.artillexstudios.axenvoy.integrations.blocks.BlockIntegration;
 import dev.lone.itemsadder.api.CustomBlock;
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 public class ItemsAdderBlockIntegration implements BlockIntegration {
 
@@ -12,6 +13,7 @@ public class ItemsAdderBlockIntegration implements BlockIntegration {
         CustomBlock block = CustomBlock.getInstance(blockId);
         if (block == null) return;
 
+        location.getBlock().setType(Material.STONE);
         block.place(location);
     }
 
@@ -19,6 +21,8 @@ public class ItemsAdderBlockIntegration implements BlockIntegration {
     public void remove(Location location) {
         CustomBlock block = CustomBlock.byAlreadyPlaced(location.getBlock());
         if (block == null) return;
+
         block.remove();
+        location.getBlock().setType(Material.AIR);
     }
 }
