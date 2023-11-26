@@ -3,7 +3,6 @@ version: '${project.version}'
 main: com.artillexstudios.axenvoy.AxEnvoyPlugin
 api-version: 1.18
 softdepend:
-  - DecentHolograms
   - PlaceholderAPI
   - Multiverse-Core
   - WorldGuard
