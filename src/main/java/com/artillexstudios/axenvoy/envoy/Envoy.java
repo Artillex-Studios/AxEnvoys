@@ -1,12 +1,11 @@
 package com.artillexstudios.axenvoy.envoy;
 
+import com.artillexstudios.axapi.utils.ItemBuilder;
+import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
-import com.artillexstudios.axenvoy.config.ConfigManager;
-import com.artillexstudios.axenvoy.utils.StringUtils;
+import com.artillexstudios.axenvoy.config.impl.EnvoyConfig;
+import com.artillexstudios.axenvoy.listeners.FlareListener;
 import com.artillexstudios.axenvoy.utils.Utils;
-import dev.dejvokep.boostedyaml.YamlDocument;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,138 +15,114 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Envoy {
-    private final ObjectArrayList<Material> notOnMaterials = new ObjectArrayList<>();
-    private final ObjectArrayList<SpawnedCrate> spawnedCrates = new ObjectArrayList<>();
-    private final Object2ObjectArrayMap<Crate, Double> cratesMap = new Object2ObjectArrayMap<>();
-    private final List<String> warnList;
-    private final YamlDocument document;
+    private final ArrayList<Material> blacklistMaterials = new ArrayList<>();
+    private final ArrayList<SpawnedCrate> spawnedCrates = new ArrayList<>();
+    private final HashMap<CrateType, Double> cratesMap = new HashMap<>();
     private final String name;
-    private final Location center;
-    private final ItemStack flare;
-    private final boolean broadcastCollect;
-    private final boolean collectGlobalCooldown;
-    private final String every;
-    private final boolean useRewardPrefix;
-    private final int minPlayers;
-    private final boolean limitPredefined;
-    private final boolean sendSpawnMessage;
-    private final boolean onlyInGlobal;
-    private ObjectArrayList<Calendar> warns = new ObjectArrayList<>();
+    private final File file;
+    private Location center;
+    private ArrayList<Calendar> warns = new ArrayList<>();
     private Calendar next = Calendar.getInstance();
     private BukkitTask bukkitTask;
     private boolean active;
-    private boolean randomSpawns;
-    private boolean predefinedSpawns;
-    private boolean flareEnabled;
-    private int collectCooldown;
-    private int flareCooldown;
-    private int timeoutTime;
-    private int crateAmount;
-    private final int minCrateAmount;
-    private final int maxCrateAmount;
-    private int minDistance;
-    private int maxDistance;
-    private int minHeight;
-    private int maxHeight;
+    private EnvoyConfig config;
+    private int minCrateAmount;
+    private int maxCrateAmount;
     private long startTime;
-    private int minDistanceBetweenCrates;
 
-    public Envoy(@NotNull YamlDocument config) {
-        this.document = config;
+    public Envoy(@NotNull File file) {
+        this.file = file;
+        this.name = file.getName().replace(".yml", "").replace(".yaml", "");
+        Envoys.register(this);
+
         this.active = false;
-        this.name = config.getFile().getName().replace(".yml", "").replace(".yaml", "");
-        this.center = Utils.deserializeLocation(config, "random-spawn.center") != null ? Utils.deserializeLocation(config, "random-spawn.center") : new ArrayList<>(this.document.getStringList("pre-defined-spawns.locations", new ArrayList<>()).stream().map(Utils::deserializeLocation).toList()).stream().findFirst().get();
-        this.randomSpawns = config.getBoolean("random-spawn.enabled", false);
-        this.predefinedSpawns = config.getBoolean("pre-defined-spawns.enabled", false);
-        this.flareEnabled = config.getBoolean("flare.enabled", false);
-        this.broadcastCollect = config.getBoolean("broadcast-collect", false);
-        this.collectGlobalCooldown = config.getBoolean("collect-global-cooldown", false);
-        this.useRewardPrefix = config.getBoolean("rewards.use-prefix", true);
-        this.limitPredefined = config.getBoolean("limit-predefined", true);
-        this.sendSpawnMessage = config.getBoolean("send-spawn-message", false);
-        this.onlyInGlobal = config.getBoolean("only-in-global", false);
-        this.crateAmount = config.getInt("amount", 30);
-        this.collectCooldown = config.getInt("collect-cooldown", 10);
-        this.minPlayers = config.getInt("min-players", 2);
-        this.timeoutTime = config.getInt("timeout-time", -1);
-        this.minDistance = config.getInt("random-spawn.min-distance", 20);
-        this.maxDistance = config.getInt("random-spawn.max-distance", 100);
-        this.minHeight = config.getInt("random-spawn.min-height", 10);
-        this.maxHeight = config.getInt("random-spawn.max-height", 200);
-        this.flareCooldown = config.getInt("flare.cooldown", 30);
-        this.warnList = config.getStringList("alert-times", new ArrayList<>());
-        this.every = config.getString("every", "");
-        this.minDistanceBetweenCrates = config.getInt("min-distance-between-crates", 0);
+        this.config = new EnvoyConfig("envoys/" + file.getName());
+        this.config.reload();
+    }
 
-        if (!config.getString("amount").contains("-")) {
-            this.minCrateAmount = this.maxCrateAmount = config.getInt("amount", 30);
+    public void reload() {
+        config.reload();
+        this.center = Utils.deserializeLocation(config.RANDOM_SPAWN_CENTER).getWorld() != null ? Utils.deserializeLocation(config.RANDOM_SPAWN_CENTER) : new ArrayList<>(config.PREDEFINED_LOCATIONS).stream().map(Utils::deserializeLocation).toList().stream().findFirst().get();
+
+        if (!config.SPAWN_AMOUNT.contains("-")) {
+            this.minCrateAmount = this.maxCrateAmount = Integer.parseInt(config.SPAWN_AMOUNT);
         } else {
-            String[] s = config.getString("amount").split("-");
+            String[] s = config.SPAWN_AMOUNT.split("-");
             this.minCrateAmount = Integer.parseInt(s[0]);
             this.maxCrateAmount = Integer.parseInt(s[1]);
         }
 
-        if (flareEnabled) {
-            flare = Utils.createItem(config.getSection("flare.item"), name);
-        } else {
-            flare = null;
+        for (Map.Entry<Object, Object> crate : config.CRATES.entrySet()) {
+            String key = (String) crate.getKey();
+            CrateType crateType = Crates.valueOf(key);
+            if (crateType == null) return;
+
+            cratesMap.put(crateType, Double.parseDouble((String) crate.getValue()));
         }
 
-        System.out.println("Loaded envoy " + name + " with center: ");
-        System.out.println(center);
+        List<String> blacklist = config.RANDOM_SPAWN_BLACKLISTED_MATERIALS;
+        ArrayList<Pattern> patterns = new ArrayList<>(blacklist.size());
+        for (String pattern : blacklist) {
+            patterns.add(Pattern.compile(pattern));
+        }
 
-        for (Object crates : config.getSection("crates").getKeys()) {
-            for (Crate crate : CrateLoader.crates) {
-                if (!crate.getName().equals(crates)) continue;
-                cratesMap.put(crate, config.getSection("crates").getDouble((String) crates));
+        material:
+        for (Material value : Material.values()) {
+            for (Pattern pattern : patterns) {
+                Matcher matcher = pattern.matcher(value.name().toLowerCase(Locale.ENGLISH));
+                if (!matcher.find()) continue;
+
+                this.blacklistMaterials.add(value);
+
+                // Don't waste time looking through all patterns if we've already found one that matches
+                continue material;
             }
         }
 
-        config.getOptionalStringList("random-spawn.not-on-blocks").ifPresent(list -> {
-            ObjectArrayList<Pattern> patterns = new ObjectArrayList<>(list.size());
-            for (String s : list) {
-                patterns.add(Pattern.compile(s));
-            }
-
-            material:
-            for (Material value : Material.values()) {
-                for (Pattern pattern : patterns) {
-                    Matcher matcher = pattern.matcher(value.name().toLowerCase(Locale.ENGLISH));
-                    if (!matcher.find()) continue;
-
-                    this.notOnMaterials.add(value);
-
-                    // Don't waste time looking through all patterns if we've already found one that matches
-                    continue material;
-                }
-            }
-        });
-
-        if (!every.isEmpty()) {
+        if (!config.EVERY.isBlank()) {
             updateNext();
         }
     }
 
-    public ObjectArrayList<SpawnedCrate> getSpawnedCrates() {
+    public EnvoyConfig getConfig() {
+        return config;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ArrayList<Material> getBlacklistMaterials() {
+        return blacklistMaterials;
+    }
+
+    public ArrayList<SpawnedCrate> getSpawnedCrates() {
         return spawnedCrates;
     }
 
-    public Object2ObjectArrayMap<Crate, Double> getCratesMap() {
+    public HashMap<CrateType, Double> getCratesMap() {
         return cratesMap;
     }
 
-    public YamlDocument getDocument() {
-        return document;
+    public File getFile() {
+        return file;
+    }
+
+    public ArrayList<Calendar> getWarns() {
+        return warns;
     }
 
     public Location getCenter() {
@@ -156,7 +131,7 @@ public class Envoy {
 
     public void updateNext() {
         next = Calendar.getInstance();
-        setCalendar(next, null, this.every);
+        setCalendar(next, null, config.EVERY);
         warns.clear();
         warns = updateWarns();
     }
@@ -200,10 +175,10 @@ public class Envoy {
         return next;
     }
 
-    private ObjectArrayList<Calendar> updateWarns() {
-        ObjectArrayList<Calendar> calendars = new ObjectArrayList<>();
+    private ArrayList<Calendar> updateWarns() {
+        ArrayList<Calendar> calendars = new ArrayList<>();
 
-        for (String warn : this.warnList) {
+        for (String warn : config.ALERT_TIMES) {
             Calendar calendar = Calendar.getInstance();
             setCalendar(calendar, getNext(), warn);
             calendars.add(calendar);
@@ -222,14 +197,15 @@ public class Envoy {
         }
 
         active = true;
-        this.updateNext();
         startTime = System.currentTimeMillis();
-        this.crateAmount = ThreadLocalRandom.current().nextInt(minCrateAmount, maxCrateAmount + 1);
+        this.updateNext();
+        
+        int crateAmount = ThreadLocalRandom.current().nextInt(minCrateAmount, maxCrateAmount + 1);
 
-        if (predefinedSpawns) {
-            List<Location> locations = new ArrayList<>(this.document.getStringList("pre-defined-spawns.locations", new ArrayList<>()).stream().map(Utils::deserializeLocation).toList());
+        if (config.PREDEFINED_SPAWNS) {
+            List<Location> locations = new ArrayList<>(config.PREDEFINED_LOCATIONS.stream().map(Utils::deserializeLocation).toList());
 
-            if (limitPredefined) {
+            if (config.LIMIT_PREDEFINED) {
                 for (int i = 0; i < crateAmount; i++) {
                     Location location = locations.get(ThreadLocalRandom.current().nextInt(locations.size()));
 
@@ -247,7 +223,7 @@ public class Envoy {
             }
         }
 
-        if (randomSpawns) {
+        if (config.RANDOM_SPAWN) {
             int count = crateAmount - this.spawnedCrates.size();
             if (count > 0) {
                 for (int i = 0; i < count; i++) {
@@ -264,61 +240,48 @@ public class Envoy {
 
         if (player == null) {
             if (crateAmount > 1) {
-                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start.multiple").replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
+                String message = String.format("%s%s", StringUtils.formatToString(config.PREFIX), config.MULTIPLE_START.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }
             } else {
-                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("start.one").replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
+                String message = String.format("%s%s", StringUtils.formatToString(config.PREFIX), config.SINGLE_START.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }
             }
         } else {
             if (crateAmount > 1) {
-                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("flare-start.multiple").replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
+                String message = String.format("%s%s", StringUtils.formatToString(config.PREFIX), config.MULTIPLE_START_FLARE.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }
             } else {
-                String message = String.format("%s%s", StringUtils.format(getMessage("prefix")), getMessage("flare-start.one").replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", this.getMessage("location-format").replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
+                String message = String.format("%s%s", StringUtils.formatToString(config.PREFIX), config.SINGLE_START_FLARE.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }
             }
         }
 
-//        List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", this.getName()), new ArrayList<>());
-//        for (SpawnedCrate spawnedCrate : this.spawnedCrates) {
-//            locations.add(Utils.serializeLocation(spawnedCrate.getFinishLocation()));
-//        }
-//
-//        ConfigManager.getTempData().set(String.format("%s.locations", this.getName()), locations);
-//
-//        try {
-//            ConfigManager.getTempData().save();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-
-        if (this.isSendSpawnMessage()) {
+        if (config.SEND_SPAWN_MESSAGES) {
             for (SpawnedCrate spawnedCrate : spawnedCrates) {
-                String message = String.format("%s%s", this.getMessage("prefix"), this.getMessage("crate-spawn-message").replace("%location%", this.getMessage("location-format").replace("%world%", spawnedCrate.getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrate.getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrate.getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrate.getFinishLocation().getBlockZ()))));
+                String message = String.format("%s%s", this.config.PREFIX, config.CRATE_SPAWN.replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrate.getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrate.getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrate.getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrate.getFinishLocation().getBlockZ()))));
 
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
-                        onlinePlayer.sendMessage(StringUtils.format(message));
+                        onlinePlayer.sendMessage(StringUtils.formatToString(message));
                     }
                 }
             }
         }
 
-        if (this.timeoutTime > 0) {
+        if (config.TIMEOUT_TIME > 0) {
             bukkitTask = Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
                 if (!active) return;
 
                 stop();
-            }, this.timeoutTime * 20L);
+            }, config.TIMEOUT_TIME * 20L);
         }
 
         return true;
@@ -343,171 +306,27 @@ public class Envoy {
         }
     }
 
-    public String getMessage(String path) {
-        return document.getOptionalString("messages.%s".formatted(path)).map(StringUtils::format).orElseGet(() -> StringUtils.format(ConfigManager.getLang().getString("messages.%s".formatted(path))));
-    }
-
-    public String getMessage(String path, Player player) {
-        return document.getOptionalString("messages.%s".formatted(path)).map(message -> StringUtils.format(message.replace("%player%", player.getName()))).orElseGet(() -> StringUtils.format(ConfigManager.getLang().getString("messages.%s".formatted(path)).replace("%player%", player.getName())));
-    }
-
-    public ObjectArrayList<Material> getNotOnMaterials() {
-        return notOnMaterials;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public boolean isRandomSpawns() {
-        return randomSpawns;
-    }
-
-    public void setRandomSpawns(boolean randomSpawns) {
-        this.randomSpawns = randomSpawns;
-    }
-
-    public boolean isPredefinedSpawns() {
-        return predefinedSpawns;
-    }
-
-    public void setPredefinedSpawns(boolean predefinedSpawns) {
-        this.predefinedSpawns = predefinedSpawns;
-    }
-
-    public boolean isFlareEnabled() {
-        return flareEnabled;
-    }
-
-    public void setFlareEnabled(boolean flareEnabled) {
-        this.flareEnabled = flareEnabled;
-    }
-
-    public int getFlareCooldown() {
-        return flareCooldown;
-    }
-
-    public void setFlareCooldown(int flareCooldown) {
-        this.flareCooldown = flareCooldown;
-    }
-
-    public int getCollectCooldown() {
-        return collectCooldown;
-    }
-
-    public void setCollectCooldown(int collectCooldown) {
-        this.collectCooldown = collectCooldown;
-    }
-
-    public int getTimeoutTime() {
-        return timeoutTime;
-    }
-
-    public void setTimeoutTime(int timeoutTime) {
-        this.timeoutTime = timeoutTime;
-    }
-
-    public int getCrateAmount() {
-        return crateAmount;
-    }
-
-    public void setCrateAmount(int crateAmount) {
-        this.crateAmount = crateAmount;
-    }
-
-    public int getMinDistance() {
-        return minDistance;
-    }
-
-    public void setMinDistance(int minDistance) {
-        this.minDistance = minDistance;
-    }
-
-    public int getMaxDistance() {
-        return maxDistance;
-    }
-
-    public void setMaxDistance(int maxDistance) {
-        this.maxDistance = maxDistance;
-    }
-
-    public int getMinHeight() {
-        return minHeight;
-    }
-
-    public void setMinHeight(int minHeight) {
-        this.minHeight = minHeight;
-    }
-
-    public int getMaxHeight() {
-        return maxHeight;
-    }
-
-    public void setMaxHeight(int maxHeight) {
-        this.maxHeight = maxHeight;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public boolean isBroadcastCollect() {
-        return broadcastCollect;
-    }
-
-    public ItemStack getFlare() {
-        return flare;
-    }
-
-    public boolean isCollectGlobalCooldown() {
-        return collectGlobalCooldown;
-    }
-
-    public long getStartTime() {
-        return startTime;
+    public ItemStack getFlare(int amount) {
+        return new ItemBuilder(config.FLARE_ITEM).amount(amount).storePersistentData(FlareListener.KEY, PersistentDataType.STRING, this.name.toLowerCase(Locale.ENGLISH)).get();
     }
 
     public BukkitTask getBukkitTask() {
         return bukkitTask;
     }
 
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
     public void setBukkitTask(BukkitTask bukkitTask) {
         this.bukkitTask = bukkitTask;
     }
 
-    public boolean isUseRewardPrefix() {
-        return useRewardPrefix;
-    }
-
-    public int getMinPlayers() {
-        return minPlayers;
-    }
-
-    public String getEvery() {
-        return every;
-    }
-
-    public ObjectArrayList<Calendar> getWarns() {
-        return warns;
-    }
-
-    public int getMinDistanceBetweenCrates() {
-        return minDistanceBetweenCrates;
-    }
-
-    public List<String> getWarnList() {
-        return warnList;
-    }
-
-    public boolean isSendSpawnMessage() {
-        return sendSpawnMessage;
-    }
-
-    public boolean isOnlyInGlobal() {
-        return onlyInGlobal;
+    public long getStartTime() {
+        return startTime;
     }
 }

@@ -1,10 +1,9 @@
 package com.artillexstudios.axenvoy.listeners;
 
 import com.artillexstudios.axenvoy.envoy.Envoy;
-import com.artillexstudios.axenvoy.envoy.EnvoyLoader;
+import com.artillexstudios.axenvoy.envoy.Envoys;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import com.artillexstudios.axenvoy.user.User;
-import com.artillexstudios.axenvoy.utils.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -23,8 +22,9 @@ public class CollectionListener implements Listener {
         if (event.getClickedBlock() == null) return;
         if (event.getClickedBlock().getType() == Material.AIR) return;
 
-        for (Envoy envoy : EnvoyLoader.envoys.values()) {
+        for (Envoy envoy : Envoys.getTypes().values()) {
             if (!envoy.isActive()) continue;
+
             for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
                 if (!spawnedCrate.getFinishLocation().equals(event.getClickedBlock().getLocation())) continue;
                 User user = User.USER_MAP.get(event.getPlayer().getUniqueId());
@@ -32,19 +32,11 @@ public class CollectionListener implements Listener {
                 event.setCancelled(true);
                 event.setUseInteractedBlock(Event.Result.DENY);
 
-                if (user.canCollect(envoy, spawnedCrate.getHandle())) {
-                    spawnedCrate.claim(event.getPlayer(), envoy);
-
-                    int cooldown = spawnedCrate.getHandle().isHasCollectionCooldown() ? spawnedCrate.getHandle().getCollectionCooldown() : envoy.getCollectCooldown();
-                    if (envoy.isCollectGlobalCooldown()) {
-                        cooldown = envoy.getCollectCooldown();
-                    }
-
-                    user.addCrateCooldown(spawnedCrate.getHandle(), cooldown, envoy);
-                } else {
-                    event.getPlayer().sendMessage(String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("cooldown", event.getPlayer()).replace("%crate%", StringUtils.format(spawnedCrate.getHandle().getDisplayName())).replace("%cooldown%", String.valueOf((user.getCooldown(envoy, spawnedCrate.getHandle()) - System.currentTimeMillis()) / 1000))));
+                if (user.canDamage(envoy, spawnedCrate.getHandle())) {
+                    spawnedCrate.damage(user, envoy);
+                    user.addDamageCooldown(spawnedCrate.getHandle(), spawnedCrate.getHandle().getConfig().REQUIRED_INTERACTION_COOLDOWN, envoy);
+                    return;
                 }
-                return;
             }
         }
     }

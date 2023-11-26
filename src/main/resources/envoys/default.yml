@@ -1,20 +1,20 @@
 crates:
   # The name of the crate:the spawn chance of the crate spawning
+  # They don't have to add up to 100%
   common: 50
-  legendary: 30
-  rare: 20
+  legendary: 10
+  rare: 40
 
+amount: "30"
+limit-predefined: true
 
-amount: 30 # you can also define a range, for example: 30-50
-limit-predefined: true # The amount cap will be used for predefined spawns aswell
-
-collect-cooldown: 10 # Seconds
-collect-global-cooldown: false # Whether the cooldown should be for all crates of this envoy, or per-crate
+collect-cooldown: 10
+collect-global-cooldown: false
 broadcast-collect: true
-timeout-time: 300 # This is in seconds
-every: "1h" # Start an envoy event every hour. To disable, leave as ""
+timeout-time: 300
+every: "1h"
 send-spawn-message: false
-alert-times: # Time before every
+alert-times:
   - "30m"
   - "10m"
   - "5s"
@@ -22,22 +22,19 @@ alert-times: # Time before every
   - "2s"
   - "1s"
 
-# If there are other regions at that location other than __global__ an envoy can't spawn there
 only-in-global: false
 
-min-players: 2 # Minimum players required for autostart
+min-players: 2
 
 random-spawn:
-  enabled: true # Should we use random spawning?
-  center: "world;0;100;0" # The center location
-  min-distance: 20 # The minimum distance from the center an envoy may spawn
-  max-distance: 100 # The maximum distance from the center an envoy may spawn
-  min-height: 10 # The minimum height at which an envoy may spawn
-  max-height: 200 # The maximum height at which an envoy may spawn
-  min-distance-between-crates: 0 # The minimum distance that can be between crates
+  enabled: true
+  center: "world;0;100;0"
+  min-distance: 20
+  max-distance: 100
+  min-height: 10
+  max-height: 200
+  min-distance-between-crates: 0
 
-  # You can use RegEx here, to match the name of the block
-  # For a list of materials, visit: https://jd.papermc.io/paper/1.20/org/bukkit/Material.html
   not-on-blocks:
     - "(?<!s)t?air(?!s)"
     - "(leaves)"
@@ -49,11 +46,11 @@ messages:
   prefix: "<#00FFAA>&lAxEnvoy &7» "
 
 rewards:
-  use-prefix: true # If we should use prefix for message rewards of this envoy
+  use-prefix: true
 
 flare:
   enabled: true
-  cooldown: 30 # Cooldown in seconds
+  cooldown: 30
   item:
     material: "prismarine_shard"
     name: "&cEnvoy flare"

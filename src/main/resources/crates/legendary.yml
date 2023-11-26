@@ -1,10 +1,14 @@
 # Cooldown in seconds until a player can collect a new crate of this type
 # THIS OVERRIDES THE SAME SETTING IN THE ENVOY'S CATEGORY! If you do NOT want to override it, remove it from here
 collect-cooldown: 10
-broadcast-collect: true # Also overridden
+broadcast-collect: true
 
 display-name: "&cLegendary"
 block: diamond_block
+
+required-interactions:
+  amount: 1
+  cooldown: 0
 
 firework:
   enabled: true
@@ -12,14 +16,14 @@ firework:
   type: ball
 
 falling-block:
-  enabled: false # If a falling block should be spawned where a crate is spawned
-  height: 10 # The height where the falling block will fall from
-  block: end_rod # The type of the block that is falling
-  speed: -1 # The speed at which the block will fall (blocks per second)
+  enabled: false
+  height: 10
+  block: end_rod
+  speed: -1
 
 flare:
   enabled: true
-  every: 200 # ticks, 20 ticks is 1 second
+  every: 200
   firework:
     color: #ff0000
     type: ball
@@ -37,6 +41,8 @@ rewards:
     commands:
       - "eco give %player% 50000"
       - "bc %player% won the jackpot of 50.000 coins! WOW!"
+    items:
+      - type: ""
 
 hologram:
   height: 2.0

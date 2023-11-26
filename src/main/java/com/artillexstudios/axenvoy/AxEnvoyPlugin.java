@@ -1,53 +1,67 @@
 package com.artillexstudios.axenvoy;
 
-import com.artillexstudios.axenvoy.commands.Commands;
-import com.artillexstudios.axenvoy.config.ConfigManager;
+import com.artillexstudios.axapi.AxPlugin;
+import com.artillexstudios.axapi.utils.StringUtils;
+import com.artillexstudios.axenvoy.commands.EnvoyCommand;
+import com.artillexstudios.axenvoy.config.impl.Config;
+import com.artillexstudios.axenvoy.config.impl.Messages;
+import com.artillexstudios.axenvoy.envoy.Crates;
 import com.artillexstudios.axenvoy.envoy.Envoy;
-import com.artillexstudios.axenvoy.envoy.EnvoyLoader;
+import com.artillexstudios.axenvoy.envoy.Envoys;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
-import com.artillexstudios.axenvoy.integrations.blocks.BlockIntegration;
-import com.artillexstudios.axenvoy.listeners.ActivateFlare;
+import com.artillexstudios.axenvoy.libraries.Libraries;
 import com.artillexstudios.axenvoy.listeners.BlockPhysicsListener;
 import com.artillexstudios.axenvoy.listeners.CollectionListener;
 import com.artillexstudios.axenvoy.listeners.FireworkDamageListener;
+import com.artillexstudios.axenvoy.listeners.FlareListener;
 import com.artillexstudios.axenvoy.listeners.WorldLoadListener;
 import com.artillexstudios.axenvoy.placeholders.Placeholders;
 import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.EditorListener;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.Utils;
-import it.unimi.dsi.fastutil.objects.ObjectListIterator;
+import net.byteflux.libby.BukkitLibraryManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.plugin.java.JavaPlugin;
+import revxrsal.commands.bukkit.BukkitCommandHandler;
 
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Locale;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public final class AxEnvoyPlugin extends JavaPlugin {
+public final class AxEnvoyPlugin extends AxPlugin {
     public static NamespacedKey MESSAGE_KEY;
     private static AxEnvoyPlugin instance;
-    private static BlockIntegration blockIntegration;
+    private static Messages MESSAGES;
     private boolean placeholderApi;
     private boolean worldGuard;
-    private boolean decentHolograms;
-    private boolean startup;
 
     public static AxEnvoyPlugin getInstance() {
         return instance;
     }
 
+    public static Messages getMessages() {
+        return MESSAGES;
+    }
+
     @Override
-    public void onEnable() {
+    public void load() {
+        BukkitLibraryManager manager = new BukkitLibraryManager(this);
+        manager.addMavenCentral();
+        manager.addJitPack();
+
+        for (Libraries value : Libraries.values()) {
+            manager.loadLibrary(value.getLibrary());
+        }
+    }
+
+    @Override
+    public void enable() {
         instance = this;
         MESSAGE_KEY = new NamespacedKey(this, "envoy_messages");
-
-        if (Bukkit.getPluginManager().getPlugin("DecentHolograms") != null) {
-            getLogger().info("Enabled DecentHolograms hook!");
-            this.decentHolograms = true;
-        }
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             getLogger().info("Enabled PlaceholderAPI hook!");
@@ -60,48 +74,44 @@ public final class AxEnvoyPlugin extends JavaPlugin {
             this.worldGuard = true;
         }
 
-        startup = true;
-        new Commands(this);
-        ConfigManager.reload();
+        MESSAGES = new Messages("messages.yml");
+        reload();
+
+        BukkitCommandHandler handler = BukkitCommandHandler.create(this);
+
+        handler.registerValueResolver(Envoy.class, context -> {
+            String envoy = context.popForParameter();
+
+            return Envoys.valueOf(envoy.toLowerCase(Locale.ENGLISH));
+        });
+
+        handler.getAutoCompleter().registerParameterSuggestions(Envoy.class, (args, sender, command) -> Envoys.getTypes().keySet());
+
+        handler.register(new EnvoyCommand());
 
         Bukkit.getOnlinePlayers().forEach(User::new);
         User.listen();
-        new FallingBlockChecker();
-        Bukkit.getPluginManager().registerEvents(new ActivateFlare(), this);
-        if (ConfigManager.getConfig().getBoolean("listen-to-block-physics")) {
+        FallingBlockChecker.start();
+        Bukkit.getPluginManager().registerEvents(new FlareListener(), this);
+
+        if (Config.LISTEN_TO_BLOCK_PHYSICS) {
             Bukkit.getPluginManager().registerEvents(new BlockPhysicsListener(), this);
         }
+
         Bukkit.getPluginManager().registerEvents(new CollectionListener(), this);
         Bukkit.getPluginManager().registerEvents(new FireworkDamageListener(), this);
         Bukkit.getPluginManager().registerEvents(new EditorListener(), this);
         Bukkit.getPluginManager().registerEvents(new WorldLoadListener(), this);
         new Metrics(this, 19146);
-        Bukkit.getScheduler().runTaskLater(this, () -> startup = false, 1200L);
-
-//        ConfigManager.getTempData().getKeys().forEach(key -> {
-//            List<String> remainingCrates = ConfigManager.getTempData().getStringList(String.format("%s.locations", key), new ArrayList<>());
-//            if (remainingCrates.isEmpty()) return;
-//            for (String remainingCrate : remainingCrates) {
-//                Location location = Utils.deserializeLocation(remainingCrate);
-//                location.getBlock().setType(Material.AIR);
-//            }
-//
-//            ConfigManager.getTempData().remove(key.toString());
-//            try {
-//                ConfigManager.getTempData().save();
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        });
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
-            EnvoyLoader.envoys.forEach((string, envoy) -> {
-                if (envoy.getEvery().isEmpty()) return;
+            Envoys.getTypes().forEach((string, envoy) -> {
+                if (envoy.getConfig().EVERY.isBlank()) return;
                 if (envoy.isActive()) return;
                 Calendar now = Calendar.getInstance();
                 now.clear(Calendar.MILLISECOND);
 
-                ObjectListIterator<Calendar> iterator = envoy.getWarns().iterator();
+                Iterator<Calendar> iterator = envoy.getWarns().iterator();
                 while (iterator.hasNext()) {
                     Calendar warn = iterator.next();
                     Calendar timeCheck = Calendar.getInstance();
@@ -110,7 +120,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
 
                     if (timeCheck.compareTo(now) == 0) {
                         iterator.remove();
-                        Bukkit.broadcastMessage(envoy.getMessage("alert").replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis())));
+                        Bukkit.broadcastMessage(StringUtils.formatToString(envoy.getConfig().ALERT.replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis()))));
                     }
                 }
 
@@ -119,9 +129,9 @@ public final class AxEnvoyPlugin extends JavaPlugin {
                 next.clear(Calendar.MILLISECOND);
 
                 if (next.compareTo(now) <= 0) {
-                    if (Bukkit.getOnlinePlayers().size() < envoy.getMinPlayers()) {
+                    if (Bukkit.getOnlinePlayers().size() < envoy.getConfig().MIN_PLAYERS) {
                         envoy.updateNext();
-                        Bukkit.broadcastMessage(envoy.getMessage("not-enough-autostart"));
+                        Bukkit.broadcastMessage(StringUtils.formatToString(envoy.getConfig().NOT_ENOUGH_AUTO_START));
                         return;
                     }
 
@@ -138,11 +148,11 @@ public final class AxEnvoyPlugin extends JavaPlugin {
         }, 0, 200, TimeUnit.MILLISECONDS);
 
         Bukkit.getScheduler().runTaskTimer(this, () -> {
-            EnvoyLoader.envoys.forEach((name, envoy) -> {
+            Envoys.getTypes().forEach((name, envoy) -> {
                 if (!envoy.isActive()) return;
 
                 for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
-                    if (spawnedCrate.getHandle().getFlareTicks() == 0) continue;
+                    if (spawnedCrate.getHandle().getConfig().FLARE_EVERY == 0) continue;
                     spawnedCrate.tickFlare();
                 }
             });
@@ -150,8 +160,16 @@ public final class AxEnvoyPlugin extends JavaPlugin {
     }
 
     @Override
-    public void onDisable() {
-        for (Envoy envoy : EnvoyLoader.envoys.values()) {
+    public void reload() {
+        Config.reload();
+        MESSAGES.reload();
+        Crates.reload();
+        Envoys.reload();
+    }
+
+    @Override
+    public void disable() {
+        for (Envoy envoy : Envoys.getTypes().values()) {
             if (!envoy.isActive()) continue;
             envoy.stop();
         }
@@ -161,23 +179,7 @@ public final class AxEnvoyPlugin extends JavaPlugin {
         return this.placeholderApi;
     }
 
-    public boolean isDecentHolograms() {
-        return decentHolograms;
-    }
-
-    public boolean isStartup() {
-        return startup;
-    }
-
-    public void setStartup(boolean startup) {
-        this.startup = startup;
-    }
-
     public boolean isWorldGuard() {
         return worldGuard;
-    }
-
-    public static BlockIntegration getBlockIntegration() {
-        return blockIntegration;
     }
 }

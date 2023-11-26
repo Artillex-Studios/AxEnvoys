@@ -1,3 +1,6 @@
+# This crate needs to be clicked 50 times to get the loot
+# so this is a sort of miniboss, I guess!
+
 # Cooldown in seconds until a player can collect a new crate of this type
 # THIS OVERRIDES THE SAME SETTING IN THE ENVOY'S CATEGORY! If you do NOT want to override it, remove it from here
 collect-cooldown: 10
@@ -7,14 +10,14 @@ display-name: "&cCommon"
 block: iron_block
 
 required-interactions:
-  amount: 1
-  cooldown: 0
+  amount: 50
+  cooldown: 0 # In ticks. 1 second is 20 ticks! Set to 0 to disable!
 
 falling-block:
-  enabled: false
-  height: 10
-  block: end_rod
-  speed: -1
+  enabled: false # If a falling block should be spawned where a crate is spawned
+  height: 10 # The height where the falling block will fall from
+  block: end_rod # The type of the block that is falling
+  speed: -1 # The speed at which the block will fall (blocks per second)
 
 firework:
   enabled: true
@@ -23,7 +26,7 @@ firework:
 
 flare:
   enabled: true
-  every: 200
+  every: 200 # ticks, 20 ticks is 1 second
   firework:
     color: #ff0000
     type: ball
@@ -47,3 +50,5 @@ hologram:
   lines:
     - "&7Envoy!"
     - "&fRarity: &acommon."
+    - ""
+    - "Hits: %hits%/%max_hits%"

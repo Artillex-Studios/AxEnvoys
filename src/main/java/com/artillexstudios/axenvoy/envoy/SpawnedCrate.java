@@ -1,18 +1,19 @@
 package com.artillexstudios.axenvoy.envoy;
 
+import com.artillexstudios.axapi.hologram.Hologram;
+import com.artillexstudios.axapi.hologram.HologramFactory;
+import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.integrations.blocks.BlockIntegration;
 import com.artillexstudios.axenvoy.rewards.Reward;
+import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
-import com.artillexstudios.axenvoy.utils.StringUtils;
 import com.artillexstudios.axenvoy.utils.Utils;
-import eu.decentsoftware.holograms.api.DHAPI;
-import eu.decentsoftware.holograms.api.holograms.Hologram;
-import io.papermc.lib.PaperLib;
-import net.kyori.adventure.util.TriState;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -29,83 +30,108 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class SpawnedCrate {
     public static final NamespacedKey FIREWORK_KEY = new NamespacedKey(AxEnvoyPlugin.getInstance(), "axenvoy_firework");
     private final Envoy parent;
-    private final Crate handle;
+    private final CrateType handle;
     private Location finishLocation;
     private FallingBlock fallingBlock;
     private Vex vex;
     private Hologram hologram;
     private int tick = 0;
+    private int health;
 
-    public SpawnedCrate(@NotNull Envoy parent, @NotNull Crate handle, @NotNull Location location) {
+    public SpawnedCrate(@NotNull Envoy parent, @NotNull CrateType handle, @NotNull Location location) {
+        this.health = handle.getConfig().REQUIRED_INTERACTION_AMOUNT;
         this.parent = parent;
         this.handle = handle;
         this.finishLocation = location;
         this.parent.getSpawnedCrates().add(this);
 
-        PaperLib.getChunkAtAsync(location).thenAccept(chunk -> {
-            List<Entity> nearby;
-            if (handle.isFallingBlock()) {
-                nearby = location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).stream().filter(entity -> entity.getType() == EntityType.PLAYER).toList();
-            } else {
-                nearby = Collections.emptyList();
+        List<Entity> nearby;
+        if (handle.getConfig().FALLING_BLOCK_ENABLED) {
+            nearby = location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).stream().filter(entity -> entity.getType() == EntityType.PLAYER).toList();
+        } else {
+            nearby = Collections.emptyList();
+        }
+
+        if (!handle.getConfig().FALLING_BLOCK_ENABLED || nearby.isEmpty()) {
+            land(location);
+            return;
+        }
+
+        Location spawnAt = location.clone();
+        spawnAt.add(0.5, this.handle.getConfig().FALLING_BLOCK_HEIGHT, 0.5);
+        vex = location.getWorld().spawn(spawnAt, Vex.class, ent -> {
+            ent.setInvisible(true);
+            ent.setSilent(true);
+            ent.setInvulnerable(true);
+            ent.setGravity(true);
+            ent.setAware(false);
+            ent.setPersistent(false);
+            if (ent.getEquipment() != null) {
+                ent.getEquipment().clear();
             }
-
-            if (!handle.isFallingBlock() || nearby.isEmpty()) {
-                land(location);
-                return;
-            }
-
-            Location spawnAt = location.clone();
-            spawnAt.add(0.5, this.handle.getFallingBlockHeight(), 0.5);
-            vex = location.getWorld().spawn(spawnAt, Vex.class, ent -> {
-                ent.setInvisible(true);
-                ent.setSilent(true);
-                ent.setInvulnerable(true);
-                ent.setGravity(true);
-                ent.setAware(false);
-                ent.setPersistent(false);
-                if (ent.getEquipment() != null) {
-                    ent.getEquipment().clear();
-                }
-            });
-
-            vex.setGravity(true);
-
-            fallingBlock = location.getWorld().spawnFallingBlock(spawnAt, this.handle.getFallingBlockType().createBlockData());
-            vex.addPassenger(fallingBlock);
-            fallingBlock.setPersistent(false);
-            FallingBlockChecker.addToCheck(this);
-            vex.setVelocity(new Vector(0, handle.getFallingBlockSpeed(), 0));
         });
+
+        vex.setGravity(true);
+
+        fallingBlock = location.getWorld().spawnFallingBlock(spawnAt, Material.matchMaterial(this.handle.getConfig().FALLING_BLOCK_BLOCK.toUpperCase(Locale.ENGLISH)).createBlockData());
+        vex.addPassenger(fallingBlock);
+        fallingBlock.setPersistent(false);
+        FallingBlockChecker.addToCheck(this);
+        vex.setVelocity(new Vector(0, handle.getConfig().FALLING_BLOCK_SPEED, 0));
     }
 
     public void land(@NotNull Location location) {
         this.finishLocation = location;
-        BlockIntegration.Companion.place(getHandle().getMaterial(), location);
-        this.spawnHologram(location);
+        BlockIntegration.Companion.place(handle.getConfig().BLOCK_TYPE, location);
+        this.updateHologram();
         this.spawnFirework(location);
     }
 
-    private void spawnHologram(@NotNull Location location) {
-        if (!handle.isHologram()) return;
-        Location hologramLocation = location.clone().add(0.5, 0, 0.5);
-        hologramLocation.add(0, handle.getHologramHeight(), 0);
+    private void updateHologram() {
+        if (!handle.getConfig().HOLOGRAM_ENABLED) return;
+        if (hologram == null) {
+            Location hologramLocation = finishLocation.clone().add(0.5, 0, 0.5);
+            hologramLocation.add(0, handle.getConfig().HOLOGRAM_HEIGHT, 0);
 
-        ArrayList<String> formatted = new ArrayList<>(handle.getHologramLines().size());
-        for (String hologramLine : handle.getHologramLines()) {
-            formatted.add(StringUtils.format(hologramLine));
+            ArrayList<Component> formatted = new ArrayList<>(handle.getConfig().HOLOGRAM_LINES.size());
+            for (String hologramLine : handle.getConfig().HOLOGRAM_LINES) {
+                formatted.add(StringUtils.format(hologramLine).replaceText(b -> {
+                    b.match("%hits%");
+                    b.replacement(String.valueOf(health));
+                }).replaceText(b -> {
+                    b.match("%max_hits%");
+                    b.replacement(String.valueOf(getHandle().getConfig().REQUIRED_INTERACTION_AMOUNT));
+                }));
+            }
+
+            hologram = HologramFactory.get().spawnHologram(hologramLocation, Utils.serializeLocation(hologramLocation).replace(";", "-"), 0.3);
+
+            for (Component component : formatted) {
+                hologram.addLine(component);
+            }
+        } else {
+            ArrayList<Component> formatted = new ArrayList<>(handle.getConfig().HOLOGRAM_LINES.size());
+            for (String hologramLine : handle.getConfig().HOLOGRAM_LINES) {
+                formatted.add(StringUtils.format(hologramLine).replaceText(b -> {
+                    b.match("%hits%");
+                    b.replacement(String.valueOf(health));
+                }).replaceText(b -> {
+                    b.match("%max_hits%");
+                    b.replacement(String.valueOf(getHandle().getConfig().REQUIRED_INTERACTION_AMOUNT));
+                }));
+            }
+
+            int num = 0;
+            for (Component component : formatted) {
+                hologram.setLine(num, component);
+                num++;
+            }
         }
-
-        Hologram tempHolo = DHAPI.getHologram(Utils.serializeLocation(hologramLocation).replace(";", ""));
-        if (tempHolo != null) {
-            tempHolo.delete();
-        }
-
-        hologram = DHAPI.createHologram(Utils.serializeLocation(hologramLocation).replace(";", ""), hologramLocation, formatted);
     }
 
     public void claim(@Nullable Player player, Envoy envoy) {
@@ -113,7 +139,7 @@ public class SpawnedCrate {
     }
 
     public void spawnFirework(Location location) {
-        if (!this.handle.isFirework()) return;
+        if (!this.handle.getConfig().FIREWORK_ENABLED) return;
 
         Location loc2 = location.clone();
         loc2.add(0.5, 0.5, 0.5);
@@ -126,6 +152,18 @@ public class SpawnedCrate {
         fw.detonate();
     }
 
+    public void damage(User user, Envoy envoy) {
+        if (user.canCollect(envoy, this.getHandle())) {
+            health--;
+            updateHologram();
+            if (health == 0) {
+                claim(user.getPlayer(), envoy);
+            }
+        } else {
+            user.getPlayer().sendMessage(StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().COOLDOWN.replace("%player%", user.getPlayer().getName()).replace("%player_name%", user.getPlayer().getName()).replace("%crate%", getHandle().getConfig().DISPLAY_NAME).replace("%cooldown%", String.valueOf((user.getCollectCooldown(envoy, getHandle()) - System.currentTimeMillis()) / 1000))));
+        }
+    }
+
 
     public void claim(@Nullable Player player, Envoy envoy, boolean remove) {
         if (fallingBlock != null) {
@@ -136,11 +174,18 @@ public class SpawnedCrate {
         if (player != null) {
             Reward reward = Utils.randomReward(this.handle.getRewards());
             reward.execute(player, envoy);
+
+            int cooldown = getHandle().getConfig().COLLECT_COOLDOWN > 0 ? getHandle().getConfig().COLLECT_COOLDOWN : envoy.getConfig().COLLECT_COOLDOWN;
+            if (envoy.getConfig().COLLECT_GLOBAL_COOLDOWN) {
+                cooldown = envoy.getConfig().COLLECT_COOLDOWN;
+            }
+
+            User.USER_MAP.get(player.getUniqueId()).addCrateCooldown(getHandle(), cooldown, envoy);
         }
 
-        BlockIntegration.Companion.remove(getHandle().getMaterial(), finishLocation);
+        BlockIntegration.Companion.remove(getHandle().getConfig().BLOCK_TYPE, finishLocation);
         if (hologram != null) {
-            hologram.delete();
+            hologram.remove();
         }
 
         if (remove) {
@@ -148,25 +193,22 @@ public class SpawnedCrate {
         }
 
         if (envoy != null) {
-            boolean broadcast;
-            if (this.handle.isBroadcastCollect() == TriState.NOT_SET) {
-                broadcast = envoy.isBroadcastCollect();
-            } else {
-                broadcast = this.handle.isBroadcastCollect().name().equalsIgnoreCase("TRUE");
+            boolean broadcast = envoy.getConfig().BROADCAST_COLLECT;
+            if (!broadcast) {
+
+                if (handle.getConfig().BROADCAST_COLLECT) {
+                    broadcast = true;
+                }
             }
 
             if (broadcast && player != null && !this.parent.getSpawnedCrates().isEmpty()) {
-                String message = String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("collect", player).replace("%crate%", StringUtils.format(this.handle.getDisplayName())).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
+                String message = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().COLLECT.replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%crate%", this.handle.getConfig().DISPLAY_NAME).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
                         onlinePlayer.sendMessage(message);
                     }
                 }
             }
-
-//            List<String> locations = ConfigManager.getTempData().getStringList(String.format("%s.locations", parent.getName()), new ArrayList<>());
-//            locations.remove(Utils.serializeLocation(finishLocation));
-//            ConfigManager.getTempData().set(String.format("%s.locations", parent.getName()), locations);
 
             if (this.parent.getSpawnedCrates().isEmpty()) {
                 envoy.updateNext();
@@ -175,26 +217,22 @@ public class SpawnedCrate {
                     envoy.getBukkitTask().cancel();
                     envoy.setBukkitTask(null);
                 }
-                String message = String.format("%s%s", StringUtils.format(envoy.getMessage("prefix")), envoy.getMessage("ended"));
+
+                String message = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().ENDED);
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }
-
-//                try {
-//                    ConfigManager.getTempData().save();
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
             }
         }
     }
 
     public void tickFlare() {
-        if (this.handle.getFlareTicks() == 0) return;
+        if (this.handle.getConfig().FLARE_EVERY == 0) return;
         tick++;
 
-        if (tick == this.handle.getFlareTicks()) {
-            if (!getFinishLocation().getWorld().isChunkLoaded(getFinishLocation().getChunk())) return;
+        if (tick == this.handle.getConfig().FLARE_EVERY) {
+            if (!getFinishLocation().getWorld().isChunkLoaded(getFinishLocation().getBlockX() >> 4, getFinishLocation().getBlockZ() >> 4))
+                return;
             Location loc2 = finishLocation.clone();
             loc2.add(0.5, 0.5, 0.5);
             Firework fw = (Firework) loc2.getWorld().spawnEntity(loc2, EntityType.FIREWORK);
@@ -216,7 +254,7 @@ public class SpawnedCrate {
         this.vex = vex;
     }
 
-    public Crate getHandle() {
+    public CrateType getHandle() {
         return handle;
     }
 

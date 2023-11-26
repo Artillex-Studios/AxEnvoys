@@ -1,7 +1,7 @@
 package com.artillexstudios.axenvoy.utils;
 
+import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
-import com.artillexstudios.axenvoy.config.ConfigManager;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.user.User;
 import org.bukkit.Bukkit;
@@ -12,7 +12,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class EditorListener implements Listener {
@@ -24,11 +23,11 @@ public class EditorListener implements Listener {
         Envoy editor = user.getEditor();
         if (editor == null) return;
 
-        List<String> locations = editor.getDocument().getStringList("pre-defined-spawns.locations", new ArrayList<String>());
+        List<String> locations = editor.getConfig().getConfig().getStringList("pre-defined-spawns.locations");
         String serialized = Utils.serializeLocation(event.getBlock().getLocation());
         if (locations.contains(serialized)) {
             locations.remove(serialized);
-            editor.getDocument().set("pre-defined-spawns.locations", locations);
+            editor.getConfig().getConfig().set("pre-defined-spawns.locations", locations);
 
             User.USER_MAP.forEach(((uuid, user1) -> {
                 if (user1.getEditor().equals(editor)) {
@@ -37,9 +36,9 @@ public class EditorListener implements Listener {
             }));
 
             try {
-                editor.getDocument().save();
-                ConfigManager.reload();
-                event.getPlayer().sendMessage(editor.getMessage("remove-predefined"));
+                editor.getConfig().getConfig().save();
+                editor.reload();
+                event.getPlayer().sendMessage(StringUtils.formatToString(editor.getConfig().REMOVE_PREDEFINED));
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -54,7 +53,7 @@ public class EditorListener implements Listener {
         if (editor == null) return;
         if (event.getBlockPlaced().getType() != Material.DIAMOND_BLOCK) return;
 
-        List<String> locations = editor.getDocument().getStringList("pre-defined-spawns.locations", new ArrayList<String>());
+        List<String> locations = editor.getConfig().getConfig().getStringList("pre-defined-spawns.locations");
 
         String serialized = Utils.serializeLocation(event.getBlock().getLocation());
         if (locations.contains(serialized)) {
@@ -63,7 +62,7 @@ public class EditorListener implements Listener {
 
         locations.add(serialized);
         event.setCancelled(true);
-        editor.getDocument().set("pre-defined-spawns.locations", locations);
+        editor.getConfig().getConfig().set("pre-defined-spawns.locations", locations);
 
         Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
             User.USER_MAP.forEach(((uuid, user1) -> {
@@ -75,9 +74,9 @@ public class EditorListener implements Listener {
         }, 2);
 
         try {
-            editor.getDocument().save();
-            ConfigManager.reload();
-            event.getPlayer().sendMessage(editor.getMessage("set-predefined"));
+            editor.getConfig().getConfig().save();
+            editor.reload();
+            event.getPlayer().sendMessage(StringUtils.formatToString(editor.getConfig().SET_PREDEFINED));
         } catch (Exception exception) {
             exception.printStackTrace();
         }

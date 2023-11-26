@@ -1,11 +1,8 @@
 package com.artillexstudios.axenvoy.user;
 
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
-import com.artillexstudios.axenvoy.envoy.Crate;
+import com.artillexstudios.axenvoy.envoy.CrateType;
 import com.artillexstudios.axenvoy.envoy.Envoy;
-import it.unimi.dsi.fastutil.objects.Object2LongArrayMap;
-import it.unimi.dsi.fastutil.objects.Object2ObjectArrayMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,13 +11,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.UUID;
 
 public class User {
-    public static final Object2ObjectArrayMap<UUID, User> USER_MAP = new Object2ObjectArrayMap<>();
-    private final ObjectArrayList<CrateCooldown> crateCooldowns = new ObjectArrayList<>();
-    private final Object2LongArrayMap<Envoy> flareCooldown = new Object2LongArrayMap<>();
+    public static final HashMap<UUID, User> USER_MAP = new HashMap<>();
+    private final ArrayList<CrateCooldown> crateCooldowns = new ArrayList<>();
+    private final ArrayList<CrateCooldown> damageCooldowns = new ArrayList<>();
+    private final HashMap<Envoy, Long> flareCooldown = new HashMap<>();
     private final Player player;
     private Envoy editor = null;
 
@@ -49,9 +49,9 @@ public class User {
         flareCooldown.clear();
     }
 
-    public void addCrateCooldown(Crate crate, long seconds, Envoy envoy) {
-        if (!envoy.isCollectGlobalCooldown()) {
-            crateCooldowns.add(new CrateCooldown(envoy, crate, System.currentTimeMillis() + (seconds * 1000)));
+    public void addCrateCooldown(CrateType crateType, long seconds, Envoy envoy) {
+        if (!envoy.getConfig().COLLECT_GLOBAL_COOLDOWN) {
+            crateCooldowns.add(new CrateCooldown(envoy, crateType, System.currentTimeMillis() + (seconds * 1000)));
         } else {
             crateCooldowns.add(new CrateCooldown(envoy, null, System.currentTimeMillis() + (seconds * 1000)));
         }
@@ -61,8 +61,12 @@ public class User {
         flareCooldown.put(envoy, System.currentTimeMillis() + (seconds * 1000));
     }
 
-    public boolean canCollect(Envoy envoy, Crate crate) {
-        return (getCooldown(envoy, crate) - System.currentTimeMillis()) / 1000 == 0;
+    public boolean canCollect(Envoy envoy, CrateType crateType) {
+        return (getCollectCooldown(envoy, crateType) - System.currentTimeMillis()) / 1000 == 0;
+    }
+
+    public boolean canDamage(Envoy envoy, CrateType crateType) {
+        return (getDamageCooldown(envoy, crateType) - System.currentTimeMillis()) / 50 == 0;
     }
 
     public boolean canUseFlare(Envoy envoy) {
@@ -70,7 +74,30 @@ public class User {
         return cooldown <= System.currentTimeMillis();
     }
 
-    public long getCooldown(Envoy envoy, Crate crate) {
+    public void addDamageCooldown(CrateType crateType, long ticks, Envoy envoy) {
+        damageCooldowns.add(new CrateCooldown(envoy, crateType, System.currentTimeMillis() + (ticks * 50)));
+    }
+
+
+    public long getDamageCooldown(Envoy envoy, CrateType crateType) {
+        Iterator<CrateCooldown> cooldownIterator = damageCooldowns.iterator();
+        while (cooldownIterator.hasNext()) {
+            CrateCooldown next = cooldownIterator.next();
+            if (next.envoy != envoy) continue;
+            if (next.end <= System.currentTimeMillis()) {
+                cooldownIterator.remove();
+                continue;
+            }
+
+            if (next.crateType != crateType) continue;
+
+            return next.end;
+        }
+
+        return System.currentTimeMillis();
+    }
+
+    public long getCollectCooldown(Envoy envoy, CrateType crateType) {
         Iterator<CrateCooldown> cooldownIterator = crateCooldowns.iterator();
         while (cooldownIterator.hasNext()) {
             CrateCooldown next = cooldownIterator.next();
@@ -80,11 +107,11 @@ public class User {
                 continue;
             }
 
-            if (envoy.isCollectGlobalCooldown()) {
+            if (envoy.getConfig().COLLECT_GLOBAL_COOLDOWN) {
                 return next.end;
             }
 
-            if (next.crate != crate) continue;
+            if (next.crateType != crateType) continue;
 
             return next.end;
         }

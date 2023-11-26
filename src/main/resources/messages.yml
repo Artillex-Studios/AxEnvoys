@@ -16,7 +16,7 @@ messages:
   already-active: "This event is already running!"
   flare-disabled: "This envoy''s flare is disabled!"
   reload: "Reloaded! Took: %time% ms!"
-  no-envoy-found: "There is no loaded envoy named %name%!"
+  no-envoy-found: "There is no loaded envoy named that!"
   alert: "An envoy event will start in %time%! Get ready!"
   not-enough-autostart: "There weren''t enough people to auto-start an envoy event! Rescheduling!"
   crate-spawn-message: "A crate spawned at %location%!"
@@ -33,5 +33,3 @@ messages:
     remaining: "%remaining% crates left"
     remaining-time: "%time%"
     until-next: "%time%"
-
-config-version: 2
