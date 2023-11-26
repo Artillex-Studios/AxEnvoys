@@ -126,11 +126,11 @@ public class AbstractConfig {
         }
         Map<String, Object> map = new LinkedHashMap<>();
         for (String key : section.getKeys(false)) {
-            String rawValue = section.getString(key);
+            Object rawValue = section.get(key);
             if (rawValue == null) {
                 continue;
             }
-            map.put(key, addToMap(rawValue));
+            map.put(key, rawValue);
         }
         return map;
     }

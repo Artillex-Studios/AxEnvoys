@@ -70,7 +70,7 @@ public class Envoy {
             CrateType crateType = Crates.valueOf(key);
             if (crateType == null) return;
 
-            cratesMap.put(crateType, Double.parseDouble((String) crate.getValue()));
+            cratesMap.put(crateType, ((Number) crate.getValue()).doubleValue());
         }
 
         List<String> blacklist = config.RANDOM_SPAWN_BLACKLISTED_MATERIALS;
@@ -198,7 +198,6 @@ public class Envoy {
 
         active = true;
         startTime = System.currentTimeMillis();
-        this.updateNext();
         
         int crateAmount = ThreadLocalRandom.current().nextInt(minCrateAmount, maxCrateAmount + 1);
 
@@ -252,12 +251,12 @@ public class Envoy {
             }
         } else {
             if (crateAmount > 1) {
-                String message = String.format("%s%s", StringUtils.formatToString(config.PREFIX), config.MULTIPLE_START_FLARE.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
+                String message = StringUtils.formatToString(config.PREFIX + config.MULTIPLE_START_FLARE.replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }
             } else {
-                String message = String.format("%s%s", StringUtils.formatToString(config.PREFIX), config.SINGLE_START_FLARE.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
+                String message = StringUtils.formatToString(config.PREFIX + config.SINGLE_START_FLARE.replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }
