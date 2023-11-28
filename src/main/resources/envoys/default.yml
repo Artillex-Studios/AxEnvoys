@@ -34,14 +34,13 @@ random-spawn:
   min-height: 10
   max-height: 200
   min-distance-between-crates: 0
-
   not-on-blocks:
     - "(?<!s)t?air(?!s)"
     - "(leaves)"
     - "(sign)"
     - "diamond_block"
 
-# You can override messages from messages.yml. You need to put it exactly how it is in that file.
+# You can override messages from messages.yml. You need to put it exactly how it is in that file (For example, if it's prefix, you need to write prefix as the key).
 messages:
   prefix: "<#00FFAA>&lAxEnvoy &7» "
 
