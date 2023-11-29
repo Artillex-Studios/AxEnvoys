@@ -60,6 +60,7 @@ public class Utils {
         Location center = loc.clone();
         loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));
         loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));
+        if (loc.distanceSquared(center) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE) return null;
 
         if (envoy.getConfig().ONLY_IN_GLOBAL && AxEnvoyPlugin.getInstance().isWorldGuard()) {
             ApplicableRegionSet regions = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(loc.getWorld())).getApplicableRegions(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ()));
@@ -74,22 +75,21 @@ public class Utils {
             }
         }
 
-        if (!loc.getChunk().isLoaded() && !loc.getChunk().load()) return null;
-
         Location loc2 = topBlock(loc);
-        Location tempLoc = loc2.clone();
-        if (envoy.getBlacklistMaterials().contains(tempLoc.add(0, -1, 0).getBlock().getType())) return null;
         if (loc2.getY() < envoy.getConfig().RANDOM_SPAWN_MIN_HEIGHT) return null;
         if (loc2.getY() > envoy.getConfig().RANDOM_SPAWN_MAX_HEIGHT) return null;
-        if (loc.distanceSquared(center) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE) return null;
+
+        if (!loc.getChunk().isLoaded() && !loc.getChunk().load()) return null;
+
+        Location tempLoc = loc2.clone();
+        if (envoy.getBlacklistMaterials().contains(tempLoc.add(0, -1, 0).getBlock().getType())) return null;
 
         return loc2;
     }
 
     @NotNull
     public static Location topBlock(@NotNull Location loc) {
-        loc.setY(loc.getWorld().getHighestBlockYAt(loc) + 1);
-        return loc;
+        return loc.getWorld().getHighestBlockAt(loc).getLocation();
     }
 
     @NotNull
