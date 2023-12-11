@@ -15,7 +15,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
 
     public static @NotNull Location deserializeLocation(@NotNull String locationString) {
         String[] split = locationString.split(";");
@@ -55,7 +57,6 @@ public class Utils {
         return e.sample();
     }
 
-    @Nullable
     public static Location getNextLocation(@NotNull Envoy envoy, @NotNull Location loc) {
         Location center = loc.clone();
         loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));

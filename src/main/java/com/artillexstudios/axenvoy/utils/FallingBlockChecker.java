@@ -1,8 +1,7 @@
 package com.artillexstudios.axenvoy.utils;
 
-import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +13,7 @@ public class FallingBlockChecker {
     private static final ConcurrentLinkedQueue<SpawnedCrate> fallingCrates = new ConcurrentLinkedQueue<>();
 
     public static void start() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(AxEnvoyPlugin.getInstance(), () -> {
+         Scheduler.get().runAsyncTimer(task -> {
             Iterator<SpawnedCrate> crateIterator = fallingCrates.iterator();
 
             while (crateIterator.hasNext()) {
@@ -29,7 +28,7 @@ public class FallingBlockChecker {
                     crateIterator.remove();
                     next.setFallingBlock(null);
                     next.setVex(null);
-                    Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
+                    Scheduler.get().runAt(fallingBlock.getLocation(), t -> {
                         fallingBlock.remove();
                         vex.remove();
                         next.land(next.getFinishLocation());
@@ -37,7 +36,7 @@ public class FallingBlockChecker {
                 }
             }
 
-        }, 0, 0);
+        }, 1, 1);
     }
 
 

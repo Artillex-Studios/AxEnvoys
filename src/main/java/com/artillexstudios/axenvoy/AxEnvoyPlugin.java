@@ -1,6 +1,7 @@
 package com.artillexstudios.axenvoy;
 
 import com.artillexstudios.axapi.AxPlugin;
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.commands.EnvoyCommand;
 import com.artillexstudios.axenvoy.config.impl.Config;
@@ -140,14 +141,14 @@ public final class AxEnvoyPlugin extends AxPlugin {
                         return;
                     }
 
-                    Bukkit.getScheduler().runTask(AxEnvoyPlugin.getInstance(), () -> {
+                    Scheduler.get().run(task -> {
                         envoy.start(null);
                     });
                 }
             });
         }, 0, 200, TimeUnit.MILLISECONDS);
 
-        Bukkit.getScheduler().runTaskTimer(this, () -> {
+        Scheduler.get().runTimer(task -> {
             Envoys.getTypes().forEach((name, envoy) -> {
                 if (!envoy.isActive()) return;
 
@@ -156,7 +157,7 @@ public final class AxEnvoyPlugin extends AxPlugin {
                     spawnedCrate.tickFlare();
                 }
             });
-        }, 0, 0);
+        }, 1, 1);
     }
 
     @Override

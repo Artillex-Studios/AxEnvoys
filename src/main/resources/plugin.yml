@@ -2,6 +2,7 @@ name: AxEnvoy
 version: '${project.version}'
 main: com.artillexstudios.axenvoy.AxEnvoyPlugin
 api-version: 1.18
+folia-supported: true
 softdepend:
   - PlaceholderAPI
   - Multiverse-Core

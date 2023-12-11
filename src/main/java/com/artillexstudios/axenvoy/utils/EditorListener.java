@@ -1,10 +1,9 @@
 package com.artillexstudios.axenvoy.utils;
 
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.StringUtils;
-import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.user.User;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -64,7 +63,7 @@ public class EditorListener implements Listener {
         event.setCancelled(true);
         editor.getConfig().getConfig().set("pre-defined-spawns.locations", locations);
 
-        Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
+        Scheduler.get().runLater(task -> {
             User.USER_MAP.forEach(((uuid, user1) -> {
                 if (user1.getEditor() == null) return;
                 if (user1.getEditor().equals(editor)) {

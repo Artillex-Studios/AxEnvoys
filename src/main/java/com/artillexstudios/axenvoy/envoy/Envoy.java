@@ -1,5 +1,6 @@
 package com.artillexstudios.axenvoy.envoy;
 
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
@@ -12,7 +13,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -36,7 +36,6 @@ public class Envoy {
     private Location center;
     private ArrayList<Calendar> warns = new ArrayList<>();
     private Calendar next = Calendar.getInstance();
-    private BukkitTask bukkitTask;
     private boolean active;
     private EnvoyConfig config;
     private int minCrateAmount;
@@ -198,7 +197,7 @@ public class Envoy {
 
         active = true;
         startTime = System.currentTimeMillis();
-        
+
         int crateAmount = ThreadLocalRandom.current().nextInt(minCrateAmount, maxCrateAmount + 1);
 
         if (config.PREDEFINED_SPAWNS) {
@@ -276,7 +275,7 @@ public class Envoy {
         }
 
         if (config.TIMEOUT_TIME > 0) {
-            bukkitTask = Bukkit.getScheduler().runTaskLater(AxEnvoyPlugin.getInstance(), () -> {
+            Scheduler.get().runLater(task -> {
                 if (!active) return;
 
                 stop();
@@ -299,30 +298,18 @@ public class Envoy {
 
         this.active = false;
         this.updateNext();
-        if (this.bukkitTask != null) {
-            this.bukkitTask.cancel();
-            this.bukkitTask = null;
-        }
     }
 
     public ItemStack getFlare(int amount) {
         return new ItemBuilder(config.FLARE_ITEM).amount(amount).storePersistentData(FlareListener.KEY, PersistentDataType.STRING, this.name.toLowerCase(Locale.ENGLISH)).get();
     }
 
-    public BukkitTask getBukkitTask() {
-        return bukkitTask;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
     public boolean isActive() {
         return active;
     }
 
-    public void setBukkitTask(BukkitTask bukkitTask) {
-        this.bukkitTask = bukkitTask;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public long getStartTime() {

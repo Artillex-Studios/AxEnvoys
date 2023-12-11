@@ -2,6 +2,7 @@ package com.artillexstudios.axenvoy.envoy;
 
 import com.artillexstudios.axapi.hologram.Hologram;
 import com.artillexstudios.axapi.hologram.HologramFactory;
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.integrations.blocks.BlockIntegration;
@@ -50,39 +51,41 @@ public class SpawnedCrate {
         this.finishLocation = location;
         this.parent.getSpawnedCrates().add(this);
 
-        List<Entity> nearby;
-        if (handle.getConfig().FALLING_BLOCK_ENABLED) {
-            nearby = location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).stream().filter(entity -> entity.getType() == EntityType.PLAYER).toList();
-        } else {
-            nearby = Collections.emptyList();
-        }
-
-        if (!handle.getConfig().FALLING_BLOCK_ENABLED || nearby.isEmpty()) {
-            land(location);
-            return;
-        }
-
-        Location spawnAt = location.clone();
-        spawnAt.add(0.5, this.handle.getConfig().FALLING_BLOCK_HEIGHT, 0.5);
-        vex = location.getWorld().spawn(spawnAt, Vex.class, ent -> {
-            ent.setInvisible(true);
-            ent.setSilent(true);
-            ent.setInvulnerable(true);
-            ent.setGravity(true);
-            ent.setAware(false);
-            ent.setPersistent(false);
-            if (ent.getEquipment() != null) {
-                ent.getEquipment().clear();
+        Scheduler.get().executeAt(location, () -> {
+            List<Entity> nearby;
+            if (handle.getConfig().FALLING_BLOCK_ENABLED) {
+                nearby = location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).stream().filter(entity -> entity.getType() == EntityType.PLAYER).toList();
+            } else {
+                nearby = Collections.emptyList();
             }
+
+            if (!handle.getConfig().FALLING_BLOCK_ENABLED || nearby.isEmpty()) {
+                land(location);
+                return;
+            }
+
+            Location spawnAt = location.clone();
+            spawnAt.add(0.5, this.handle.getConfig().FALLING_BLOCK_HEIGHT, 0.5);
+            vex = location.getWorld().spawn(spawnAt, Vex.class, ent -> {
+                ent.setInvisible(true);
+                ent.setSilent(true);
+                ent.setInvulnerable(true);
+                ent.setGravity(true);
+                ent.setAware(false);
+                ent.setPersistent(false);
+                if (ent.getEquipment() != null) {
+                    ent.getEquipment().clear();
+                }
+            });
+
+            vex.setGravity(true);
+
+            fallingBlock = location.getWorld().spawnFallingBlock(spawnAt, Material.matchMaterial(this.handle.getConfig().FALLING_BLOCK_BLOCK.toUpperCase(Locale.ENGLISH)).createBlockData());
+            vex.addPassenger(fallingBlock);
+            fallingBlock.setPersistent(false);
+            FallingBlockChecker.addToCheck(this);
+            vex.setVelocity(new Vector(0, handle.getConfig().FALLING_BLOCK_SPEED, 0));
         });
-
-        vex.setGravity(true);
-
-        fallingBlock = location.getWorld().spawnFallingBlock(spawnAt, Material.matchMaterial(this.handle.getConfig().FALLING_BLOCK_BLOCK.toUpperCase(Locale.ENGLISH)).createBlockData());
-        vex.addPassenger(fallingBlock);
-        fallingBlock.setPersistent(false);
-        FallingBlockChecker.addToCheck(this);
-        vex.setVelocity(new Vector(0, handle.getConfig().FALLING_BLOCK_SPEED, 0));
     }
 
     public void land(@NotNull Location location) {
@@ -141,15 +144,17 @@ public class SpawnedCrate {
     public void spawnFirework(Location location) {
         if (!this.handle.getConfig().FIREWORK_ENABLED) return;
 
-        Location loc2 = location.clone();
-        loc2.add(0.5, 0.5, 0.5);
-        Firework fw = (Firework) location.getWorld().spawnEntity(loc2, EntityType.FIREWORK);
-        FireworkMeta meta = fw.getFireworkMeta();
-        meta.addEffect(FireworkEffect.builder().with(this.handle.getFireworkType()).withColor(org.bukkit.Color.fromRGB(this.handle.getFireworkColor().getRed(), this.handle.getFireworkColor().getGreen(), this.handle.getFireworkColor().getBlue())).build());
-        meta.setPower(0);
-        fw.setFireworkMeta(meta);
-        fw.getPersistentDataContainer().set(FIREWORK_KEY, PersistentDataType.BYTE, (byte) 0);
-        fw.detonate();
+        Scheduler.get().executeAt(location, () -> {
+            Location loc2 = location.clone();
+            loc2.add(0.5, 0.5, 0.5);
+            Firework fw = (Firework) location.getWorld().spawnEntity(loc2, EntityType.FIREWORK);
+            FireworkMeta meta = fw.getFireworkMeta();
+            meta.addEffect(FireworkEffect.builder().with(this.handle.getFireworkType()).withColor(org.bukkit.Color.fromRGB(this.handle.getFireworkColor().getRed(), this.handle.getFireworkColor().getGreen(), this.handle.getFireworkColor().getBlue())).build());
+            meta.setPower(0);
+            fw.setFireworkMeta(meta);
+            fw.getPersistentDataContainer().set(FIREWORK_KEY, PersistentDataType.BYTE, (byte) 0);
+            fw.detonate();
+        });
     }
 
     public void damage(User user, Envoy envoy) {
@@ -213,10 +218,6 @@ public class SpawnedCrate {
             if (this.parent.getSpawnedCrates().isEmpty()) {
                 envoy.updateNext();
                 envoy.setActive(false);
-                if (envoy.getBukkitTask() != null) {
-                    envoy.getBukkitTask().cancel();
-                    envoy.setBukkitTask(null);
-                }
 
                 String message = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().ENDED);
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
@@ -231,17 +232,20 @@ public class SpawnedCrate {
         tick++;
 
         if (tick == this.handle.getConfig().FLARE_EVERY) {
-            if (!getFinishLocation().getWorld().isChunkLoaded(getFinishLocation().getBlockX() >> 4, getFinishLocation().getBlockZ() >> 4))
-                return;
-            Location loc2 = finishLocation.clone();
-            loc2.add(0.5, 0.5, 0.5);
-            Firework fw = (Firework) loc2.getWorld().spawnEntity(loc2, EntityType.FIREWORK);
-            FireworkMeta meta = fw.getFireworkMeta();
-            meta.addEffect(FireworkEffect.builder().with(this.handle.getFlareFireworkType()).withColor(org.bukkit.Color.fromRGB(this.handle.getFlareFireworkColor().getRed(), this.handle.getFlareFireworkColor().getGreen(), this.handle.getFlareFireworkColor().getBlue())).build());
-            meta.setPower(0);
-            fw.setFireworkMeta(meta);
-            fw.getPersistentDataContainer().set(FIREWORK_KEY, PersistentDataType.BYTE, (byte) 0);
-            fw.detonate();
+            Scheduler.get().executeAt(finishLocation, () -> {
+                if (!getFinishLocation().getWorld().isChunkLoaded(getFinishLocation().getBlockX() >> 4, getFinishLocation().getBlockZ() >> 4))
+                    return;
+                Location loc2 = finishLocation.clone();
+                loc2.add(0.5, 0.5, 0.5);
+                Firework fw = (Firework) loc2.getWorld().spawnEntity(loc2, EntityType.FIREWORK);
+                FireworkMeta meta = fw.getFireworkMeta();
+                meta.addEffect(FireworkEffect.builder().with(this.handle.getFlareFireworkType()).withColor(org.bukkit.Color.fromRGB(this.handle.getFlareFireworkColor().getRed(), this.handle.getFlareFireworkColor().getGreen(), this.handle.getFlareFireworkColor().getBlue())).build());
+                meta.setPower(0);
+                fw.setFireworkMeta(meta);
+                fw.getPersistentDataContainer().set(FIREWORK_KEY, PersistentDataType.BYTE, (byte) 0);
+                fw.detonate();
+            });
+
             tick = 0;
         }
     }
