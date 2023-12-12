@@ -227,11 +227,14 @@ public class Envoy {
                 for (int i = 0; i < count; i++) {
                     Location location = null;
                     int tries = 0;
-                    while (location == null || tries < 500) {
+                    while (location == null && tries < 100) {
                         tries++;
                         location = Utils.getNextLocation(this, center.clone());
                     }
-                    new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+
+                    if (location != null) {
+                        new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+                    }
                 }
             }
         }
