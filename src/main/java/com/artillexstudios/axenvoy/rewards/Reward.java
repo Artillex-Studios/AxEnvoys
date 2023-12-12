@@ -1,5 +1,6 @@
 package com.artillexstudios.axenvoy.rewards;
 
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
@@ -34,7 +35,10 @@ public record Reward(double chance, List<String> commands, List<String> messages
                 command = PlaceholderAPI.setPlaceholders(player, command);
             }
 
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+            String finalCommand = command;
+            Scheduler.get().run(task -> {
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), finalCommand);
+            });
         }
 
         for (Map<Object, Object> item : this.items) {

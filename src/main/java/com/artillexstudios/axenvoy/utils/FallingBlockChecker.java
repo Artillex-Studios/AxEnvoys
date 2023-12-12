@@ -31,7 +31,7 @@ public class FallingBlockChecker {
                     Scheduler.get().runAt(fallingBlock.getLocation(), t -> {
                         fallingBlock.remove();
                         vex.remove();
-                        next.land(next.getFinishLocation());
+                        next.land(finishLocation);
                     });
                 }
             }

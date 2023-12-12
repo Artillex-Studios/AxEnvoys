@@ -28,7 +28,6 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
-    private static final CompletableFuture<Location> NULL_FUTURE = CompletableFuture.completedFuture(null);
 
     public static @NotNull Location deserializeLocation(@NotNull String locationString) {
         String[] split = locationString.split(";");
@@ -101,7 +100,7 @@ public class Utils {
             return null;
         }
 
-        return loc;
+        return loc2;
     }
 
     public static CompletableFuture<Location> getNextLocationFolia(@NotNull Envoy envoy, @NotNull Location loc) {
@@ -146,7 +145,7 @@ public class Utils {
                 locationCompletableFuture.complete(null);
             }
 
-            locationCompletableFuture.complete(loc);
+            locationCompletableFuture.complete(loc2);
         });
 
         return locationCompletableFuture;
