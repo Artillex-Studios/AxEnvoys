@@ -126,7 +126,7 @@ public class EnvoyCommand {
 
         sender.getInventory().addItem(new ItemStack(Material.DIAMOND_BLOCK));
 
-        sender.sendMessage(StringUtils.formatToString(editor.getConfig().PREFIX + editor.getConfig().EDITOR_JOIN));
+        sender.sendMessage(StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().EDITOR_JOIN));
     }
 
     @Subcommand("coords")
