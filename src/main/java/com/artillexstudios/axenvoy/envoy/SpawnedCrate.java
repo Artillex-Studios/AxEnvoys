@@ -51,7 +51,7 @@ public class SpawnedCrate {
         this.finishLocation = location;
         this.parent.getSpawnedCrates().add(this);
 
-        Scheduler.get().executeAt(location, () -> {
+        Scheduler.get().runAt(location, task -> {
             List<Entity> nearby;
             if (handle.getConfig().FALLING_BLOCK_ENABLED) {
                 nearby = location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).stream().filter(entity -> entity.getType() == EntityType.PLAYER).toList();

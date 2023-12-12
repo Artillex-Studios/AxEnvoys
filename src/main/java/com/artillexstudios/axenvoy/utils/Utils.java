@@ -1,5 +1,6 @@
 package com.artillexstudios.axenvoy.utils;
 
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.CrateType;
 import com.artillexstudios.axenvoy.envoy.Envoy;
@@ -22,10 +23,12 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+    private static final CompletableFuture<Location> NULL_FUTURE = CompletableFuture.completedFuture(null);
 
     public static @NotNull Location deserializeLocation(@NotNull String locationString) {
         String[] split = locationString.split(";");
@@ -57,35 +60,52 @@ public class Utils {
         return e.sample();
     }
 
-    public static Location getNextLocation(@NotNull Envoy envoy, @NotNull Location loc) {
+    public static CompletableFuture<Location> getNextLocation(@NotNull Envoy envoy, @NotNull Location loc) {
+        CompletableFuture<Location> locationCompletableFuture = new CompletableFuture<>();
         Location center = loc.clone();
         loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));
         loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));
-        if (loc.distanceSquared(center) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE) return null;
+        if (loc.distanceSquared(center) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE) {
+            locationCompletableFuture.complete(null);
+        }
 
         if (envoy.getConfig().ONLY_IN_GLOBAL && AxEnvoyPlugin.getInstance().isWorldGuard()) {
             ApplicableRegionSet regions = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(loc.getWorld())).getApplicableRegions(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ()));
             if (!regions.getRegions().isEmpty()) {
-                return null;
+                locationCompletableFuture.complete(null);
             }
         }
 
         if (envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES > 0) {
             for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
-                if (spawnedCrate.getFinishLocation().distanceSquared(loc) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES) return null;
+                if (spawnedCrate.getFinishLocation().distanceSquared(loc) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES) {
+                    locationCompletableFuture.complete(null);
+                }
             }
         }
 
-        Location loc2 = topBlock(loc);
-        if (loc2.getY() < envoy.getConfig().RANDOM_SPAWN_MIN_HEIGHT) return null;
-        if (loc2.getY() > envoy.getConfig().RANDOM_SPAWN_MAX_HEIGHT) return null;
+        Scheduler.get().runAt(loc, task -> {
+            Location loc2 = topBlock(loc);
+            if (loc2.getY() < envoy.getConfig().RANDOM_SPAWN_MIN_HEIGHT) {
+                locationCompletableFuture.complete(null);
+            }
+            if (loc2.getY() > envoy.getConfig().RANDOM_SPAWN_MAX_HEIGHT) {
+                locationCompletableFuture.complete(null);
+            }
 
-        if (!loc.getChunk().isLoaded() && !loc.getChunk().load()) return null;
+            if (!loc.getChunk().isLoaded() && !loc.getChunk().load()) {
+                locationCompletableFuture.complete(null);
+            }
 
-        Location tempLoc = loc2.clone();
-        if (envoy.getBlacklistMaterials().contains(tempLoc.add(0, -1, 0).getBlock().getType())) return null;
+            Location tempLoc = loc2.clone();
+            if (envoy.getBlacklistMaterials().contains(tempLoc.add(0, -1, 0).getBlock().getType())) {
+                locationCompletableFuture.complete(null);
+            }
 
-        return loc2;
+            locationCompletableFuture.complete(loc);
+        });
+
+        return locationCompletableFuture;
     }
 
     @NotNull
