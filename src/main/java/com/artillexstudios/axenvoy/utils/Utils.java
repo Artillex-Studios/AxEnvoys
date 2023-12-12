@@ -153,7 +153,7 @@ public class Utils {
 
     @NotNull
     public static Location topBlock(@NotNull Location loc) {
-        return loc.getWorld().getHighestBlockAt(loc).getLocation();
+        return loc.getWorld().getHighestBlockAt(loc).getLocation().add(0, 1, 0);
     }
 
     @NotNull
