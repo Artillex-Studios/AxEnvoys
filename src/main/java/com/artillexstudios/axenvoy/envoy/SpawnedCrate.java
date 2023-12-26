@@ -228,6 +228,7 @@ public class SpawnedCrate {
     }
 
     public void tickFlare() {
+        if (!this.handle.getConfig().FLARE_ENABLED) return;
         if (this.handle.getConfig().FLARE_EVERY == 0) return;
         tick++;
 

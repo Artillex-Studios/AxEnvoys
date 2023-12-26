@@ -153,7 +153,7 @@ public final class AxEnvoyPlugin extends AxPlugin {
                 if (!envoy.isActive()) return;
 
                 for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
-                    if (spawnedCrate.getHandle().getConfig().FLARE_EVERY == 0) continue;
+                    if (spawnedCrate.getHandle().getConfig().FLARE_EVERY == 0 || !spawnedCrate.getHandle().getConfig().FLARE_ENABLED) continue;
                     spawnedCrate.tickFlare();
                 }
             });
