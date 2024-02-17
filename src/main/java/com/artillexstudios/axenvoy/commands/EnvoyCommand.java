@@ -10,6 +10,7 @@ import com.artillexstudios.axenvoy.utils.Utils;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.apache.commons.math3.util.Pair;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -159,5 +160,12 @@ public class EnvoyCommand {
 
         sender.getPersistentDataContainer().set(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE, (byte) 0);
         sender.sendMessage(StringUtils.formatToString(AxEnvoyPlugin.getMessages().PREFIX + AxEnvoyPlugin.getMessages().TOGGLE_OFF));
+    }
+
+    @Subcommand("time")
+    @CommandPermission("axenvoy.command.time")
+    public void time(CommandSender sender) {
+        Pair<Envoy, Long> pair = Utils.getNextEnvoy();
+        sender.sendMessage(StringUtils.formatToString(pair.getFirst().getConfig().PREFIX + pair.getFirst().getConfig().START_TIME.replace("%time%", Utils.fancyTime(pair.getSecond(), pair.getFirst())).replace("%envoy%", pair.getFirst().getName())));
     }
 }

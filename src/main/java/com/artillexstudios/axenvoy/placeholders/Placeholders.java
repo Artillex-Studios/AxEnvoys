@@ -56,14 +56,14 @@ public class Placeholders extends PlaceholderExpansion {
                     return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_NOT_RUNNING);
                 }
 
-                return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_REMAINING_TIME.replace("%time%", Utils.fancyTime((envoy.getStartTime() + envoy.getConfig().TIMEOUT_TIME * 1000L) - System.currentTimeMillis())));
+                return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_REMAINING_TIME.replace("%time%", Utils.fancyTime((envoy.getStartTime() + envoy.getConfig().TIMEOUT_TIME * 1000L) - System.currentTimeMillis(), envoy)));
             }
             case "nextstart" -> {
                 if (envoy.isActive() || envoy.getNext() == null) {
                     return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_RUNNING);
                 }
 
-                return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_UNTIL_NEXT.replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis())));
+                return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_UNTIL_NEXT.replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), envoy)));
             }
         }
 

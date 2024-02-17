@@ -44,6 +44,8 @@ random-spawn:
 messages:
   prefix: "<#00FFAA>&lAxEnvoy &7» "
 
+time-format: 1
+
 rewards:
   use-prefix: true
 

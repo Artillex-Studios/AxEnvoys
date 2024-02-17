@@ -65,6 +65,9 @@ public class Messages extends AbstractConfig {
     @Key("messages.location-format")
     public String LOCATION_FORMAT = "%world% %x% %y% %z%";
 
+    @Key("messages.start-time")
+    public String START_TIME = "There is %time% left until %envoy% starts!";
+
     @Key("messages.toggle.on")
     public String TOGGLE_ON = "&aYou have enabled the envoy collect messages!";
 
@@ -91,6 +94,18 @@ public class Messages extends AbstractConfig {
 
     @Key("messages.placeholder.until-next")
     public String PLACEHOLDER_UNTIL_NEXT = "%time%";
+
+    @Key("messages.time.day")
+    public String DAY = "d";
+
+    @Key("messages.time.hour")
+    public String HOUR = "h";
+
+    @Key("messages.time.minute")
+    public String MINUTE = "m";
+
+    @Key("messages.time.second")
+    public String SECOND = "s";
 
     protected final String fileName;
 

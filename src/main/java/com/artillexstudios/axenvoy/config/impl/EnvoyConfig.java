@@ -90,6 +90,14 @@ public class EnvoyConfig extends Messages {
     @Comment("If we should use prefix for message rewards of this envoy")
     public boolean USE_PREFIX = true;
 
+    @Key("time-format")
+    @Comment("""
+            1 - HH:MM:SS, for example 01:25:35
+            2 - short format, for example 20m
+            3 - text format, for example 01h 25m 35s
+            \\""")
+    public int TIME_FORMAT = 1;
+
     @Key("flare.enabled")
     public boolean FLARE_ENABLED = true;
 

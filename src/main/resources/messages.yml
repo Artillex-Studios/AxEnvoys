@@ -21,6 +21,7 @@ messages:
   not-enough-autostart: "There weren''t enough people to auto-start an envoy event! Rescheduling!"
   crate-spawn-message: "A crate spawned at %location%!"
   location-format: "%world% %x% %y% %z%"
+  start-time: "There is %time% left until %envoy% starts!"
   toggle:
     on: "&aYou have enabled the envoy collect messages!"
     off: "&cYou have disabled the envoy collect messages!"
@@ -33,3 +34,8 @@ messages:
     remaining: "%remaining% crates left"
     remaining-time: "%time%"
     until-next: "%time%"
+  time:
+    day: "d"
+    hour: "h"
+    minute: "m"
+    second: "s"

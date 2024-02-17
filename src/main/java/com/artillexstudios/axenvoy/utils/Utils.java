@@ -4,6 +4,7 @@ import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.CrateType;
 import com.artillexstudios.axenvoy.envoy.Envoy;
+import com.artillexstudios.axenvoy.envoy.Envoys;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import com.artillexstudios.axenvoy.rewards.Reward;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class Utils {
     private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
@@ -156,16 +158,59 @@ public class Utils {
         return loc.getWorld().getHighestBlockAt(loc).getLocation().add(0, 1, 0);
     }
 
-    @NotNull
-    public static String fancyTime(long time) {
-        Duration remainingTime = Duration.ofMillis(time);
+//    @NotNull
+//    public static String fancyTime(long time) {
+//        Duration remainingTime = Duration.ofMillis(time);
+//        long total = remainingTime.getSeconds();
+//        long days = total / 84600;
+//        long hours = (total % 84600) / 3600;
+//        long minutes = (total % 3600) / 60;
+//        long seconds = total % 60;
+//
+//        if (days > 0) return String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds);
+//        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+//    }
+
+    public static @NotNull String fancyTime(long time, Envoy envoy) {
+        if (time < 0) return "---";
+
+        final Duration remainingTime = Duration.ofMillis(time);
         long total = remainingTime.getSeconds();
-        long days = total / 84600;
-        long hours = (total % 84600) / 3600;
+        long days = total / 86400;
+        long hours = (total % 86400) / 3600;
         long minutes = (total % 3600) / 60;
         long seconds = total % 60;
 
-        if (days > 0) return String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds);
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        if (envoy.getConfig().TIME_FORMAT == 1) {
+            if (days > 0) return String.format("%02d:%02d:%02d:%02d", days, hours, minutes, seconds);
+            if (hours > 0) return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+            return String.format("%02d:%02d", minutes, seconds);
+        } else if (envoy.getConfig().TIME_FORMAT == 2) {
+            if (days > 0) return days + envoy.getConfig().DAY;
+            if (hours > 0) return hours + envoy.getConfig().HOUR;
+            if (minutes > 0) return minutes + envoy.getConfig().MINUTE;
+            return seconds + envoy.getConfig().SECOND;
+        } else {
+            if (days > 0)
+                return String.format("%02d" + envoy.getConfig().DAY + " %02d" + envoy.getConfig().HOUR + " %02d" + envoy.getConfig().MINUTE + " %02d" + envoy.getConfig().SECOND, days, hours, minutes, seconds);
+            if (hours > 0)
+                return String.format("%02d" + envoy.getConfig().HOUR + " %02d" + envoy.getConfig().MINUTE + " %02d" + envoy.getConfig().SECOND, hours, minutes, seconds);
+            return String.format("%02d" + envoy.getConfig().MINUTE + " %02d" + envoy.getConfig().SECOND, minutes, seconds);
+        }
+    }
+
+    public static Pair<Envoy, Long> getNextEnvoy() {
+        AtomicReference<Envoy> next = new AtomicReference<>();
+        Envoys.getTypes().values().forEach(envoy -> {
+            Envoy currNext = next.get();
+            if (currNext != null && envoy.getNext().before(currNext.getNext())) {
+                next.set(envoy);
+            } else if (currNext == null) {
+                next.set(envoy);
+            }
+        });
+
+
+        return Pair.create(next.get(), next.get().getNext().getTimeInMillis() - System.currentTimeMillis());
     }
 }
