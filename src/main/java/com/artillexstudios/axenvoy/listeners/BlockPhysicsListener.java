@@ -48,5 +48,6 @@ public class BlockPhysicsListener implements Listener {
     public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
         if (!event.getEntity().getPersistentDataContainer().has(SpawnedCrate.FALLING_BLOCK_KEY, PersistentDataType.BYTE)) return;
         event.setCancelled(true);
+        event.getEntity().remove();
     }
 }
