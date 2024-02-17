@@ -358,6 +358,18 @@ public class Envoy {
                     }, config.TIMEOUT_TIME * 20L);
                 }
             }
+        } else {
+            if (crateAmount > 1) {
+                String message = StringUtils.formatToString(config.PREFIX + config.MULTIPLE_START.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world")).replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", getCenter() != null ? getCenter().getWorld().getName() : "world").replace("%x%", String.valueOf(getCenter() != null ? getCenter().getBlockX() : "x")).replace("%y%", String.valueOf(getCenter() != null ? getCenter().getBlockY() : "y")).replace("%z%", String.valueOf(getCenter() != null ? getCenter().getBlockZ() : "z")));
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    onlinePlayer.sendMessage(message);
+                }
+            } else {
+                String message = StringUtils.formatToString(config.PREFIX + config.SINGLE_START.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName())).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())));
+                for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+                    onlinePlayer.sendMessage(message);
+                }
+            }
         }
 
         return true;

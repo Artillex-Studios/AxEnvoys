@@ -35,6 +35,7 @@ import java.util.Locale;
 
 public class SpawnedCrate {
     public static final NamespacedKey FIREWORK_KEY = new NamespacedKey(AxEnvoyPlugin.getInstance(), "axenvoy_firework");
+    public static final NamespacedKey FALLING_BLOCK_KEY = new NamespacedKey(AxEnvoyPlugin.getInstance(), "axenvoy_falling_block");
     private final Envoy parent;
     private final CrateType handle;
     private Location finishLocation;
@@ -83,6 +84,7 @@ public class SpawnedCrate {
             fallingBlock = location.getWorld().spawnFallingBlock(spawnAt, Material.matchMaterial(this.handle.getConfig().FALLING_BLOCK_BLOCK.toUpperCase(Locale.ENGLISH)).createBlockData());
             vex.addPassenger(fallingBlock);
             fallingBlock.setPersistent(false);
+            fallingBlock.getPersistentDataContainer().set(FALLING_BLOCK_KEY, PersistentDataType.BYTE, (byte) 0);
             FallingBlockChecker.addToCheck(this);
             vex.setVelocity(new Vector(0, handle.getConfig().FALLING_BLOCK_SPEED, 0));
         });

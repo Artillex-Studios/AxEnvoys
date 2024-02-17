@@ -8,6 +8,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -40,5 +42,11 @@ public class BlockPhysicsListener implements Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    public void onEntityChangeBlockEvent(EntityChangeBlockEvent event) {
+        if (!event.getEntity().getPersistentDataContainer().has(SpawnedCrate.FALLING_BLOCK_KEY, PersistentDataType.BYTE)) return;
+        event.setCancelled(true);
     }
 }
