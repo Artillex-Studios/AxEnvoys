@@ -1,7 +1,7 @@
 package com.artillexstudios.axenvoy.libraries;
 
-import net.byteflux.libby.Library;
-import net.byteflux.libby.relocation.Relocation;
+import com.artillexstudios.axapi.libs.libby.Library;
+import com.artillexstudios.axapi.libs.libby.relocation.Relocation;
 
 public enum Libraries {
     SLF4J("org.slf4j:slf4j-api:2.0.9"),
