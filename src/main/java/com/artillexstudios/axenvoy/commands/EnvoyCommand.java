@@ -137,13 +137,14 @@ public class EnvoyCommand {
             sender.sendMessage(StringUtils.formatToString(AxEnvoyPlugin.getMessages().PREFIX + AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND));
             return;
         }
+        Audience audience = BukkitAudiences.create(AxEnvoyPlugin.getInstance()).sender(sender);
 
         for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
-            Audience audience = BukkitAudiences.create(AxEnvoyPlugin.getInstance()).sender(sender);
+            Location finish = spawnedCrate.getFinishLocation();
             audience.sendMessage(MiniMessage.miniMessage().deserialize("<click:run_command:'/tp %x% %y% %z%'><hover:show_text:'<color:#7df0ff>Click to teleport!</color>'><white>Crate</white> %crate% %x% %y% %z%.</hover></click>"
-                    .replace("%x%", String.valueOf(spawnedCrate.getFinishLocation().getBlockX()))
-                    .replace("%y%", String.valueOf(spawnedCrate.getFinishLocation().getBlockY()))
-                    .replace("%z%", String.valueOf(spawnedCrate.getFinishLocation().getBlockZ()))
+                    .replace("%x%", String.valueOf(finish.getBlockX()))
+                    .replace("%y%", String.valueOf(finish.getBlockY()))
+                    .replace("%z%", String.valueOf(finish.getBlockZ()))
                     .replace("%crate%", String.valueOf(spawnedCrate.getHandle().getName()))
             ));
         }
