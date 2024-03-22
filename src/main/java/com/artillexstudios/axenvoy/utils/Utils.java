@@ -20,6 +20,7 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.geom.Point2D;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,7 +79,8 @@ public class Utils {
 
         if (envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES > 0) {
             for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
-                if (spawnedCrate.getFinishLocation().distanceSquared(loc) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES) {
+                // We only care about 2D distance!
+                if (Point2D.distanceSq(spawnedCrate.getFinishLocation().getX(), spawnedCrate.getFinishLocation().getZ(), loc.getX(), loc.getZ()) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES) {
                     return null;
                 }
             }
@@ -95,6 +97,13 @@ public class Utils {
 
         if (!loc.getChunk().isLoaded() && !loc.getChunk().load()) {
             return null;
+        }
+
+        for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
+            if (spawnedCrate.getFinishLocation().getBlockX() == loc2.getBlockX() && spawnedCrate.getFinishLocation().getBlockY() == loc2.getBlockY() && spawnedCrate.getFinishLocation().getBlockZ() == loc2.getBlockZ()) {
+                // There's a crate at that location!
+                return null;
+            }
         }
 
         Location tempLoc = loc2.clone();
