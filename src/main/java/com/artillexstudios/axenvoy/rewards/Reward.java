@@ -8,12 +8,13 @@ import com.artillexstudios.axenvoy.envoy.Envoy;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
 
-public record Reward(double chance, List<String> commands, List<String> messages, List<Map<Object, Object>> items) {
+public record Reward(double chance, List<String> commands, List<String> messages, List<Map<Object, Object>> items, Map<Object, Object> requiredItem) {
 
     public void execute(@NotNull Player player, @NotNull Envoy envoy) {
         for (String message : this.messages) {
@@ -44,5 +45,14 @@ public record Reward(double chance, List<String> commands, List<String> messages
         for (Map<Object, Object> item : this.items) {
             player.getInventory().addItem(new ItemBuilder(item).get());
         }
+    }
+
+    public boolean doesMatchRequired(ItemStack itemStack) {
+        if (this.requiredItem == null) {
+            return false;
+        }
+
+        ItemStack requiredStack = new ItemBuilder(requiredItem).get();
+        return itemStack.isSimilar(requiredStack);
     }
 }

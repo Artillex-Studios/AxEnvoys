@@ -52,7 +52,7 @@ public class CrateType {
         }
 
         for (Map<String, Object> map : list) {
-            this.rewards.add(new Reward(((Number) map.get("chance")).doubleValue(), (List<String>) map.getOrDefault("commands", new ArrayList<String>()), (List<String>) map.getOrDefault("messages", new ArrayList<String>()), (List<Map<Object, Object>>) map.getOrDefault("items", new ArrayList<Map<Object, Object>>())));
+            this.rewards.add(new Reward(((Number) map.get("chance")).doubleValue(), (List<String>) map.getOrDefault("commands", new ArrayList<String>()), (List<String>) map.getOrDefault("messages", new ArrayList<String>()), (List<Map<Object, Object>>) map.getOrDefault("items", new ArrayList<Map<Object, Object>>()), (Map<Object, Object>) map.get("required-item")));
         }
     }
 

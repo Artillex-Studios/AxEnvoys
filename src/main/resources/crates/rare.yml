@@ -37,9 +37,11 @@ rewards:
       - "&7Wow!"
     commands:
       - "give %player% diamond 6"
-  - chance: 4.0
-    commands:
+  - commands:
       - "give %player% netherite_ingot 1"
+    required-item:
+      type: stone
+      name: "&cI like tomatoes"
 
 hologram:
   height: 2.0

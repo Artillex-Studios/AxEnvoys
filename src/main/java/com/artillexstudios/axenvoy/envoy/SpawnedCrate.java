@@ -22,6 +22,7 @@ import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Vex;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
@@ -179,8 +180,21 @@ public class SpawnedCrate {
         }
 
         if (player != null) {
-            Reward reward = Utils.randomReward(this.handle.getRewards());
-            reward.execute(player, envoy);
+            ItemStack item = player.getInventory().getItemInMainHand();
+            Reward finalReward = null;
+            for (Reward reward : this.handle.getRewards()) {
+                if (reward.doesMatchRequired(item)) {
+                    finalReward = reward;
+                    item.setAmount(item.getAmount() - 1);
+                    break;
+                }
+            }
+
+            if (finalReward == null) {
+                finalReward = Utils.randomReward(this.handle.getRewards());
+            }
+
+            finalReward.execute(player, envoy);
 
             int cooldown = getHandle().getConfig().COLLECT_COOLDOWN > 0 ? getHandle().getConfig().COLLECT_COOLDOWN : envoy.getConfig().COLLECT_COOLDOWN;
             if (envoy.getConfig().COLLECT_GLOBAL_COOLDOWN) {

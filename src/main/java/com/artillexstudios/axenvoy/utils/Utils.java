@@ -54,6 +54,7 @@ public class Utils {
     public static Reward randomReward(@NotNull List<Reward> rewards) {
         List<Pair<Reward, Double>> list = new ArrayList<>();
         for (Reward reward : rewards) {
+            if (reward.requiredItem() != null) continue;
             list.add(new Pair<>(reward, reward.chance()));
         }
 
