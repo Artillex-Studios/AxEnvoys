@@ -7,14 +7,16 @@ import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
-public record Reward(double chance, List<String> commands, List<String> messages, List<Map<Object, Object>> items, Map<Object, Object> requiredItem) {
+public record Reward(double chance, List<String> commands, List<String> messages, List<Map<Object, Object>> items, Map<Object, Object> requiredItem, List<String> sounds) {
 
     public void execute(@NotNull Player player, @NotNull Envoy envoy) {
         for (String message : this.messages) {
@@ -44,6 +46,13 @@ public record Reward(double chance, List<String> commands, List<String> messages
 
         for (Map<Object, Object> item : this.items) {
             player.getInventory().addItem(new ItemBuilder(item).get());
+        }
+
+        for (String sound : sounds) {
+            String[] split = sound.split(";");
+            float volume = Float.parseFloat(split[1]);
+            float pitch = Float.parseFloat(split[2]);
+            player.getWorld().playSound(player, Sound.valueOf(split[0].toUpperCase(Locale.ENGLISH)), volume, pitch);
         }
     }
 

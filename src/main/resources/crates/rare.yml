@@ -32,6 +32,8 @@ rewards:
   - chance: 30.0
     commands:
       - "give %player% diamond 1"
+    sounds:
+    - "ENTITY_PLAYER_LEVELUP;0;0"
   - chance: 20.0
     messages:
       - "&7Wow!"
