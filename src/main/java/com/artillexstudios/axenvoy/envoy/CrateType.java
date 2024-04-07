@@ -51,6 +51,9 @@ public class CrateType {
             list.add(hashMap);
         }
 
+
+        this.rewards.clear();
+
         for (Map<String, Object> map : list) {
             this.rewards.add(new Reward(((Number) map.getOrDefault("chance", 0)).doubleValue(), (List<String>) map.getOrDefault("commands", new ArrayList<String>()), (List<String>) map.getOrDefault("messages", new ArrayList<String>()), (List<Map<Object, Object>>) map.getOrDefault("items", new ArrayList<Map<Object, Object>>()), (Map<Object, Object>) map.get("required-item"), (List<String>) map.getOrDefault("sounds", new ArrayList<String>())));
         }
