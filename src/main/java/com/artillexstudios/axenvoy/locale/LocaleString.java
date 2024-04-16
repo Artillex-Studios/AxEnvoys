@@ -47,13 +47,14 @@ public enum LocaleString {
     TIME_MINUTE("time.minute"),
     TIME_SECOND("time.second");
 
-
-
-
     private String key;
 
     private LocaleString(String key) {
         this.key = key;
+    }
+
+    public String getKey() {
+        return this.key;
     }
 
 }
