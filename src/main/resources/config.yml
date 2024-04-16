@@ -4,3 +4,7 @@
 # Warning: This will probably tank your performance at crate spawning, if lots of crates spawn (lots = hundreds)
 # Changing this requires a restart!
 listen-to-block-physics: false
+
+locale: "en"
+
+prefix: "<#00FFAA>&lAxEnvoy &7» "

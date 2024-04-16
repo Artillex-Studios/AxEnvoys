@@ -7,7 +7,6 @@ import com.artillexstudios.axapi.utils.FeatureFlags;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.commands.EnvoyCommand;
 import com.artillexstudios.axenvoy.config.impl.Config;
-import com.artillexstudios.axenvoy.config.impl.Messages;
 import com.artillexstudios.axenvoy.envoy.Crates;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.Envoys;
@@ -39,7 +38,6 @@ public final class AxEnvoyPlugin extends AxPlugin {
     public static NamespacedKey MESSAGE_KEY;
     private static AxEnvoyPlugin instance;
     private static LocaleManager localeManager;
-    private static Messages MESSAGES;
     private boolean placeholderApi;
     private boolean worldGuard;
 
@@ -47,8 +45,8 @@ public final class AxEnvoyPlugin extends AxPlugin {
         return instance;
     }
 
-    public static Messages getMessages() {
-        return MESSAGES;
+    public static LocaleManager getLocaleManager() {
+        return localeManager;
     }
 
     @Override
@@ -83,8 +81,6 @@ public final class AxEnvoyPlugin extends AxPlugin {
             getLogger().info("Enabled WorldGuard hook!");
             this.worldGuard = true;
         }
-
-        MESSAGES = new Messages("messages.yml");
 
         localeManager = new LocaleManager(this);
 
