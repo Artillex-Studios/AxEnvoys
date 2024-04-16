@@ -55,14 +55,15 @@ public class SpawnedCrate {
         this.parent.getSpawnedCrates().add(this);
 
         Scheduler.get().runAt(location, task -> {
-            List<Entity> nearby;
-            if (handle.getConfig().FALLING_BLOCK_ENABLED) {
+            List<Entity> nearby = null;
+
+            boolean chunkLoaded = location.getWorld().isChunkLoaded(location.getBlockX() >> 4, location.getBlockZ() >> 4);
+
+            if (handle.getConfig().FALLING_BLOCK_ENABLED && chunkLoaded) {
                 nearby = location.getWorld().getNearbyEntities(location, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16, Bukkit.getServer().getSimulationDistance() * 16).stream().filter(entity -> entity.getType() == EntityType.PLAYER).toList();
-            } else {
-                nearby = Collections.emptyList();
             }
 
-            if (!handle.getConfig().FALLING_BLOCK_ENABLED || nearby.isEmpty()) {
+            if (!handle.getConfig().FALLING_BLOCK_ENABLED || nearby == null) {
                 land(location);
                 return;
             }
