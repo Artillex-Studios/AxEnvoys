@@ -4,6 +4,8 @@ import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.Envoys;
+import com.artillexstudios.axenvoy.locale.LocaleManager;
+import com.artillexstudios.axenvoy.locale.LocaleString;
 import com.artillexstudios.axenvoy.utils.Utils;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
@@ -39,31 +41,31 @@ public class Placeholders extends PlaceholderExpansion {
         switch (args[0]) {
             case "active" -> {
                 if (envoy.isActive()) {
-                    return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_RUNNING);
+                    return StringUtils.formatToString(LocaleManager.getMessage(LocaleString.PLACEHOLDER_RUNNING));
                 }
 
-                return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_NOT_RUNNING);
+                return StringUtils.formatToString(LocaleManager.getMessage(LocaleString.PLACEHOLDER_IDLE));
             }
             case "remaining" -> {
                 if (!envoy.isActive()) {
-                    return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_NOT_RUNNING);
+                    return StringUtils.formatToString(LocaleManager.getMessage(LocaleString.PLACEHOLDER_IDLE));
                 }
 
-                return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_REMAINING.replace("%remaining%", String.valueOf(envoy.getSpawnedCrates().size())));
+                return StringUtils.formatToString(LocaleManager.getMessage(LocaleString.PLACEHOLDER_REMAIN).replace("%remaining%", String.valueOf(envoy.getSpawnedCrates().size())));
             }
             case "timeleft" -> {
                 if (!envoy.isActive()) {
-                    return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_NOT_RUNNING);
+                    return StringUtils.formatToString(LocaleManager.getMessage(LocaleString.PLACEHOLDER_IDLE));
                 }
 
-                return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_REMAINING_TIME.replace("%time%", Utils.fancyTime((envoy.getStartTime() + envoy.getConfig().TIMEOUT_TIME * 1000L) - System.currentTimeMillis(), envoy)));
+                return StringUtils.formatToString(LocaleManager.getMessage(LocaleString.PLACEHOLDER_TIME_REMAIN).replace("%time%", Utils.fancyTime((envoy.getStartTime() + envoy.getConfig().TIMEOUT_TIME * 1000L) - System.currentTimeMillis(), envoy)));
             }
             case "nextstart" -> {
                 if (envoy.isActive() || envoy.getNext() == null) {
-                    return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_RUNNING);
+                    return StringUtils.formatToString(LocaleManager.getMessage(LocaleString.PLACEHOLDER_IDLE));
                 }
 
-                return StringUtils.formatToString(envoy.getConfig().PLACEHOLDER_UNTIL_NEXT.replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), envoy)));
+                return StringUtils.formatToString(LocaleManager.getMessage(LocaleString.PLACEHOLDER_UNTIL_NEXT).replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), envoy)));
             }
         }
 

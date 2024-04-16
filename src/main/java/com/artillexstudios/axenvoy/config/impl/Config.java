@@ -2,6 +2,7 @@ package com.artillexstudios.axenvoy.config.impl;
 
 import com.artillexstudios.axenvoy.config.AbstractConfig;
 import com.artillexstudios.axenvoy.utils.FileUtils;
+import org.checkerframework.checker.units.qual.K;
 
 public class Config extends AbstractConfig {
 
@@ -14,6 +15,12 @@ public class Config extends AbstractConfig {
             Changing this requires a restart!\
             """)
     public static boolean LISTEN_TO_BLOCK_PHYSICS = false;
+
+    @Key("locale")
+    public static String LOCALE = "en";
+
+    @Key("prefix")
+    public static String PREFIX = "<#00FFAA>&lAxEnvoy &7» ";
 
     private static final Config CONFIG = new Config();
 

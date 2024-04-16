@@ -5,8 +5,11 @@ import com.artillexstudios.axapi.hologram.HologramFactory;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.config.impl.Config;
 import com.artillexstudios.axenvoy.event.EnvoyCrateCollectEvent;
 import com.artillexstudios.axenvoy.integrations.blocks.BlockIntegration;
+import com.artillexstudios.axenvoy.locale.LocaleManager;
+import com.artillexstudios.axenvoy.locale.LocaleString;
 import com.artillexstudios.axenvoy.rewards.Reward;
 import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
@@ -170,7 +173,7 @@ public class SpawnedCrate {
                 claim(user.getPlayer(), envoy);
             }
         } else {
-            user.getPlayer().sendMessage(StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().COOLDOWN.replace("%player%", user.getPlayer().getName()).replace("%player_name%", user.getPlayer().getName()).replace("%crate%", getHandle().getConfig().DISPLAY_NAME).replace("%cooldown%", String.valueOf((user.getCollectCooldown(envoy, getHandle()) - System.currentTimeMillis()) / 1000))));
+            user.getPlayer().sendMessage(StringUtils.formatToString(Config.PREFIX + LocaleManager.getMessage(LocaleString.ENVOY_COOLDOWN).replace("%player%", user.getPlayer().getName()).replace("%player_name%", user.getPlayer().getName()).replace("%crate%", getHandle().getConfig().DISPLAY_NAME).replace("%cooldown%", String.valueOf((user.getCollectCooldown(envoy, getHandle()) - System.currentTimeMillis()) / 1000))));
         }
     }
 
@@ -226,7 +229,7 @@ public class SpawnedCrate {
             }
 
             if (broadcast && player != null && !this.parent.getSpawnedCrates().isEmpty()) {
-                String message = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().COLLECT.replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%crate%", this.handle.getConfig().DISPLAY_NAME).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
+                String message = StringUtils.formatToString(Config.PREFIX + LocaleManager.getMessage(LocaleString.CRATE_COLLECT).replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%crate%", this.handle.getConfig().DISPLAY_NAME).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
                         onlinePlayer.sendMessage(message);
@@ -238,7 +241,7 @@ public class SpawnedCrate {
                 envoy.updateNext();
                 envoy.setActive(false);
 
-                String message = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().ENDED);
+                String message = StringUtils.formatToString(Config.PREFIX + LocaleManager.getMessage(LocaleString.EVENT_END));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     onlinePlayer.sendMessage(message);
                 }

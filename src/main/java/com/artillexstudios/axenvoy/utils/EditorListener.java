@@ -3,6 +3,8 @@ package com.artillexstudios.axenvoy.utils;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.envoy.Envoy;
+import com.artillexstudios.axenvoy.locale.LocaleManager;
+import com.artillexstudios.axenvoy.locale.LocaleString;
 import com.artillexstudios.axenvoy.user.User;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
@@ -37,7 +39,7 @@ public class EditorListener implements Listener {
             try {
                 editor.getConfig().getConfig().save();
                 editor.reload();
-                event.getPlayer().sendMessage(StringUtils.formatToString(editor.getConfig().REMOVE_PREDEFINED));
+                event.getPlayer().sendMessage(StringUtils.formatToString(LocaleManager.getMessage(LocaleString.PREDEFINED_REMOVE)));
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -75,7 +77,7 @@ public class EditorListener implements Listener {
         try {
             editor.getConfig().getConfig().save();
             editor.reload();
-            event.getPlayer().sendMessage(StringUtils.formatToString(editor.getConfig().SET_PREDEFINED));
+            event.getPlayer().sendMessage(StringUtils.formatToString(LocaleManager.getMessage(LocaleString.PREDEFINED_SET)));
         } catch (Exception exception) {
             exception.printStackTrace();
         }

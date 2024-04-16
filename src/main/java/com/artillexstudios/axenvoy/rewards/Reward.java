@@ -4,6 +4,7 @@ import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.config.impl.Config;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
@@ -26,7 +27,7 @@ public record Reward(double chance, List<String> commands, List<String> messages
             }
 
             if (envoy.getConfig().USE_PREFIX) {
-                player.sendMessage(StringUtils.formatToString(envoy.getConfig().PREFIX + message));
+                player.sendMessage(StringUtils.formatToString(Config.PREFIX + message));
             } else {
                 player.sendMessage(StringUtils.formatToString(message));
             }

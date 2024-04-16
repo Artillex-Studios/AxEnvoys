@@ -1,12 +1,15 @@
 package com.artillexstudios.axenvoy.config.impl;
 
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.config.AbstractConfig;
 import com.artillexstudios.axenvoy.utils.FileUtils;
 
 import java.util.List;
 import java.util.Map;
 
-public class EnvoyConfig extends Messages {
+public class EnvoyConfig extends AbstractConfig {
+
+    private String fileName;
 
     @Key("crates")
     public Map<Object, Object> CRATES = Map.of("common", 50, "legendary", "30", "rare", 40);
@@ -115,11 +118,10 @@ public class EnvoyConfig extends Messages {
     public List<String> PREDEFINED_LOCATIONS = List.of("world;1;1;1");
 
     public EnvoyConfig(String fileName) {
-        super(fileName);
+        this.fileName = fileName;
     }
 
     public void reload() {
-        this.reload(FileUtils.PLUGIN_DIRECTORY.resolve(fileName), Messages.class, this, AxEnvoyPlugin.getMessages());
         this.reload(FileUtils.PLUGIN_DIRECTORY.resolve(fileName), EnvoyConfig.class, this, null);
     }
 }

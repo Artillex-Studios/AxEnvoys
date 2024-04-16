@@ -1,3 +1,6 @@
+
+# Lets keep that file until everything is good with the Locale system.
+
 messages:
   prefix: "<#00FFAA>&lAxEnvoy &7» "
   collect: "%player% collected a %crate% crate! But fear not, there is still %amount% left!"
