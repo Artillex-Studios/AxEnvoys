@@ -2,8 +2,11 @@ package com.artillexstudios.axenvoy.listeners;
 
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.config.impl.Config;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.Envoys;
+import com.artillexstudios.axenvoy.locale.LocaleManager;
+import com.artillexstudios.axenvoy.locale.LocaleString;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
@@ -36,12 +39,12 @@ public class FlareListener implements Listener {
         if (envoy == null) return;
 
         if (!envoy.getConfig().FLARE_ENABLED) {
-            event.getPlayer().sendMessage(StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().FLARE_DISABLED));
+            event.getPlayer().sendMessage(StringUtils.formatToString(Config.PREFIX + LocaleManager.getMessage(LocaleString.FLARE_DISABLED)));
             return;
         }
 
         if (envoy.isActive()) {
-            event.getPlayer().sendMessage(StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().ALREADY_ACTIVE));
+            event.getPlayer().sendMessage(StringUtils.formatToString(Config.PREFIX + LocaleManager.getMessage(LocaleString.EVENT_ALREADY_RUNNING)));
             return;
         }
 
