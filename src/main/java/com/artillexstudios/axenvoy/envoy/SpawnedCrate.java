@@ -5,6 +5,7 @@ import com.artillexstudios.axapi.hologram.HologramFactory;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.event.EnvoyCrateCollectEvent;
 import com.artillexstudios.axenvoy.integrations.blocks.BlockIntegration;
 import com.artillexstudios.axenvoy.rewards.Reward;
 import com.artillexstudios.axenvoy.user.User;
@@ -180,6 +181,7 @@ public class SpawnedCrate {
         }
 
         if (player != null) {
+            Bukkit.getPluginManager().callEvent(new EnvoyCrateCollectEvent(player, this.parent, this));
             ItemStack item = player.getInventory().getItemInMainHand();
             Reward finalReward = null;
             for (Reward reward : this.handle.getRewards()) {

@@ -6,6 +6,8 @@ import com.artillexstudios.axapi.utils.PaperUtils;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.config.impl.EnvoyConfig;
+import com.artillexstudios.axenvoy.event.EnvoyEndEvent;
+import com.artillexstudios.axenvoy.event.EnvoyStartEvent;
 import com.artillexstudios.axenvoy.listeners.FlareListener;
 import com.artillexstudios.axenvoy.utils.Utils;
 import org.bukkit.Bukkit;
@@ -372,6 +374,8 @@ public class Envoy {
             }
         }
 
+        Bukkit.getPluginManager().callEvent(new EnvoyStartEvent(this));
+
         return true;
     }
 
@@ -386,6 +390,7 @@ public class Envoy {
             next.claim(null, this, false);
         }
 
+        Bukkit.getPluginManager().callEvent(new EnvoyEndEvent(this));
         this.active = false;
         this.updateNext();
     }
