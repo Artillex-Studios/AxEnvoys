@@ -18,6 +18,7 @@ import com.artillexstudios.axenvoy.listeners.CollectionListener;
 import com.artillexstudios.axenvoy.listeners.FireworkDamageListener;
 import com.artillexstudios.axenvoy.listeners.FlareListener;
 import com.artillexstudios.axenvoy.listeners.WorldLoadListener;
+import com.artillexstudios.axenvoy.locale.LocaleManager;
 import com.artillexstudios.axenvoy.placeholders.Placeholders;
 import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.EditorListener;
@@ -37,6 +38,7 @@ import java.util.concurrent.TimeUnit;
 public final class AxEnvoyPlugin extends AxPlugin {
     public static NamespacedKey MESSAGE_KEY;
     private static AxEnvoyPlugin instance;
+    private static LocaleManager localeManager;
     private static Messages MESSAGES;
     private boolean placeholderApi;
     private boolean worldGuard;
@@ -83,6 +85,9 @@ public final class AxEnvoyPlugin extends AxPlugin {
         }
 
         MESSAGES = new Messages("messages.yml");
+
+        localeManager = new LocaleManager(this);
+
         reload();
 
         BukkitCommandHandler handler = BukkitCommandHandler.create(this);
