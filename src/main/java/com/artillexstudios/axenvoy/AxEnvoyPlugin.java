@@ -18,6 +18,7 @@ import com.artillexstudios.axenvoy.listeners.FireworkDamageListener;
 import com.artillexstudios.axenvoy.listeners.FlareListener;
 import com.artillexstudios.axenvoy.listeners.WorldLoadListener;
 import com.artillexstudios.axenvoy.locale.LocaleManager;
+import com.artillexstudios.axenvoy.locale.LocaleString;
 import com.artillexstudios.axenvoy.placeholders.Placeholders;
 import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.EditorListener;
@@ -129,7 +130,7 @@ public final class AxEnvoyPlugin extends AxPlugin {
 
                     if (timeCheck.compareTo(now) == 0) {
                         iterator.remove();
-                        Bukkit.broadcastMessage(StringUtils.formatToString(envoy.getConfig().ALERT.replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), envoy))));
+                        Bukkit.broadcastMessage(StringUtils.formatToString(LocaleManager.getMessage(LocaleString.ALERT).replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), envoy))));
                     }
                 }
 
@@ -140,7 +141,7 @@ public final class AxEnvoyPlugin extends AxPlugin {
                 if (next.compareTo(now) <= 0) {
                     if (Bukkit.getOnlinePlayers().size() < envoy.getConfig().MIN_PLAYERS) {
                         envoy.updateNext();
-                        Bukkit.broadcastMessage(StringUtils.formatToString(envoy.getConfig().NOT_ENOUGH_AUTO_START));
+                        Bukkit.broadcastMessage(StringUtils.formatToString(LocaleManager.getMessage(LocaleString.AUTOSTART_NOT_ENOUGH)));
                         return;
                     }
 
@@ -171,7 +172,6 @@ public final class AxEnvoyPlugin extends AxPlugin {
     @Override
     public void reload() {
         Config.reload();
-        MESSAGES.reload();
         Crates.reload();
         Envoys.reload();
     }
