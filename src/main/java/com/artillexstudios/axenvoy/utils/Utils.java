@@ -6,6 +6,8 @@ import com.artillexstudios.axenvoy.envoy.CrateType;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.Envoys;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
+import com.artillexstudios.axenvoy.locale.LocaleManager;
+import com.artillexstudios.axenvoy.locale.LocaleString;
 import com.artillexstudios.axenvoy.rewards.Reward;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
@@ -196,16 +198,16 @@ public class Utils {
             if (hours > 0) return String.format("%02d:%02d:%02d", hours, minutes, seconds);
             return String.format("%02d:%02d", minutes, seconds);
         } else if (envoy.getConfig().TIME_FORMAT == 2) {
-            if (days > 0) return days + envoy.getConfig().DAY;
-            if (hours > 0) return hours + envoy.getConfig().HOUR;
-            if (minutes > 0) return minutes + envoy.getConfig().MINUTE;
-            return seconds + envoy.getConfig().SECOND;
+            if (days > 0) return days + LocaleManager.getMessage(LocaleString.TIME_DAY);
+            if (hours > 0) return hours + LocaleManager.getMessage(LocaleString.TIME_HOUR);
+            if (minutes > 0) return minutes + LocaleManager.getMessage(LocaleString.TIME_MINUTE);
+            return seconds + LocaleManager.getMessage(LocaleString.TIME_SECOND);
         } else {
             if (days > 0)
-                return String.format("%02d" + envoy.getConfig().DAY + " %02d" + envoy.getConfig().HOUR + " %02d" + envoy.getConfig().MINUTE + " %02d" + envoy.getConfig().SECOND, days, hours, minutes, seconds);
+                return String.format("%02d" + LocaleManager.getMessage(LocaleString.TIME_DAY) + " %02d" + LocaleManager.getMessage(LocaleString.TIME_HOUR) + " %02d" + LocaleManager.getMessage(LocaleString.TIME_MINUTE) + " %02d" + LocaleManager.getMessage(LocaleString.TIME_SECOND), days, hours, minutes, seconds);
             if (hours > 0)
-                return String.format("%02d" + envoy.getConfig().HOUR + " %02d" + envoy.getConfig().MINUTE + " %02d" + envoy.getConfig().SECOND, hours, minutes, seconds);
-            return String.format("%02d" + envoy.getConfig().MINUTE + " %02d" + envoy.getConfig().SECOND, minutes, seconds);
+                return String.format("%02d" + LocaleManager.getMessage(LocaleString.TIME_HOUR) + " %02d" + LocaleManager.getMessage(LocaleString.TIME_MINUTE) + " %02d" + LocaleManager.getMessage(LocaleString.TIME_SECOND), hours, minutes, seconds);
+            return String.format("%02d" + LocaleManager.getMessage(LocaleString.TIME_MINUTE) + " %02d" + LocaleManager.getMessage(LocaleString.TIME_SECOND), minutes, seconds);
         }
     }
 
