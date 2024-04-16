@@ -41,6 +41,7 @@ public enum LocaleString {
     PLACEHOLDER_IDLE("placeholder.idle"),
     PLACEHOLDER_REMAIN("placeholder.crates.remaining"),
     PLACEHOLDER_TIME_REMAIN("placeholder.time.remaining"),
+    PLACEHOLDER_UNTIL_NEXT("placeholder.time.until.next"),
 
     TIME_DAY("time.day"),
     TIME_HOUR("time.hour"),
