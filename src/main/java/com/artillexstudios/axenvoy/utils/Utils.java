@@ -2,7 +2,6 @@ package com.artillexstudios.axenvoy.utils;
 
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
-import com.artillexstudios.axenvoy.envoy.CrateType;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.Envoys;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
@@ -10,7 +9,6 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -21,9 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.geom.Point2D;
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicReference;
@@ -40,16 +35,6 @@ public class Utils {
     public static String serializeLocation(@NotNull Location location) {
         return "%s;%s;%s;%s".formatted(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
-
-    public static CrateType randomCrate(@NotNull HashMap<CrateType, Double> map) {
-        List<Pair<CrateType, Double>> list = new ArrayList<>();
-        map.forEach((key, value) -> list.add(new Pair<>(key, value)));
-
-        EnumeratedDistribution<CrateType> e = new EnumeratedDistribution<>(list);
-
-        return e.sample();
-    }
-
 
     public static Location getNextLocation(Envoy envoy, Location loc) {
         Location center = loc.clone();

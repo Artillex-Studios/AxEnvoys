@@ -10,6 +10,8 @@ import com.artillexstudios.axenvoy.event.EnvoyEndEvent;
 import com.artillexstudios.axenvoy.event.EnvoyStartEvent;
 import com.artillexstudios.axenvoy.listeners.FlareListener;
 import com.artillexstudios.axenvoy.utils.Utils;
+import org.apache.commons.math3.distribution.EnumeratedDistribution;
+import org.apache.commons.math3.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -48,6 +50,7 @@ public class Envoy {
     private int minCrateAmount;
     private int maxCrateAmount;
     private long startTime;
+    private EnumeratedDistribution<CrateType> randomCrates;
 
     public Envoy(@NotNull File file) {
         this.file = file;
@@ -70,6 +73,8 @@ public class Envoy {
             this.minCrateAmount = Integer.parseInt(s[0]);
             this.maxCrateAmount = Integer.parseInt(s[1]);
         }
+
+        cratesMap.clear();
 
         for (Map.Entry<Object, Object> crate : config.CRATES.entrySet()) {
             String key = (String) crate.getKey();
@@ -97,6 +102,11 @@ public class Envoy {
                 continue material;
             }
         }
+
+        List<Pair<CrateType, Double>> list = new ArrayList<>();
+        cratesMap.forEach((key, value) -> list.add(new Pair<>(key, value)));
+
+        randomCrates = new EnumeratedDistribution<>(list);
 
         if (!config.EVERY.isBlank()) {
             updateNext();
@@ -214,7 +224,7 @@ public class Envoy {
                 for (int i = 0; i < crateAmount; i++) {
                     Location location = locations.get(ThreadLocalRandom.current().nextInt(locations.size()));
 
-                    new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+                    new SpawnedCrate(this, getRandomCrate(), location.clone());
                     locations.remove(location);
 
                     if (locations.isEmpty()) {
@@ -223,7 +233,7 @@ public class Envoy {
                 }
             } else {
                 for (Location location : locations) {
-                    new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+                    new SpawnedCrate(this, getRandomCrate(), location.clone());
                 }
             }
         }
@@ -246,7 +256,7 @@ public class Envoy {
                             }
 
                             if (location != null) {
-                                new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+                                new SpawnedCrate(this, getRandomCrate(), location.clone());
                             }
                         }
                     }
@@ -309,7 +319,7 @@ public class Envoy {
                         }
 
                         if (location != null) {
-                            new SpawnedCrate(this, Utils.randomCrate(cratesMap), location.clone());
+                            new SpawnedCrate(this, getRandomCrate(), location.clone());
                         }
                     }
                 }
@@ -377,6 +387,10 @@ public class Envoy {
         Bukkit.getPluginManager().callEvent(new EnvoyStartEvent(this));
 
         return true;
+    }
+
+    public CrateType getRandomCrate() {
+        return randomCrates.sample();
     }
 
     public void stop() {
