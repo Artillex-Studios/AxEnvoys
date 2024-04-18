@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public record Reward(double chance, List<String> commands, List<String> messages, List<Map<Object, Object>> items, Map<Object, Object> requiredItem, List<String> sounds) {
+public record Reward(double chance, List<String> commands, List<String> messages, List<Map<Object, Object>> items, Map<Object, Object> requiredItem, List<String> sounds, String name) {
 
     public void execute(@NotNull Player player, @NotNull Envoy envoy) {
         for (String message : this.messages) {

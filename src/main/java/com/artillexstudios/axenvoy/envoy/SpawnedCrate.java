@@ -31,7 +31,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -182,7 +181,6 @@ public class SpawnedCrate {
         }
 
         if (player != null) {
-            Bukkit.getPluginManager().callEvent(new EnvoyCrateCollectEvent(player, this.parent, this));
             ItemStack item = player.getInventory().getItemInMainHand();
             Reward finalReward = null;
             for (Reward reward : this.handle.getRewards()) {
@@ -197,6 +195,7 @@ public class SpawnedCrate {
                 finalReward = Utils.randomReward(this.handle.getRewards());
             }
 
+            Bukkit.getPluginManager().callEvent(new EnvoyCrateCollectEvent(player, this.parent, this, finalReward));
             finalReward.execute(player, envoy);
 
             int cooldown = getHandle().getConfig().COLLECT_COOLDOWN > 0 ? getHandle().getConfig().COLLECT_COOLDOWN : envoy.getConfig().COLLECT_COOLDOWN;
