@@ -192,7 +192,7 @@ public class SpawnedCrate {
             }
 
             if (finalReward == null) {
-                finalReward = Utils.randomReward(this.handle.getRewards());
+                finalReward = this.handle.randomReward();
             }
 
             Bukkit.getPluginManager().callEvent(new EnvoyCrateCollectEvent(player, this.parent, this, finalReward));

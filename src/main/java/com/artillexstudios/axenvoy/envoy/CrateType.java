@@ -2,6 +2,8 @@ package com.artillexstudios.axenvoy.envoy;
 
 import com.artillexstudios.axenvoy.config.impl.CrateConfig;
 import com.artillexstudios.axenvoy.rewards.Reward;
+import org.apache.commons.math3.distribution.EnumeratedDistribution;
+import org.apache.commons.math3.util.Pair;
 import org.bukkit.FireworkEffect;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,6 +25,7 @@ public class CrateType {
     private FireworkEffect.Type flareFireworkType;
     private Color fireworkColor;
     private Color flareFireworkColor;
+    private EnumeratedDistribution<Reward> reward;
 
     public CrateType(@NotNull File file) {
         this.name = file.getName().replace(".yml", "").replace(".yaml", "");
@@ -31,6 +34,10 @@ public class CrateType {
 
         this.config = new CrateConfig("crates/" + file.getName());
         this.config.reload();
+    }
+
+    public Reward randomReward() {
+        return reward.sample();
     }
 
     public void reload() {
@@ -57,6 +64,14 @@ public class CrateType {
         for (Map<String, Object> map : list) {
             this.rewards.add(new Reward(((Number) map.getOrDefault("chance", 0)).doubleValue(), (List<String>) map.getOrDefault("commands", new ArrayList<String>()), (List<String>) map.getOrDefault("messages", new ArrayList<String>()), (List<Map<Object, Object>>) map.getOrDefault("items", new ArrayList<Map<Object, Object>>()), (Map<Object, Object>) map.get("required-item"), (List<String>) map.getOrDefault("sounds", new ArrayList<String>()), (String) map.getOrDefault("name", "---")));
         }
+
+        List<Pair<Reward, Double>> list1 = new ArrayList<>();
+        for (Reward reward : rewards) {
+            if (reward.requiredItem() != null) continue;
+            list1.add(new Pair<>(reward, reward.chance()));
+        }
+
+        reward = new EnumeratedDistribution<>(list1);
     }
 
     public void remove() {

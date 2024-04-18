@@ -6,7 +6,6 @@ import com.artillexstudios.axenvoy.envoy.CrateType;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.Envoys;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
-import com.artillexstudios.axenvoy.rewards.Reward;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.WorldGuard;
@@ -51,17 +50,6 @@ public class Utils {
         return e.sample();
     }
 
-    public static Reward randomReward(@NotNull List<Reward> rewards) {
-        List<Pair<Reward, Double>> list = new ArrayList<>();
-        for (Reward reward : rewards) {
-            if (reward.requiredItem() != null) continue;
-            list.add(new Pair<>(reward, reward.chance()));
-        }
-
-        EnumeratedDistribution<Reward> e = new EnumeratedDistribution<>(list);
-
-        return e.sample();
-    }
 
     public static Location getNextLocation(Envoy envoy, Location loc) {
         Location center = loc.clone();
