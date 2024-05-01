@@ -180,9 +180,9 @@ public class SpawnedCrate {
             fallingBlock = null;
         }
 
+        Reward finalReward = null;
         if (player != null) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            Reward finalReward = null;
             for (Reward reward : this.handle.getRewards()) {
                 if (reward.doesMatchRequired(item)) {
                     finalReward = reward;
@@ -225,7 +225,7 @@ public class SpawnedCrate {
             }
 
             if (broadcast && player != null && !this.parent.getSpawnedCrates().isEmpty()) {
-                String message = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().COLLECT.replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%crate%", this.handle.getConfig().DISPLAY_NAME).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
+                String message = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().COLLECT.replace("%reward%", finalReward.name()).replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%crate%", this.handle.getConfig().DISPLAY_NAME).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
                         onlinePlayer.sendMessage(message);
