@@ -1,9 +1,11 @@
 package com.artillexstudios.axenvoy.envoy;
 
 import com.artillexstudios.axapi.hologram.Hologram;
-import com.artillexstudios.axapi.hologram.HologramFactory;
+import com.artillexstudios.axapi.hologram.HologramLine;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.StringUtils;
+import com.artillexstudios.axapi.utils.placeholder.Placeholder;
+import com.artillexstudios.axapi.utils.placeholder.StaticPlaceholder;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.event.EnvoyCrateCollectEvent;
 import com.artillexstudios.axenvoy.integrations.blocks.BlockIntegration;
@@ -11,7 +13,6 @@ import com.artillexstudios.axenvoy.rewards.Reward;
 import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.Utils;
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Location;
@@ -30,7 +31,6 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -105,39 +105,10 @@ public class SpawnedCrate {
             Location hologramLocation = finishLocation.clone().add(0.5, 0, 0.5);
             hologramLocation.add(0, handle.getConfig().HOLOGRAM_HEIGHT, 0);
 
-            ArrayList<Component> formatted = new ArrayList<>(handle.getConfig().HOLOGRAM_LINES.size());
-            for (String hologramLine : handle.getConfig().HOLOGRAM_LINES) {
-                formatted.add(StringUtils.format(hologramLine).replaceText(b -> {
-                    b.match("%hits%");
-                    b.replacement(String.valueOf(health));
-                }).replaceText(b -> {
-                    b.match("%max_hits%");
-                    b.replacement(String.valueOf(getHandle().getConfig().REQUIRED_INTERACTION_AMOUNT));
-                }));
-            }
-
-            hologram = HologramFactory.get().spawnHologram(hologramLocation, Utils.serializeLocation(hologramLocation).replace(";", "-"), 0.3);
-
-            for (Component component : formatted) {
-                hologram.addLine(component);
-            }
-        } else {
-            ArrayList<Component> formatted = new ArrayList<>(handle.getConfig().HOLOGRAM_LINES.size());
-            for (String hologramLine : handle.getConfig().HOLOGRAM_LINES) {
-                formatted.add(StringUtils.format(hologramLine).replaceText(b -> {
-                    b.match("%hits%");
-                    b.replacement(String.valueOf(health));
-                }).replaceText(b -> {
-                    b.match("%max_hits%");
-                    b.replacement(String.valueOf(getHandle().getConfig().REQUIRED_INTERACTION_AMOUNT));
-                }));
-            }
-
-            int num = 0;
-            for (Component component : formatted) {
-                hologram.setLine(num, component);
-                num++;
-            }
+            hologram = new Hologram(hologramLocation, Utils.serializeLocation(hologramLocation).replace(";", "-"), 0.3);
+            hologram.addPlaceholder(new StaticPlaceholder(string -> string.replace("%max_hits%", String.valueOf(getHandle().getConfig().REQUIRED_INTERACTION_AMOUNT))));
+            hologram.addPlaceholder(new Placeholder((player, string) -> string.replace("%hits%", String.valueOf(health))));
+            hologram.addLines(handle.getConfig().HOLOGRAM_LINES, HologramLine.Type.TEXT);
         }
     }
 
@@ -164,7 +135,6 @@ public class SpawnedCrate {
     public void damage(User user, Envoy envoy) {
         if (user.canCollect(envoy, this.getHandle())) {
             health--;
-            updateHologram();
             if (health == 0) {
                 claim(user.getPlayer(), envoy);
             }

@@ -52,7 +52,7 @@ public final class AxEnvoyPlugin extends AxPlugin {
     @Override
     public void updateFlags() {
         FeatureFlags.PACKET_ENTITY_TRACKER_ENABLED.set(true);
-        FeatureFlags.HOLOGRAM_UPDATE_TICKS.set(1000L);
+        FeatureFlags.HOLOGRAM_UPDATE_TICKS.set(10L);
     }
 
     @Override

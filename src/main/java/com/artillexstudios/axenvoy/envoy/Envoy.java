@@ -17,6 +17,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
@@ -410,7 +411,11 @@ public class Envoy {
     }
 
     public ItemStack getFlare(int amount) {
-        return new ItemBuilder(config.FLARE_ITEM).amount(amount).storePersistentData(FlareListener.KEY, PersistentDataType.STRING, this.name.toLowerCase(Locale.ENGLISH)).get();
+        ItemStack item = new ItemBuilder(config.FLARE_ITEM).amount(amount).get();
+        ItemMeta meta = item.getItemMeta();
+        meta.getPersistentDataContainer().set(FlareListener.KEY, PersistentDataType.STRING, this.name.toLowerCase(Locale.ENGLISH));
+        item.setItemMeta(meta);
+        return item;
     }
 
     public boolean isActive() {
