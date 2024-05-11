@@ -12,14 +12,14 @@ public class DefaultBlockIntegration implements BlockIntegration {
     @Override
     public void place(String id, Location location) {
         Scheduler.get().executeAt(location, () -> {
-            location.getBlock().setType(Material.matchMaterial(id.toUpperCase(Locale.ENGLISH)));
+            location.getBlock().setType(Material.matchMaterial(id.toUpperCase(Locale.ENGLISH)), false);
         });
     }
 
     @Override
     public void remove(Location location) {
         Scheduler.get().executeAt(location, () -> {
-            location.getBlock().setType(Material.AIR);
+            location.getBlock().setType(Material.AIR, false);
         });
     }
 }
