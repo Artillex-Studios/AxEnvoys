@@ -1,6 +1,5 @@
 package com.artillexstudios.axenvoy.commands;
 
-import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.Envoys;
@@ -32,7 +31,7 @@ public class EnvoyCommand {
     @CommandPermission("axenvoy.command.flare")
     public void flare(CommandSender sender, Envoy envoy, @Default("me") Player receiver, @Default("1") int amount) {
         if (envoy == null) {
-            sender.sendMessage(StringUtils.formatToString(AxEnvoyPlugin.getMessages().PREFIX + AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND));
+            Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX, AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND);
             return;
         }
 
@@ -44,7 +43,7 @@ public class EnvoyCommand {
     @CommandPermission("axenvoy.command.start")
     public void start(CommandSender sender, Envoy envoy) {
         if (envoy == null) {
-            sender.sendMessage(StringUtils.formatToString(AxEnvoyPlugin.getMessages().PREFIX + AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND));
+            Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX, AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND);
             return;
         }
 
@@ -55,7 +54,7 @@ public class EnvoyCommand {
     @CommandPermission("axenvoy.command.stop")
     public void stop(CommandSender sender, Envoy envoy) {
         if (envoy == null) {
-            sender.sendMessage(StringUtils.formatToString(AxEnvoyPlugin.getMessages().PREFIX + AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND));
+            Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX, AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND);
             return;
         }
 
@@ -75,14 +74,14 @@ public class EnvoyCommand {
     @Subcommand("reload")
     @CommandPermission("axenvoy.command.reload")
     public void reload(CommandSender sender) {
-        sender.sendMessage(StringUtils.formatToString(AxEnvoyPlugin.getMessages().PREFIX + AxEnvoyPlugin.getMessages().RELOAD.replace("%time%", String.valueOf(AxEnvoyPlugin.getInstance().reloadWithTime()))));
+        Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX,  AxEnvoyPlugin.getMessages().RELOAD.replace("%time%", String.valueOf(AxEnvoyPlugin.getInstance().reloadWithTime())));
     }
 
     @Subcommand("center")
     @CommandPermission("axenvoy.command.center")
     public void center(Player sender, Envoy envoy) {
         if (envoy == null) {
-            sender.sendMessage(StringUtils.formatToString(AxEnvoyPlugin.getMessages().PREFIX + AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND));
+            Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX, AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND);
             return;
         }
 
@@ -91,7 +90,7 @@ public class EnvoyCommand {
         try {
             envoy.getConfig().getConfig().save();
             envoy.getConfig().reload();
-            sender.sendMessage(StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().SET_CENTER));
+            Utils.sendMessage(sender, envoy.getConfig().PREFIX, envoy.getConfig().SET_CENTER);
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -113,7 +112,7 @@ public class EnvoyCommand {
                 }
 
                 sender.getInventory().remove(new ItemStack(Material.DIAMOND_BLOCK, 1));
-                sender.sendMessage(StringUtils.formatToString(editor.getConfig().PREFIX + editor.getConfig().EDITOR_LEAVE));
+                Utils.sendMessage(sender, editor.getConfig().PREFIX, editor.getConfig().EDITOR_LEAVE);
             }
             return;
         }
@@ -127,14 +126,14 @@ public class EnvoyCommand {
 
         sender.getInventory().addItem(new ItemStack(Material.DIAMOND_BLOCK));
 
-        sender.sendMessage(StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().EDITOR_JOIN));
+        Utils.sendMessage(sender, envoy.getConfig().PREFIX, envoy.getConfig().EDITOR_JOIN);
     }
 
     @Subcommand("coords")
     @CommandPermission("axenvoy.command.coords")
     public void coords(CommandSender sender, Envoy envoy) {
         if (envoy == null) {
-            sender.sendMessage(StringUtils.formatToString(AxEnvoyPlugin.getMessages().PREFIX + AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND));
+            Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX, AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND);
             return;
         }
         Audience audience = BukkitAudiences.create(AxEnvoyPlugin.getInstance()).sender(sender);
@@ -155,18 +154,18 @@ public class EnvoyCommand {
     public void toggle(Player sender) {
         if (sender.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
             sender.getPersistentDataContainer().remove(AxEnvoyPlugin.MESSAGE_KEY);
-            sender.sendMessage(StringUtils.formatToString(AxEnvoyPlugin.getMessages().PREFIX + AxEnvoyPlugin.getMessages().TOGGLE_ON));
+            Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX, AxEnvoyPlugin.getMessages().TOGGLE_ON);
             return;
         }
 
         sender.getPersistentDataContainer().set(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE, (byte) 0);
-        sender.sendMessage(StringUtils.formatToString(AxEnvoyPlugin.getMessages().PREFIX + AxEnvoyPlugin.getMessages().TOGGLE_OFF));
+        Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX, AxEnvoyPlugin.getMessages().TOGGLE_OFF);
     }
 
     @Subcommand("time")
     @CommandPermission("axenvoy.command.time")
     public void time(CommandSender sender) {
         Pair<Envoy, Long> pair = Utils.getNextEnvoy();
-        sender.sendMessage(StringUtils.formatToString(pair.getFirst().getConfig().PREFIX + pair.getFirst().getConfig().START_TIME.replace("%time%", Utils.fancyTime(pair.getSecond(), pair.getFirst())).replace("%envoy%", pair.getFirst().getName())));
+        Utils.sendMessage(sender, pair.getFirst().getConfig().PREFIX, pair.getFirst().getConfig().START_TIME.replace("%time%", Utils.fancyTime(pair.getSecond(), pair.getFirst())).replace("%envoy%", pair.getFirst().getName()));
     }
 }

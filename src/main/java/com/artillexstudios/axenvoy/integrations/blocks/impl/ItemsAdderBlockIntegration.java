@@ -27,7 +27,6 @@ public class ItemsAdderBlockIntegration implements BlockIntegration {
         CustomBlock block = CustomBlock.byAlreadyPlaced(location.getBlock());
         if (block != null) {
             block.remove();
-            return;
         }
 
         CustomFurniture furniture = CustomFurniture.byAlreadySpawned(location.getBlock());

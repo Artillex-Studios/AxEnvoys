@@ -3,7 +3,6 @@ package com.artillexstudios.axenvoy.envoy;
 import com.artillexstudios.axapi.hologram.Hologram;
 import com.artillexstudios.axapi.hologram.HologramLine;
 import com.artillexstudios.axapi.scheduler.Scheduler;
-import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.placeholder.Placeholder;
 import com.artillexstudios.axapi.utils.placeholder.StaticPlaceholder;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
@@ -139,7 +138,7 @@ public class SpawnedCrate {
                 claim(user.getPlayer(), envoy);
             }
         } else {
-            user.getPlayer().sendMessage(StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().COOLDOWN.replace("%player%", user.getPlayer().getName()).replace("%player_name%", user.getPlayer().getName()).replace("%crate%", getHandle().getConfig().DISPLAY_NAME).replace("%cooldown%", String.valueOf((user.getCollectCooldown(envoy, getHandle()) - System.currentTimeMillis()) / 1000))));
+            Utils.sendMessage(user.getPlayer(), envoy.getConfig().PREFIX, envoy.getConfig().COOLDOWN.replace("%player%", user.getPlayer().getName()).replace("%player_name%", user.getPlayer().getName()).replace("%crate%", getHandle().getConfig().DISPLAY_NAME).replace("%cooldown%", String.valueOf((user.getCollectCooldown(envoy, getHandle()) - System.currentTimeMillis()) / 1000)));
         }
     }
 
@@ -195,10 +194,9 @@ public class SpawnedCrate {
             }
 
             if (broadcast && player != null && !this.parent.getSpawnedCrates().isEmpty()) {
-                String message = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().COLLECT.replace("%reward%", finalReward.name()).replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%crate%", this.handle.getConfig().DISPLAY_NAME).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                     if (!onlinePlayer.getPersistentDataContainer().has(AxEnvoyPlugin.MESSAGE_KEY, PersistentDataType.BYTE)) {
-                        onlinePlayer.sendMessage(message);
+                        Utils.sendMessage(onlinePlayer, envoy.getConfig().PREFIX, envoy.getConfig().COLLECT.replace("%reward%", finalReward.name()).replace("%player_name%", player.getName()).replace("%player%", player.getName()).replace("%crate%", this.handle.getConfig().DISPLAY_NAME).replace("%amount%", String.valueOf(envoy.getSpawnedCrates().size())));
                     }
                 }
             }
@@ -207,9 +205,8 @@ public class SpawnedCrate {
                 envoy.updateNext();
                 envoy.setActive(false);
 
-                String message = StringUtils.formatToString(envoy.getConfig().PREFIX + envoy.getConfig().ENDED);
                 for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-                    onlinePlayer.sendMessage(message);
+                    Utils.sendMessage(onlinePlayer, envoy.getConfig().PREFIX, envoy.getConfig().ENDED);
                 }
             }
         }

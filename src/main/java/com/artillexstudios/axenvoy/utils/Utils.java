@@ -1,6 +1,7 @@
 package com.artillexstudios.axenvoy.utils;
 
 import com.artillexstudios.axapi.scheduler.Scheduler;
+import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.Envoys;
@@ -13,6 +14,7 @@ import org.apache.commons.math3.util.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +88,12 @@ public class Utils {
         }
 
         return loc2;
+    }
+
+    public static void sendMessage(CommandSender sender, String prefix, String message) {
+        if (!message.isBlank()) {
+            sender.sendMessage(StringUtils.formatToString(prefix + message));
+        }
     }
 
     public static CompletableFuture<Location> getNextLocationFolia(@NotNull Envoy envoy, @NotNull Location loc) {
