@@ -40,8 +40,8 @@ public class Utils {
 
     public static Location getNextLocation(Envoy envoy, Location loc) {
         Location center = loc.clone();
-        loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));
-        loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));
+        loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_X * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_X));
+        loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_Z * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_Z));
         if (loc.distanceSquared(center) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE) {
             return null;
         }
@@ -99,8 +99,8 @@ public class Utils {
     public static CompletableFuture<Location> getNextLocationFolia(@NotNull Envoy envoy, @NotNull Location loc) {
         CompletableFuture<Location> locationCompletableFuture = new CompletableFuture<>();
         Location center = loc.clone();
-        loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));
-        loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE));
+        loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_X * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_X));
+        loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_Z * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_Z));
         if (loc.distanceSquared(center) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE) {
             locationCompletableFuture.complete(null);
         }

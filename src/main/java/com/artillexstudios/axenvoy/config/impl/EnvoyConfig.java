@@ -59,13 +59,17 @@ public class EnvoyConfig extends Messages {
     @Comment("The center location")
     public String RANDOM_SPAWN_CENTER = "world;0;100;0";
 
+    @Key("random-spawn.max-distance.x")
+    @Comment("The maximum distance from the center an envoy may spawn, x coordinate")
+    public int RANDOM_SPAWN_MAX_DISTANCE_X = 100;
+
+    @Key("random-spawn.max-distance.z")
+    @Comment("The maximum distance from the center an envoy may spawn, z coordinate")
+    public int RANDOM_SPAWN_MAX_DISTANCE_Z = 100;
+
     @Key("random-spawn.min-distance")
     @Comment("The minimum distance from the center an envoy may spawn")
     public int RANDOM_SPAWN_MIN_DISTANCE = 20;
-
-    @Key("random-spawn.max-distance")
-    @Comment("The maximum distance from the center an envoy may spawn")
-    public int RANDOM_SPAWN_MAX_DISTANCE = 100;
 
     @Key("random-spawn.min-height")
     @Comment("The minimum height at which an envoy may spawn")
@@ -80,10 +84,7 @@ public class EnvoyConfig extends Messages {
     public int RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES = 0;
 
     @Key("random-spawn.not-on-blocks")
-    @Comment("""
-            You can use RegEx here, to match the name of the block
-            For a list of materials, visit: https://jd.papermc.io/paper/1.20/org/bukkit/Material.html\
-            """)
+    @Comment({"You can use RegEx here, to match the name of the block", "For a list of materials, visit: https://jd.papermc.io/paper/1.20/org/bukkit/Material.html"})
     public List<String> RANDOM_SPAWN_BLACKLISTED_MATERIALS = List.of("(?<!s)t?air(?!s)", "(leaves)", "(sign)", "diamond_block");
 
     @Key("rewards.use-prefix")
@@ -91,11 +92,7 @@ public class EnvoyConfig extends Messages {
     public boolean USE_PREFIX = true;
 
     @Key("time-format")
-    @Comment("""
-            1 - HH:MM:SS, for example 01:25:35
-            2 - short format, for example 20m
-            3 - text format, for example 01h 25m 35s
-            \\""")
+    @Comment({"1 - HH:MM:SS, for example 01:25:35", "2 - short format, for example 20m", "3 - text format, for example 01h 25m 35s"})
     public int TIME_FORMAT = 1;
 
     @Key("flare.enabled")
@@ -119,6 +116,17 @@ public class EnvoyConfig extends Messages {
     }
 
     public void reload() {
+        com.artillexstudios.axapi.config.Config config = new com.artillexstudios.axapi.config.Config(FileUtils.PLUGIN_DIRECTORY.resolve(fileName).toFile());
+
+        if (config.getBackingDocument().isInt("random-spawn.max-distance")) {
+            int maxDistance = config.getInt("random-spawn.max-distance");
+
+            config.getBackingDocument().remove("random-spawn.max-distance");
+            config.set("random-spawn.max-distance.x", maxDistance);
+            config.set("random-spawn.max-distance.z", maxDistance);
+            config.save();
+        }
+
         this.reload(FileUtils.PLUGIN_DIRECTORY.resolve(fileName), Messages.class, this, AxEnvoyPlugin.getMessages());
         this.reload(FileUtils.PLUGIN_DIRECTORY.resolve(fileName), EnvoyConfig.class, this, null);
     }

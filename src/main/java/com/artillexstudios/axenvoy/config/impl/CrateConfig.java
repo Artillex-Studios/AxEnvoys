@@ -9,10 +9,7 @@ import java.util.Map;
 public class CrateConfig extends AbstractConfig {
 
     @Key("collect-cooldown")
-    @Comment("""
-            Cooldown in seconds until a player can collect a new crateType of this type
-            THIS OVERRIDES THE SAME SETTING IN THE ENVOY'S CATEGORY! If you do NOT want to override it, remove it from here\
-            """)
+    @Comment({"Cooldown in seconds until a player can collect a new crateType of this type", "THIS OVERRIDES THE SAME SETTING IN THE ENVOY'S CATEGORY! If you do NOT want to override it, remove it from here"})
     public int COLLECT_COOLDOWN = 10;
 
     @Key("broadcast-collect")

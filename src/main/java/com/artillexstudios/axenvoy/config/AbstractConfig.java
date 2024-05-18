@@ -165,6 +165,6 @@ public class AbstractConfig {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface Comment {
-        String value();
+        String[] value();
     }
 }
