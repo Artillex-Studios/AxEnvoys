@@ -24,15 +24,15 @@ public class ItemsAdderBlockIntegration implements BlockIntegration {
 
     @Override
     public void remove(Location location) {
-        CustomBlock block = CustomBlock.byAlreadyPlaced(location.getBlock());
-        if (block != null) {
-            block.remove();
-        }
-
         CustomFurniture furniture = CustomFurniture.byAlreadySpawned(location.getBlock());
 
         if (furniture != null) {
             furniture.remove(false);
+        }
+
+        CustomBlock block = CustomBlock.byAlreadyPlaced(location.getBlock());
+        if (block != null) {
+            block.remove();
         }
     }
 }

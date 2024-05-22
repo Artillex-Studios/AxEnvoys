@@ -32,8 +32,10 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 import java.util.List;
@@ -76,7 +78,7 @@ public class FileUtils {
     }
 
     public static void copyFromResource(@NotNull String path) {
-        try (ZipFile zip = new ZipFile(AxEnvoyPlugin.getInstance().getClass().getProtectionDomain().getCodeSource().getLocation().getPath())) {
+        try (ZipFile zip = new ZipFile(Paths.get(AxEnvoyPlugin.getInstance().getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).toFile())) {
             for (Iterator<? extends ZipEntry> it = zip.entries().asIterator(); it.hasNext(); ) {
                 ZipEntry entry = it.next();
                 if (entry.getName().startsWith(path + "/")) {
@@ -90,7 +92,7 @@ public class FileUtils {
                     Files.copy(resource, PLUGIN_DIRECTORY.resolve(entry.getName()));
                 }
             }
-        } catch (IOException exception) {
+        } catch (IOException | URISyntaxException exception) {
             LOGGER.error("An unexpected error occurred while extracting directory {} from plugin's assets!", path, exception);
         }
     }
