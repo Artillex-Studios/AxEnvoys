@@ -128,7 +128,9 @@ public final class AxEnvoyPlugin extends AxPlugin {
 
                     if (timeCheck.compareTo(now) == 0) {
                         iterator.remove();
-                        Bukkit.broadcastMessage(StringUtils.formatToString(envoy.getConfig().ALERT.replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), envoy))));
+                        if (!envoy.getConfig().ALERT.isBlank()) {
+                            Bukkit.broadcastMessage(StringUtils.formatToString(envoy.getConfig().ALERT.replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), envoy))));
+                        }
                     }
                 }
 
