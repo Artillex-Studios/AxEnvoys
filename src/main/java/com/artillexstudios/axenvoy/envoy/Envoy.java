@@ -21,8 +21,12 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -37,6 +41,7 @@ import java.util.regex.Pattern;
 
 public class Envoy {
     private static final ExecutorService EXECUTOR = Executors.newSingleThreadScheduledExecutor();
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
     private final ArrayList<Material> blacklistMaterials = new ArrayList<>();
     private final ArrayList<SpawnedCrate> spawnedCrates = new ArrayList<>();
     private final HashMap<CrateType, Double> cratesMap = new HashMap<>();
@@ -147,7 +152,43 @@ public class Envoy {
 
     public void updateNext() {
         next = Calendar.getInstance();
-        setCalendar(next, null, config.EVERY);
+        if (config.TIMES.isEmpty()) {
+            setCalendar(next, null, config.EVERY);
+        } else {
+            Calendar cld = null;
+            for (String time : config.TIMES) {
+
+                Date parsed;
+                try {
+                    parsed = dateFormat.parse(time);
+                } catch (ParseException e) {
+                    throw new RuntimeException(e);
+                }
+                Calendar n = Calendar.getInstance();
+                n.setTime(parsed);
+
+                ZonedDateTime zoneDateTime = ZonedDateTime.now();
+                zoneDateTime = zoneDateTime.withHour(n.get(Calendar.HOUR_OF_DAY));
+                zoneDateTime = zoneDateTime.withMinute(n.get(Calendar.MINUTE));
+                zoneDateTime = zoneDateTime.withSecond(n.get(Calendar.SECOND));
+
+                if (zoneDateTime.isBefore(ZonedDateTime.now())) {
+                    zoneDateTime = zoneDateTime.plusDays(1);
+                }
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTimeInMillis(zoneDateTime.toInstant().toEpochMilli());
+                if (cld == null) {
+                    cld = calendar;
+                }
+
+                if (calendar.before(cld)) {
+                    cld = calendar;
+                }
+            }
+
+            next = cld;
+        }
         warns.clear();
         warns = updateWarns();
     }

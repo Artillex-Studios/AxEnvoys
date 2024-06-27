@@ -44,6 +44,9 @@ public class EnvoyConfig extends Messages {
     @Key("alert-times")
     public List<String> ALERT_TIMES = List.of("30m", "10m", "5s", "3s", "2s", "1s");
 
+    @Key("times")
+    public List<String> TIMES = List.of();
+
     @Key("only-in-global")
     @Comment("If there are other regions at that location other than __global__ an envoy can't spawn there")
     public boolean ONLY_IN_GLOBAL = false;
