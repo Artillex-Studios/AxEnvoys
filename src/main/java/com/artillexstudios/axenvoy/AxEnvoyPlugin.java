@@ -28,6 +28,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import revxrsal.commands.bukkit.BukkitCommandHandler;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.Locale;
@@ -116,17 +119,14 @@ public final class AxEnvoyPlugin extends AxPlugin {
             Envoys.getTypes().forEach((string, envoy) -> {
                 if (envoy.getConfig().EVERY.isBlank()) return;
                 if (envoy.isActive()) return;
-                Calendar now = Calendar.getInstance();
-                now.clear(Calendar.MILLISECOND);
+                ZonedDateTime now = ZonedDateTime.now();
 
                 Iterator<Calendar> iterator = envoy.getWarns().iterator();
                 while (iterator.hasNext()) {
                     Calendar warn = iterator.next();
-                    Calendar timeCheck = Calendar.getInstance();
-                    timeCheck.setTimeInMillis(warn.getTimeInMillis());
-                    timeCheck.clear(Calendar.MILLISECOND);
+                    ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(Instant.ofEpochMilli(warn.getTimeInMillis()), ZoneId.systemDefault());
 
-                    if (timeCheck.compareTo(now) == 0) {
+                    if (zonedDateTime.getHour() == now.getHour() && zonedDateTime.getMinute() == now.getMinute() && zonedDateTime.getSecond() == now.getSecond()) {
                         iterator.remove();
                         if (!envoy.getConfig().ALERT.isBlank()) {
                             Bukkit.broadcastMessage(StringUtils.formatToString(envoy.getConfig().ALERT.replace("%time%", Utils.fancyTime(envoy.getNext().getTimeInMillis() - Calendar.getInstance().getTimeInMillis(), envoy))));
@@ -134,11 +134,13 @@ public final class AxEnvoyPlugin extends AxPlugin {
                     }
                 }
 
-                Calendar next = Calendar.getInstance();
-                next.setTimeInMillis(envoy.getNext().getTimeInMillis());
-                next.clear(Calendar.MILLISECOND);
+                ZonedDateTime next = ZonedDateTime.ofInstant(Instant.ofEpochMilli(envoy.getNext().getTimeInMillis()), ZoneId.systemDefault());
+                if (next.getHour() == now.getHour() && next.getMinute() == now.getMinute() && next.getSecond() == now.getSecond()) {
+                    if (System.currentTimeMillis() - envoy.getLastStart() < 2000) {
+                        return;
+                    }
 
-                if (next.compareTo(now) <= 0) {
+                    envoy.setLastStart(System.currentTimeMillis());
                     if (Bukkit.getOnlinePlayers().size() < envoy.getConfig().MIN_PLAYERS) {
                         envoy.updateNext();
                         Bukkit.broadcastMessage(StringUtils.formatToString(envoy.getConfig().NOT_ENOUGH_AUTO_START));
@@ -162,7 +164,8 @@ public final class AxEnvoyPlugin extends AxPlugin {
                 if (!envoy.isActive()) return;
 
                 for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
-                    if (spawnedCrate.getHandle().getConfig().FLARE_EVERY == 0 || !spawnedCrate.getHandle().getConfig().FLARE_ENABLED) continue;
+                    if (spawnedCrate.getHandle().getConfig().FLARE_EVERY == 0 || !spawnedCrate.getHandle().getConfig().FLARE_ENABLED)
+                        continue;
                     spawnedCrate.tickFlare();
                 }
             });

@@ -56,6 +56,7 @@ public class Envoy {
     private int maxCrateAmount;
     private long startTime;
     private EnumeratedDistribution<CrateType> randomCrates;
+    private long lastStart;
 
     public Envoy(@NotNull File file) {
         this.file = file;
@@ -450,6 +451,14 @@ public class Envoy {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public long getLastStart() {
+        return this.lastStart;
+    }
+
+    public void setLastStart(long lastStart) {
+        this.lastStart = lastStart;
     }
 
     public long getStartTime() {
