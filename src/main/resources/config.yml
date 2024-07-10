@@ -4,3 +4,7 @@
 # Warning: This will probably tank your performance at crate spawning, if lots of crates spawn (lots = hundreds)
 # Changing this requires a restart!
 listen-to-block-physics: false
+
+# Enable this, if you want to prevent some blocks that
+# replaced by crates in certain cases.
+dont-replace-blocks: true
