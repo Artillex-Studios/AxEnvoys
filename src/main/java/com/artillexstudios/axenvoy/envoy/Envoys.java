@@ -1,8 +1,7 @@
 package com.artillexstudios.axenvoy.envoy;
 
-import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axenvoy.utils.FileUtils;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,52 +19,49 @@ public class Envoys {
     private static final File CRATE_TYPES_FOLDER = FileUtils.PLUGIN_DIRECTORY.resolve("envoys/").toFile();
 
     public static void reload() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (CRATE_TYPES_FOLDER.mkdirs()) {
-                    FileUtils.copyFromResource("envoys");
-                }
+        Scheduler.get().runAsync(() -> {
+            if (CRATE_TYPES_FOLDER.mkdirs()) {
+                FileUtils.copyFromResource("envoys");
+            }
 
-                Collection<File> files = org.apache.commons.io.FileUtils.listFiles(CRATE_TYPES_FOLDER, new String[]{"yaml", "yml"}, true);
+            Collection<File> files = org.apache.commons.io.FileUtils.listFiles(CRATE_TYPES_FOLDER, new String[]{"yaml", "yml"}, true);
 
-                for (File file : files) {
-                    Envoy envoy = TYPES.get(file.getName()
-                            .replace(".yml", "")
-                            .replace(".yaml", ""));
+            for (File file : files) {
+                Envoy envoy = TYPES.get(file.getName()
+                        .replace(".yml", "")
+                        .replace(".yaml", ""));
 
-                    if (envoy == null) {
-                        new Envoy(file);
-                    } else {
-                        envoy.reload();
-                    }
-                }
-
-                ArrayList<Envoy> removedTypes = new ArrayList<>();
-                TYPES.entrySet().removeIf((entry) -> {
-                    boolean contains = files.contains(entry.getValue().getFile());
-
-                    if (!contains) {
-                        removedTypes.add(entry.getValue());
-                    }
-
-                    return !contains;
-                });
-
-                List<Envoy> envoyTypes = new ArrayList<>(Envoys.getTypes().values());
-                int chestSize = envoyTypes.size();
-
-                for (int i = 0; i < chestSize; i++) {
-                    Envoy envoy = envoyTypes.get(i);
-
-                    if (removedTypes.contains(envoy)) {
-                        envoy.stop();
-                    } else {
-                        envoy.reload();
-                    }
+                if (envoy == null) {
+                    new Envoy(file);
+                } else {
+                    envoy.reload();
                 }
             }
-        }.runTaskAsynchronously(AxEnvoyPlugin.getInstance());
+
+            ArrayList<Envoy> removedTypes = new ArrayList<>();
+            TYPES.entrySet().removeIf((entry) -> {
+                boolean contains = files.contains(entry.getValue().getFile());
+
+                if (!contains) {
+                    removedTypes.add(entry.getValue());
+                }
+
+                return !contains;
+            });
+
+            List<Envoy> envoyTypes = new ArrayList<>(Envoys.getTypes().values());
+            int chestSize = envoyTypes.size();
+
+            for (int i = 0; i < chestSize; i++) {
+                Envoy envoy = envoyTypes.get(i);
+
+                if (removedTypes.contains(envoy)) {
+                    envoy.stop();
+                } else {
+                    envoy.reload();
+                }
+            }
+        });
     }
 
     public static Envoy valueOf(String name) {
