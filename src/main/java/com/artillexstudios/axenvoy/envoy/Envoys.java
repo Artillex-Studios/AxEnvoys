@@ -17,9 +17,13 @@ public class Envoys {
     private static final Logger LOGGER = LoggerFactory.getLogger(Crates.class);
     private static final HashMap<String, Envoy> TYPES = new HashMap<>();
     private static final File CRATE_TYPES_FOLDER = FileUtils.PLUGIN_DIRECTORY.resolve("envoys/").toFile();
+    private static boolean isReloading;
 
     public static void reload() {
         Scheduler.get().runAsync(() -> {
+            if (isReloading) return;
+
+            isReloading = true;
             if (CRATE_TYPES_FOLDER.mkdirs()) {
                 FileUtils.copyFromResource("envoys");
             }
@@ -46,6 +50,7 @@ public class Envoys {
                     removedTypes.add(entry.getValue());
                 }
 
+                isReloading = false;
                 return !contains;
             });
 
@@ -61,6 +66,8 @@ public class Envoys {
                     envoy.reload();
                 }
             }
+
+            isReloading = false;
         });
     }
 
