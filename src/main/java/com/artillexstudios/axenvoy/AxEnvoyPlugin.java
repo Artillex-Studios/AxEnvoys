@@ -136,11 +136,11 @@ public final class AxEnvoyPlugin extends AxPlugin {
 
                 ZonedDateTime next = ZonedDateTime.ofInstant(Instant.ofEpochMilli(envoy.getNext().getTimeInMillis()), ZoneId.systemDefault());
                 if (next.getHour() == now.getHour() && next.getMinute() == now.getMinute() && next.getSecond() == now.getSecond()) {
-                    if (System.currentTimeMillis() - envoy.getLastStart() < 2000) {
+                    if (envoy.startAttempt()) {
                         return;
                     }
 
-                    envoy.setLastStart(System.currentTimeMillis());
+                    envoy.setStartAttempt(true);
                     if (Bukkit.getOnlinePlayers().size() < envoy.getConfig().MIN_PLAYERS) {
                         envoy.updateNext();
                         Bukkit.broadcastMessage(StringUtils.formatToString(envoy.getConfig().NOT_ENOUGH_AUTO_START));
