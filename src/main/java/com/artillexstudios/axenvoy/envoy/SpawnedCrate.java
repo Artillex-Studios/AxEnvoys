@@ -6,6 +6,7 @@ import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.placeholder.Placeholder;
 import com.artillexstudios.axapi.utils.placeholder.StaticPlaceholder;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.config.impl.Config;
 import com.artillexstudios.axenvoy.event.EnvoyCrateCollectEvent;
 import com.artillexstudios.axenvoy.integrations.blocks.BlockIntegration;
 import com.artillexstudios.axenvoy.rewards.Reward;
@@ -92,6 +93,12 @@ public class SpawnedCrate {
     }
 
     public void land(@NotNull Location location) {
+        if (Config.DONT_REPLACE_BLOCKS) {
+            while (!location.getBlock().getType().equals(Material.AIR) && !location.getBlock().getType().equals(Material.VOID_AIR) && !location.getBlock().getType().equals(Material.CAVE_AIR)) {
+                if (location.getY() >= location.getWorld().getMaxHeight()) break;
+                location.add(0, 1, 0);
+            }
+        }
         this.finishLocation = location;
         BlockIntegration.Companion.place(handle.getConfig().BLOCK_TYPE, location);
         this.updateHologram();

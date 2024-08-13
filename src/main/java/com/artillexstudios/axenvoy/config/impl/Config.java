@@ -14,6 +14,13 @@ public class Config extends AbstractConfig {
     })
     public static boolean LISTEN_TO_BLOCK_PHYSICS = false;
 
+    @Key("dont-replace-blocks")
+    @Comment({
+            "Enable this, if you want to prevent some blocks that",
+            "replaced by crates in certain cases."
+    })
+    public static boolean DONT_REPLACE_BLOCKS = true;
+
     private static final Config CONFIG = new Config();
 
     public static void reload() {
