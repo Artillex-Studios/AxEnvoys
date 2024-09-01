@@ -26,6 +26,7 @@ public class CrateType {
     private Color fireworkColor;
     private Color flareFireworkColor;
     private EnumeratedDistribution<Reward> reward;
+    private int rewardAmount;
 
     public CrateType(@NotNull File file) {
         this.name = file.getName().replace(".yml", "").replace(".yaml", "");
@@ -47,6 +48,7 @@ public class CrateType {
         this.fireworkColor = new Color(Integer.valueOf(config.FIREWORK_COLOR.substring(1, 3), 16), Integer.valueOf(config.FIREWORK_COLOR.substring(3, 5), 16), Integer.valueOf(config.FIREWORK_COLOR.substring(5, 7), 16));
         this.flareFireworkColor = new Color(Integer.valueOf(config.FLARE_FIREWORK_COLOR.substring(1, 3), 16), Integer.valueOf(config.FLARE_FIREWORK_COLOR.substring(3, 5), 16), Integer.valueOf(config.FLARE_FIREWORK_COLOR.substring(5, 7), 16));
         this.flareFireworkType = FireworkEffect.Type.valueOf(config.FLARE_FIREWORK_TYPE.toUpperCase(Locale.ENGLISH));
+        this.rewardAmount = config.REWARD_AMOUNT;
 
         List<Map<String, Object>> list = new ArrayList<>();
         for (Map<Object, Object> map : config.REWARDS) {
@@ -117,6 +119,10 @@ public class CrateType {
 
     public String getName() {
         return name;
+    }
+
+    public int getRewardAmount() {
+        return rewardAmount;
     }
 
     @Override

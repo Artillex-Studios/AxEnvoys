@@ -28,6 +28,8 @@ flare:
     color: #ff0000
     type: ball
 
+reward-amount: 1
+
 rewards:
   - chance: 10.0
     messages:

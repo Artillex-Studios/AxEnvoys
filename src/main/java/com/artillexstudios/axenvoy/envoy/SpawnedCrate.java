@@ -167,12 +167,16 @@ public class SpawnedCrate {
                 }
             }
 
-            if (finalReward == null) {
-                finalReward = this.handle.randomReward();
+            if (finalReward != null) {
+                finalReward.execute(player, envoy);
+            } else {
+                for (int i = 0; i < this.handle.getRewardAmount(); i++) {
+                    Reward reward = this.handle.randomReward();
+                    reward.execute(player, envoy);
+                }
             }
 
             Bukkit.getPluginManager().callEvent(new EnvoyCrateCollectEvent(player, this.parent, this, finalReward));
-            finalReward.execute(player, envoy);
 
             int cooldown = getHandle().getConfig().COLLECT_COOLDOWN > 0 ? getHandle().getConfig().COLLECT_COOLDOWN : envoy.getConfig().COLLECT_COOLDOWN;
             if (envoy.getConfig().COLLECT_GLOBAL_COOLDOWN) {

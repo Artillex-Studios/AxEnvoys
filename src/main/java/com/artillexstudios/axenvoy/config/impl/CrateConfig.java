@@ -62,6 +62,9 @@ public class CrateConfig extends AbstractConfig {
     @Key("flare.firework.type")
     public String FLARE_FIREWORK_TYPE = "ball";
 
+    @Key("reward-amount")
+    public int REWARD_AMOUNT = 1;
+
     @Key("rewards")
     public List<Map<Object, Object>> REWARDS = List.of();
 
