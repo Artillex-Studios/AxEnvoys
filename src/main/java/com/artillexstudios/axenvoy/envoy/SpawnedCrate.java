@@ -173,6 +173,7 @@ public class SpawnedCrate {
                 for (int i = 0; i < this.handle.getRewardAmount(); i++) {
                     Reward reward = this.handle.randomReward();
                     reward.execute(player, envoy);
+                    finalReward = reward;
                 }
             }
 
@@ -198,7 +199,6 @@ public class SpawnedCrate {
         if (envoy != null) {
             boolean broadcast = envoy.getConfig().BROADCAST_COLLECT;
             if (!broadcast) {
-
                 if (handle.getConfig().BROADCAST_COLLECT) {
                     broadcast = true;
                 }
