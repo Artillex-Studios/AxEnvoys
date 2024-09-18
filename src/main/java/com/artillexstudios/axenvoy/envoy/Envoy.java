@@ -1,5 +1,6 @@
 package com.artillexstudios.axenvoy.envoy;
 
+import com.artillexstudios.axapi.scheduler.ScheduledTask;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.PaperUtils;
@@ -57,6 +58,7 @@ public class Envoy {
     private long startTime;
     private EnumeratedDistribution<CrateType> randomCrates;
     private boolean startAttempt = false;
+    private ScheduledTask cancelTask;
 
     public Envoy(@NotNull File file) {
         this.file = file;
@@ -337,7 +339,7 @@ public class Envoy {
                     }
 
                     if (config.TIMEOUT_TIME > 0) {
-                        Scheduler.get().runLater(task -> {
+                        cancelTask = Scheduler.get().runLater(() -> {
                             if (!active) return;
 
                             stop();
@@ -394,7 +396,7 @@ public class Envoy {
                 }
 
                 if (config.TIMEOUT_TIME > 0) {
-                    Scheduler.get().runLater(task -> {
+                    cancelTask = Scheduler.get().runLater(() -> {
                         if (!active) return;
 
                         stop();
@@ -411,6 +413,14 @@ public class Envoy {
                     Utils.sendMessage(onlinePlayer, config.PREFIX, config.SINGLE_START.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ())).replace("%amount%", String.valueOf(spawnedCrates.size())).replace("%location%", config.LOCATION_FORMAT.replace("%world%", spawnedCrates.get(0).getFinishLocation().getWorld().getName()).replace("%x%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockX())).replace("%y%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockY())).replace("%z%", String.valueOf(spawnedCrates.get(0).getFinishLocation().getBlockZ()))));
                 }
             }
+
+            if (config.TIMEOUT_TIME > 0) {
+                cancelTask = Scheduler.get().runLater(() -> {
+                    if (!active) return;
+
+                    stop();
+                }, config.TIMEOUT_TIME * 20L);
+            }
         }
 
         Bukkit.getPluginManager().callEvent(new EnvoyStartEvent(this));
@@ -424,6 +434,10 @@ public class Envoy {
 
     public void stop() {
         if (!active) return;
+        if (this.cancelTask != null && !this.cancelTask.isCancelled()) {
+            this.cancelTask.cancel();
+            this.cancelTask = null;
+        }
 
         Iterator<SpawnedCrate> crateIterator = this.spawnedCrates.iterator();
 
