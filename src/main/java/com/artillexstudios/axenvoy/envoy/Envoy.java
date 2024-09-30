@@ -13,6 +13,7 @@ import com.artillexstudios.axenvoy.utils.Utils;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 import org.bukkit.Bukkit;
+import org.bukkit.HeightMap;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -59,6 +60,7 @@ public class Envoy {
     private EnumeratedDistribution<CrateType> randomCrates;
     private boolean startAttempt = false;
     private ScheduledTask cancelTask;
+    private HeightMap heightMap;
 
     public Envoy(@NotNull File file) {
         this.file = file;
@@ -118,6 +120,12 @@ public class Envoy {
 
         if (!config.EVERY.isBlank()) {
             updateNext();
+        }
+
+        try {
+            this.heightMap = HeightMap.valueOf(config.HEIGHTMAP.toUpperCase(Locale.ENGLISH));
+        } catch (EnumConstantNotPresentException exception) {
+            this.heightMap = HeightMap.MOTION_BLOCKING;
         }
     }
 
@@ -474,6 +482,10 @@ public class Envoy {
 
     public void setStartAttempt(boolean startAttempt) {
         this.startAttempt = startAttempt;
+    }
+
+    public HeightMap heightMap() {
+        return heightMap;
     }
 
     public long getStartTime() {

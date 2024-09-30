@@ -12,6 +12,7 @@ import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import org.apache.commons.math3.util.Pair;
 import org.bukkit.Bukkit;
+import org.bukkit.HeightMap;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -63,7 +64,7 @@ public class Utils {
         }
 
 
-        Location loc2 = topBlock(loc);
+        Location loc2 = topBlock(loc, envoy.heightMap());
         if (loc2.getY() < envoy.getConfig().RANDOM_SPAWN_MIN_HEIGHT) {
             return null;
         }
@@ -121,7 +122,7 @@ public class Utils {
         }
 
         Scheduler.get().runAt(loc, task -> {
-            Location loc2 = topBlock(loc);
+            Location loc2 = topBlock(loc, envoy.heightMap());
             if (loc2.getY() < envoy.getConfig().RANDOM_SPAWN_MIN_HEIGHT) {
                 locationCompletableFuture.complete(null);
             }
@@ -145,8 +146,8 @@ public class Utils {
     }
 
     @NotNull
-    public static Location topBlock(@NotNull Location loc) {
-        return loc.getWorld().getHighestBlockAt(loc).getLocation().add(0, 1, 0);
+    public static Location topBlock(@NotNull Location loc, HeightMap heightMap) {
+        return loc.getWorld().getHighestBlockAt(loc, heightMap).getLocation().add(0, 1, 0);
     }
 
 //    @NotNull

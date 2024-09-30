@@ -37,6 +37,7 @@ random-spawn:
   min-height: 10
   max-height: 200
   min-distance-between-crates: 0
+  heightmap-mode: ""
   not-on-blocks:
     - "(?<!s)t?air(?!s)"
     - "(leaves)"

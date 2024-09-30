@@ -82,6 +82,10 @@ public class EnvoyConfig extends Messages {
     @Comment("The maximum height at which an envoy may spawn")
     public int RANDOM_SPAWN_MAX_HEIGHT = 100;
 
+    @Key("random-spawn.heightmap")
+    @Comment("The heightmap type, refer to https://jd.papermc.io/paper/1.21.1/org/bukkit/HeightMap.html for valid inputs")
+    public String HEIGHTMAP = "MOTION_BLOCKING";
+
     @Key("random-spawn.min-distance-between-crates")
     @Comment("The minimum distance that can be between crates")
     public int RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES = 0;
