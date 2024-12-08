@@ -5,6 +5,10 @@ import com.artillexstudios.axapi.libs.libby.BukkitLibraryManager;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
+import com.artillexstudios.axapi.utils.updatechecker.Changelog;
+import com.artillexstudios.axapi.utils.updatechecker.UpdateCheckResult;
+import com.artillexstudios.axapi.utils.updatechecker.UpdateChecker;
+import com.artillexstudios.axapi.utils.updatechecker.sources.ModrinthUpdateCheckSource;
 import com.artillexstudios.axenvoy.commands.EnvoyCommand;
 import com.artillexstudios.axenvoy.config.impl.Config;
 import com.artillexstudios.axenvoy.config.impl.Messages;
@@ -23,11 +27,13 @@ import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.EditorListener;
 import com.artillexstudios.axenvoy.utils.FallingBlockChecker;
 import com.artillexstudios.axenvoy.utils.Utils;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import revxrsal.commands.bukkit.BukkitCommandHandler;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -87,6 +93,33 @@ public final class AxEnvoyPlugin extends AxPlugin {
 
         MESSAGES = new Messages("messages.yml");
         reload();
+
+        if (Config.UPDATE_CHECKER_ENABLED) {
+            UpdateChecker checker = new UpdateChecker(new ModrinthUpdateCheckSource("axenvoys"))
+                    .checkEvery(2)
+                    .timeBetweenChecks(Duration.ofMinutes(5))
+                    .register("axenvoys.updatecheck.onjoin", () -> Config.UPDATE_CHECKER_MESSAGE_ON_JOIN)
+                    .onCheck((sender, result) -> {
+                        if (result.result() == UpdateCheckResult.UPDATE_AVAILABLE) {
+                            for (String string : MESSAGES.UPDATE_CHECK) {
+                                if (string.contains("<changelog>")) {
+                                    for (Changelog changelog : result.changelog()) {
+                                        sender.sendMessage(StringUtils.formatToString(MESSAGES.CHANGELOG_VERSION, Placeholder.unparsed("version", changelog.version().string())));
+                                        for (String s : changelog.changelog().split("\n")) {
+                                            sender.sendMessage(StringUtils.formatToString(MESSAGES.CHANGELOG, Placeholder.unparsed("changelog-entry", s)));
+                                        }
+                                    }
+                                } else {
+                                    sender.sendMessage(StringUtils.formatToString(MESSAGES.PREFIX + string, Placeholder.parsed("version", result.version().string()), Placeholder.parsed("current", this.getDescription().getVersion())));
+                                }
+                            }
+                        } else if (result.result() == UpdateCheckResult.FAILED) {
+                            sender.sendMessage(StringUtils.formatToString(MESSAGES.PREFIX + "<#FF0000>Failed to check for updates! Chack the console for more information!"));
+                            result.exception().printStackTrace();
+                        }
+                    })
+                    .check(Bukkit.getConsoleSender());
+        }
 
         BukkitCommandHandler handler = BukkitCommandHandler.create(this);
 

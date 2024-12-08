@@ -3,6 +3,8 @@ package com.artillexstudios.axenvoy.config.impl;
 import com.artillexstudios.axenvoy.config.AbstractConfig;
 import com.artillexstudios.axenvoy.utils.FileUtils;
 
+import java.util.List;
+
 public class Messages extends AbstractConfig {
 
     @Key("messages.prefix")
@@ -106,6 +108,19 @@ public class Messages extends AbstractConfig {
 
     @Key("messages.time.second")
     public String SECOND = "s";
+
+    @Key("messages.updatecheck.message")
+    public List<String> UPDATE_CHECK = List.of(
+            "<#00FF00>A new version of the plugin is available! <white><click:open_url:'https://modrinth.com/plugin/axenvoys/version/<version>'><u>Download it on <#00FF00>Modrinth!</u></click>",
+            "<gray>Changelog:",
+            "<changelog>"
+            );
+
+    @Key("messages.updatecheck.changelog-version")
+    public String CHANGELOG_VERSION = "<white><version>:";
+
+    @Key("messages.updatecheck.changelog")
+    public String CHANGELOG = "<white><changelog-entry>";
 
     protected final String fileName;
 

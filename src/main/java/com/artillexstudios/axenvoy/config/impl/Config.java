@@ -21,6 +21,20 @@ public class Config extends AbstractConfig {
     })
     public static boolean DONT_REPLACE_BLOCKS = true;
 
+    @Key("update-checker.enabled")
+    @Comment({
+            "Enable this, if you want the plugin to check for updates"
+    })
+    public static boolean UPDATE_CHECKER_ENABLED = true;
+
+    @Key("update-checker.message-on-join")
+    @Comment({
+            "Enable this, if you want the plugin to check for updates",
+            "and send messages to users with the axenvoys.updatecheck.onjoin permission.",
+            "This only works if the update checker is enabled!"
+    })
+    public static boolean UPDATE_CHECKER_MESSAGE_ON_JOIN = true;
+
     private static final Config CONFIG = new Config();
 
     public static void reload() {
