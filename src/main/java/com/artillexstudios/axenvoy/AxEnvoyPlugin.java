@@ -96,7 +96,6 @@ public final class AxEnvoyPlugin extends AxPlugin {
 
         if (Config.UPDATE_CHECKER_ENABLED) {
             UpdateChecker checker = new UpdateChecker(new ModrinthUpdateCheckSource("axenvoys"))
-                    .checkEvery(2)
                     .timeBetweenChecks(Duration.ofMinutes(5))
                     .register("axenvoys.updatecheck.onjoin", () -> Config.UPDATE_CHECKER_MESSAGE_ON_JOIN)
                     .onCheck((sender, result) -> {
