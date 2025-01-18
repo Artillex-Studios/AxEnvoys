@@ -113,7 +113,7 @@ public final class AxEnvoyPlugin extends AxPlugin {
                                 }
                             }
                         } else if (result.result() == UpdateCheckResult.FAILED) {
-                            sender.sendMessage(StringUtils.formatToString(MESSAGES.PREFIX + "<#FF0000>Failed to check for updates! Chack the console for more information!"));
+                            sender.sendMessage(StringUtils.formatToString(MESSAGES.PREFIX + "<#FF0000>Failed to check for updates! Check the console for more information!"));
                             result.exception().printStackTrace();
                         }
                     })
