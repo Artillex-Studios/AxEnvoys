@@ -1,14 +1,13 @@
 package com.artillexstudios.axenvoy;
 
 import com.artillexstudios.axapi.AxPlugin;
-import com.artillexstudios.axapi.libs.libby.BukkitLibraryManager;
 import com.artillexstudios.axapi.scheduler.Scheduler;
+import com.artillexstudios.axapi.updatechecker.Changelog;
+import com.artillexstudios.axapi.updatechecker.UpdateCheckResult;
+import com.artillexstudios.axapi.updatechecker.UpdateChecker;
+import com.artillexstudios.axapi.updatechecker.sources.ModrinthUpdateCheckSource;
 import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axapi.utils.featureflags.FeatureFlags;
-import com.artillexstudios.axapi.utils.updatechecker.Changelog;
-import com.artillexstudios.axapi.utils.updatechecker.UpdateCheckResult;
-import com.artillexstudios.axapi.utils.updatechecker.UpdateChecker;
-import com.artillexstudios.axapi.utils.updatechecker.sources.ModrinthUpdateCheckSource;
 import com.artillexstudios.axenvoy.commands.EnvoyCommand;
 import com.artillexstudios.axenvoy.config.impl.Config;
 import com.artillexstudios.axenvoy.config.impl.Messages;
@@ -32,6 +31,8 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import revxrsal.commands.bukkit.BukkitCommandHandler;
+import revxrsal.zapper.DependencyManager;
+import revxrsal.zapper.repository.Repository;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -65,13 +66,10 @@ public final class AxEnvoyPlugin extends AxPlugin {
     }
 
     @Override
-    public void load() {
-        BukkitLibraryManager manager = new BukkitLibraryManager(this);
-        manager.addMavenCentral();
-        manager.addJitPack();
-
+    public void dependencies(DependencyManager manager) {
+        manager.repository(Repository.jitpack());
         for (Libraries value : Libraries.values()) {
-            manager.loadLibrary(value.getLibrary());
+            manager.dependency(value.library());
         }
     }
 
