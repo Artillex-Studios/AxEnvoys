@@ -24,13 +24,13 @@
 package com.artillexstudios.axenvoy.config;
 
 import com.artillexstudios.axapi.config.Config;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.block.Block;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.block.implementation.Section;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.libs.org.snakeyaml.engine.v2.common.FlowStyle;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.dumper.DumperSettings;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.general.GeneralSettings;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.loader.LoaderSettings;
-import com.artillexstudios.axapi.libs.boostedyaml.boostedyaml.settings.updater.UpdaterSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.block.Block;
+import com.artillexstudios.axapi.libs.boostedyaml.block.implementation.Section;
+import com.artillexstudios.axapi.libs.boostedyaml.libs.org.snakeyaml.engine.v2.common.FlowStyle;
+import com.artillexstudios.axapi.libs.boostedyaml.settings.dumper.DumperSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.settings.general.GeneralSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.settings.loader.LoaderSettings;
+import com.artillexstudios.axapi.libs.boostedyaml.settings.updater.UpdaterSettings;
 import com.artillexstudios.axenvoy.utils.FileUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;

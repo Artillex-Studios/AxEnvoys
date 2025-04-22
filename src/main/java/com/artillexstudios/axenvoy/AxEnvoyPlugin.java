@@ -1,6 +1,8 @@
 package com.artillexstudios.axenvoy;
 
 import com.artillexstudios.axapi.AxPlugin;
+import com.artillexstudios.axapi.dependencies.DependencyManagerWrapper;
+import com.artillexstudios.axapi.metrics.AxMetrics;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.updatechecker.Changelog;
 import com.artillexstudios.axapi.updatechecker.UpdateCheckResult;
@@ -31,7 +33,6 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import revxrsal.commands.bukkit.BukkitCommandHandler;
-import revxrsal.zapper.DependencyManager;
 import revxrsal.zapper.repository.Repository;
 
 import java.time.Duration;
@@ -66,7 +67,7 @@ public final class AxEnvoyPlugin extends AxPlugin {
     }
 
     @Override
-    public void dependencies(DependencyManager manager) {
+    public void dependencies(DependencyManagerWrapper manager) {
         manager.repository(Repository.jitpack());
         for (Libraries value : Libraries.values()) {
             manager.dependency(value.library());
@@ -144,6 +145,7 @@ public final class AxEnvoyPlugin extends AxPlugin {
         Bukkit.getPluginManager().registerEvents(new EditorListener(), this);
         Bukkit.getPluginManager().registerEvents(new WorldLoadListener(), this);
         new Metrics(this, 19146);
+        new AxMetrics(this, 13).start();
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             Envoys.getTypes().forEach((string, envoy) -> {
