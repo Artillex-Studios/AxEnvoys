@@ -149,8 +149,14 @@ public final class AxEnvoyPlugin extends AxPlugin {
 
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
             Envoys.getTypes().forEach((string, envoy) -> {
-                if (envoy.getConfig().EVERY.isBlank()) return;
-                if (envoy.isActive()) return;
+                if (envoy.getConfig().EVERY.isBlank() && envoy.getConfig().TIMES.isEmpty()) {
+                    return;
+                }
+
+                if (envoy.isActive()) {
+                    return;
+                }
+
                 ZonedDateTime now = ZonedDateTime.now();
 
                 Iterator<Calendar> iterator = envoy.getWarns().iterator();
