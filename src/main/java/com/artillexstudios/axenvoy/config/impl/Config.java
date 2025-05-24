@@ -41,7 +41,7 @@ public class Config extends AbstractConfig {
             "logs of why something is happening. This will send messages",
             "in the console."
     })
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
 
     private static final Config CONFIG = new Config();
 
