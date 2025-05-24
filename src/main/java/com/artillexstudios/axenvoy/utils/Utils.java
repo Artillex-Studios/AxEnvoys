@@ -2,7 +2,9 @@ package com.artillexstudios.axenvoy.utils;
 
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.StringUtils;
+import com.artillexstudios.axapi.utils.logging.LogUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.config.impl.Config;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.Envoys;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
@@ -44,12 +46,20 @@ public class Utils {
         loc.setX(loc.getBlockX() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_X * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_X));
         loc.setZ(loc.getBlockZ() + ThreadLocalRandom.current().nextInt(envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_Z * -1, envoy.getConfig().RANDOM_SPAWN_MAX_DISTANCE_Z));
         if (loc.distanceSquared(center) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE) {
+            if (Config.DEBUG) {
+                LogUtils.debug("Smaller than min distance!");
+            }
+
             return null;
         }
 
         if (envoy.getConfig().ONLY_IN_GLOBAL && AxEnvoyPlugin.getInstance().isWorldGuard()) {
             ApplicableRegionSet regions = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(loc.getWorld())).getApplicableRegions(BlockVector3.at(loc.getX(), loc.getY(), loc.getZ()));
             if (!regions.getRegions().isEmpty()) {
+                if (Config.DEBUG) {
+                    LogUtils.debug("Only in global region!");
+                }
+
                 return null;
             }
         }
@@ -58,6 +68,10 @@ public class Utils {
             for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
                 // We only care about 2D distance!
                 if (Point2D.distanceSq(spawnedCrate.getFinishLocation().getX(), spawnedCrate.getFinishLocation().getZ(), loc.getX(), loc.getZ()) < envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES * envoy.getConfig().RANDOM_SPAWN_MIN_DISTANCE_BETWEEN_CRATES) {
+                    if (Config.DEBUG) {
+                        LogUtils.debug("Distance between crates is too low!");
+                    }
+
                     return null;
                 }
             }
@@ -66,25 +80,44 @@ public class Utils {
 
         Location loc2 = topBlock(loc, envoy.heightMap());
         if (loc2.getY() < envoy.getConfig().RANDOM_SPAWN_MIN_HEIGHT) {
+            if (Config.DEBUG) {
+                LogUtils.debug("Smaller than min height!");
+            }
+
             return null;
         }
         if (loc2.getY() > envoy.getConfig().RANDOM_SPAWN_MAX_HEIGHT) {
+            if (Config.DEBUG) {
+                LogUtils.debug("Above max height");
+            }
+
             return null;
         }
 
         if (!loc.getChunk().isLoaded() && !loc.getChunk().load()) {
+            if (Config.DEBUG) {
+                LogUtils.debug("Chunk is not loaded!");
+            }
+
             return null;
         }
 
         for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
             if (spawnedCrate.getFinishLocation().getBlockX() == loc2.getBlockX() && spawnedCrate.getFinishLocation().getBlockY() == loc2.getBlockY() && spawnedCrate.getFinishLocation().getBlockZ() == loc2.getBlockZ()) {
                 // There's a crate at that location!
+                if (Config.DEBUG) {
+                    LogUtils.debug("Crate already exists there!");
+                }
                 return null;
             }
         }
 
         Location tempLoc = loc2.clone();
         if (envoy.getBlacklistMaterials().contains(tempLoc.add(0, -1, 0).getBlock().getType())) {
+            if (Config.DEBUG) {
+                LogUtils.debug("Blacklisted block!");
+            }
+
             return null;
         }
 

@@ -4,7 +4,9 @@ import com.artillexstudios.axapi.scheduler.ScheduledTask;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.PaperUtils;
+import com.artillexstudios.axapi.utils.logging.LogUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.config.impl.Config;
 import com.artillexstudios.axenvoy.config.impl.EnvoyConfig;
 import com.artillexstudios.axenvoy.event.EnvoyEndEvent;
 import com.artillexstudios.axenvoy.event.EnvoyStartEvent;
@@ -367,6 +369,10 @@ public class Envoy {
 
                         if (location != null) {
                             new SpawnedCrate(this, getRandomCrate(), location.clone());
+                        } else {
+                            if (Config.DEBUG) {
+                                LogUtils.debug("Reached max tries while trying to spawn crate!");
+                            }
                         }
                     }
                 }
@@ -441,6 +447,10 @@ public class Envoy {
     }
 
     public void stop() {
+        if (Config.DEBUG) {
+            LogUtils.debug("Stop called from: ", new Throwable());
+        }
+
         if (!active) return;
         if (this.cancelTask != null && !this.cancelTask.isCancelled()) {
             this.cancelTask.cancel();

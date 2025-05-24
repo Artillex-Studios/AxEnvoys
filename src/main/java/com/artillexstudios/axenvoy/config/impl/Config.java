@@ -35,6 +35,14 @@ public class Config extends AbstractConfig {
     })
     public static boolean UPDATE_CHECKER_MESSAGE_ON_JOIN = true;
 
+    @Key("debug")
+    @Comment({
+            "Enable this, if you'd like to receive some detailed",
+            "logs of why something is happening. This will send messages",
+            "in the console."
+    })
+    public static boolean DEBUG = true;
+
     private static final Config CONFIG = new Config();
 
     public static void reload() {
