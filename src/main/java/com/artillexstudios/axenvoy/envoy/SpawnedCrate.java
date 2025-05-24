@@ -2,6 +2,7 @@ package com.artillexstudios.axenvoy.envoy;
 
 import com.artillexstudios.axapi.hologram.Hologram;
 import com.artillexstudios.axapi.hologram.HologramLine;
+import com.artillexstudios.axapi.scheduler.ScheduledTask;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.utils.placeholder.Placeholder;
 import com.artillexstudios.axapi.utils.placeholder.StaticPlaceholder;
@@ -196,6 +197,10 @@ public class SpawnedCrate {
             this.parent.getSpawnedCrates().remove(this);
         }
 
+        ScheduledTask task = this.parent.cancelTask();
+        if (task != null) {
+            task.cancel();
+        }
         if (envoy != null) {
             boolean broadcast = envoy.getConfig().BROADCAST_COLLECT;
             if (!broadcast) {

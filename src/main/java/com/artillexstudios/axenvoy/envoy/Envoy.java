@@ -501,4 +501,8 @@ public class Envoy {
     public long getStartTime() {
         return startTime;
     }
+
+    public ScheduledTask cancelTask() {
+        return cancelTask;
+    }
 }
