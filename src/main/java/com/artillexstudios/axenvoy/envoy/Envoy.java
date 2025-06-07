@@ -6,6 +6,9 @@ import com.artillexstudios.axapi.utils.ItemBuilder;
 import com.artillexstudios.axapi.utils.PaperUtils;
 import com.artillexstudios.axapi.utils.logging.LogUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
+import com.artillexstudios.axenvoy.blockfinder.BlockFinder;
+import com.artillexstudios.axenvoy.blockfinder.HeightmapBlockFinder;
+import com.artillexstudios.axenvoy.blockfinder.IterativeBlockFinder;
 import com.artillexstudios.axenvoy.config.impl.Config;
 import com.artillexstudios.axenvoy.config.impl.EnvoyConfig;
 import com.artillexstudios.axenvoy.event.EnvoyEndEvent;
@@ -63,6 +66,7 @@ public class Envoy {
     private boolean startAttempt = false;
     private ScheduledTask cancelTask;
     private HeightMap heightMap;
+    private BlockFinder blockFinder;
 
     public Envoy(@NotNull File file) {
         this.file = file;
@@ -129,6 +133,11 @@ public class Envoy {
         } catch (EnumConstantNotPresentException exception) {
             this.heightMap = HeightMap.MOTION_BLOCKING;
         }
+
+        this.blockFinder = switch (config.TOP_BLOCK_FINDER.toUpperCase(Locale.ENGLISH)) {
+            case "ITERATIVE" -> new IterativeBlockFinder();
+            default -> new HeightmapBlockFinder();
+        };
     }
 
     public EnvoyConfig getConfig() {
@@ -500,6 +509,10 @@ public class Envoy {
 
     public long getStartTime() {
         return startTime;
+    }
+
+    public BlockFinder blockFinder() {
+        return blockFinder;
     }
 
     public ScheduledTask cancelTask() {

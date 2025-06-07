@@ -50,6 +50,8 @@ messages:
 
 time-format: 1
 
+top-block-finder: heightmap
+
 rewards:
   use-prefix: true
 

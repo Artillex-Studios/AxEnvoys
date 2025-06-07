@@ -3,6 +3,8 @@ package com.artillexstudios.axenvoy.config.impl;
 import com.artillexstudios.axenvoy.config.AbstractConfig;
 import com.artillexstudios.axenvoy.utils.FileUtils;
 
+import java.util.List;
+
 public class Config extends AbstractConfig {
 
     @Key("listen-to-block-physics")
@@ -20,6 +22,14 @@ public class Config extends AbstractConfig {
             "replaced by crates in certain cases."
     })
     public static boolean DONT_REPLACE_BLOCKS = true;
+
+    @Key("passable-blocks")
+    @Comment({
+            "Add any blocks that you want to be passable",
+            "when using the iterative block-finder. These",
+            "blocks will not be used for determining the top block."
+    })
+    public static List<String> PASSABLE_BLOCKS = List.of("air", "barrier");
 
     @Key("update-checker.enabled")
     @Comment({

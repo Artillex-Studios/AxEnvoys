@@ -78,7 +78,7 @@ public class Utils {
         }
 
 
-        Location loc2 = topBlock(loc, envoy.heightMap());
+        Location loc2 = envoy.blockFinder().highestBlockAt(loc, envoy.getConfig()).getLocation();
         if (loc2.getY() < envoy.getConfig().RANDOM_SPAWN_MIN_HEIGHT) {
             if (Config.DEBUG) {
                 LogUtils.debug("Smaller than min height!");
@@ -155,7 +155,7 @@ public class Utils {
         }
 
         Scheduler.get().runAt(loc, task -> {
-            Location loc2 = topBlock(loc, envoy.heightMap());
+            Location loc2 = envoy.blockFinder().highestBlockAt(loc, envoy.getConfig()).getLocation();
             if (loc2.getY() < envoy.getConfig().RANDOM_SPAWN_MIN_HEIGHT) {
                 locationCompletableFuture.complete(null);
             }

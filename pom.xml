@@ -6,7 +6,7 @@
 
     <groupId>com.artillexstudios.axenvoy</groupId>
     <artifactId>AxEnvoy</artifactId>
-    <version>2.2.1</version>
+    <version>2.3.0</version>
     <packaging>jar</packaging>
 
     <name>AxEnvoy</name>
@@ -190,7 +190,7 @@
         <dependency>
             <groupId>com.artillexstudios.axapi</groupId>
             <artifactId>axapi</artifactId>
-            <version>1.4.677</version>
+            <version>1.4.688</version>
             <classifier>all</classifier>
         </dependency>
         <dependency>

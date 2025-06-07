@@ -38,6 +38,13 @@ public class EnvoyConfig extends Messages {
     @Comment("Start an envoy event every hour. To disable, leave as \"\"")
     public String EVERY = "1h";
 
+    @Key("top-block-finder")
+    @Comment({"What method should we use to find the top block at a location?",
+            "can be heightmap or iterative.",
+            "Iterative can pass through some blocks, heightmap",
+            "is the topmost block of the world at that location."})
+    public String TOP_BLOCK_FINDER = "heightmap";
+
     @Key("send-spawn-message")
     public boolean SEND_SPAWN_MESSAGES = false;
 
