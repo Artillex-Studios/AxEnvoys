@@ -1,13 +1,13 @@
 package com.artillexstudios.axenvoy.commands;
 
+import com.artillexstudios.axapi.nms.wrapper.ServerPlayerWrapper;
+import com.artillexstudios.axapi.utils.StringUtils;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.envoy.Envoy;
 import com.artillexstudios.axenvoy.envoy.Envoys;
 import com.artillexstudios.axenvoy.envoy.SpawnedCrate;
 import com.artillexstudios.axenvoy.user.User;
 import com.artillexstudios.axenvoy.utils.Utils;
-import net.kyori.adventure.audience.Audience;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.math3.util.Pair;
 import org.bukkit.Location;
@@ -74,7 +74,7 @@ public class EnvoyCommand {
     @Subcommand("reload")
     @CommandPermission("axenvoy.command.reload")
     public void reload(CommandSender sender) {
-        Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX,  AxEnvoyPlugin.getMessages().RELOAD.replace("%time%", String.valueOf(AxEnvoyPlugin.getInstance().reloadWithTime())));
+        Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX, AxEnvoyPlugin.getMessages().RELOAD.replace("%time%", String.valueOf(AxEnvoyPlugin.getInstance().reloadWithTime())));
     }
 
     @Subcommand("center")
@@ -136,16 +136,25 @@ public class EnvoyCommand {
             Utils.sendMessage(sender, AxEnvoyPlugin.getMessages().PREFIX, AxEnvoyPlugin.getMessages().NO_ENVOY_FOUND);
             return;
         }
-        Audience audience = BukkitAudiences.create(AxEnvoyPlugin.getInstance()).sender(sender);
 
         for (SpawnedCrate spawnedCrate : envoy.getSpawnedCrates()) {
             Location finish = spawnedCrate.getFinishLocation();
-            audience.sendMessage(MiniMessage.miniMessage().deserialize("<click:run_command:'/tp %x% %y% %z%'><hover:show_text:'<color:#7df0ff>Click to teleport!</color>'><white>Crate</white> %crate% %x% %y% %z%.</hover></click>"
-                    .replace("%x%", String.valueOf(finish.getBlockX()))
-                    .replace("%y%", String.valueOf(finish.getBlockY()))
-                    .replace("%z%", String.valueOf(finish.getBlockZ()))
-                    .replace("%crate%", String.valueOf(spawnedCrate.getHandle().getName()))
-            ));
+            if (sender instanceof Player player) {
+                ServerPlayerWrapper wrapper = ServerPlayerWrapper.wrap(player);
+                wrapper.message(MiniMessage.miniMessage().deserialize("<click:run_command:'/tp %x% %y% %z%'><hover:show_text:'<color:#7df0ff>Click to teleport!</color>'><white>Crate</white> %crate% %x% %y% %z%.</hover></click>"
+                        .replace("%x%", String.valueOf(finish.getBlockX()))
+                        .replace("%y%", String.valueOf(finish.getBlockY()))
+                        .replace("%z%", String.valueOf(finish.getBlockZ()))
+                        .replace("%crate%", String.valueOf(spawnedCrate.getHandle().getName()))
+                ));
+            } else {
+                sender.sendMessage(StringUtils.formatToString("<click:run_command:'/tp %x% %y% %z%'><hover:show_text:'<color:#7df0ff>Click to teleport!</color>'><white>Crate</white> %crate% %x% %y% %z%.</hover></click>"
+                        .replace("%x%", String.valueOf(finish.getBlockX()))
+                        .replace("%y%", String.valueOf(finish.getBlockY()))
+                        .replace("%z%", String.valueOf(finish.getBlockZ()))
+                        .replace("%crate%", String.valueOf(spawnedCrate.getHandle().getName()))
+                ));
+            }
         }
     }
 
