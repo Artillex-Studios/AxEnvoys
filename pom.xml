@@ -190,7 +190,7 @@
         <dependency>
             <groupId>com.artillexstudios.axapi</groupId>
             <artifactId>axapi</artifactId>
-            <version>1.4.710</version>
+            <version>1.4.720</version>
             <classifier>all</classifier>
         </dependency>
         <dependency>
