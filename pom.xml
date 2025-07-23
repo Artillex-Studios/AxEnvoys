@@ -212,4 +212,11 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>Artillex-Studios</id>
+            <url>https://repo.artillex-studios.com/releases/</url>
+        </repository>
+    </distributionManagement>
 </project>
