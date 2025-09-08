@@ -52,6 +52,8 @@ public class EnvoyConfig extends Messages {
     public List<String> ALERT_TIMES = List.of("30m", "10m", "5s", "3s", "2s", "1s");
 
     @Key("times")
+    @Comment({"Exact times can be defined with the HH:mm:ss format.",
+            "This setting works only if the every setting is set to a blank value."})
     public List<String> TIMES = List.of();
 
     @Key("only-in-global")
