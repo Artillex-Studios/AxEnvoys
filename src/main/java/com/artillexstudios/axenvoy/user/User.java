@@ -38,8 +38,10 @@ public class User {
 
             @EventHandler
             public void onPlayerQuitEvent(@NotNull PlayerQuitEvent event) {
-                USER_MAP.get(event.getPlayer().getUniqueId()).clear();
-                USER_MAP.remove(event.getPlayer().getUniqueId());
+                User user = USER_MAP.remove(event.getPlayer().getUniqueId());
+                if (user != null) {
+                    user.clear();
+                }
             }
         }, AxEnvoyPlugin.getInstance());
     }
