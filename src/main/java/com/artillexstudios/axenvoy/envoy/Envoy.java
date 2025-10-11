@@ -480,7 +480,7 @@ public class Envoy {
     }
 
     public ItemStack getFlare(int amount) {
-        ItemStack item = new ItemBuilder(config.FLARE_ITEM).amount(amount).get();
+        ItemStack item = ItemBuilder.create(config.FLARE_ITEM).amount(amount).get();
         ItemMeta meta = item.getItemMeta();
         meta.getPersistentDataContainer().set(FlareListener.KEY, PersistentDataType.STRING, this.name.toLowerCase(Locale.ENGLISH));
         item.setItemMeta(meta);

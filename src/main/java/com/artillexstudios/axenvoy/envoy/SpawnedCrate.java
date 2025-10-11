@@ -1,11 +1,11 @@
 package com.artillexstudios.axenvoy.envoy;
 
 import com.artillexstudios.axapi.hologram.Hologram;
-import com.artillexstudios.axapi.hologram.HologramLine;
+import com.artillexstudios.axapi.hologram.HologramType;
+import com.artillexstudios.axapi.hologram.HologramTypes;
+import com.artillexstudios.axapi.hologram.page.HologramPage;
 import com.artillexstudios.axapi.scheduler.ScheduledTask;
 import com.artillexstudios.axapi.scheduler.Scheduler;
-import com.artillexstudios.axapi.utils.placeholder.Placeholder;
-import com.artillexstudios.axapi.utils.placeholder.StaticPlaceholder;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
 import com.artillexstudios.axenvoy.config.impl.Config;
 import com.artillexstudios.axenvoy.event.EnvoyCrateCollectEvent;
@@ -32,6 +32,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
@@ -112,10 +113,16 @@ public class SpawnedCrate {
             Location hologramLocation = finishLocation.clone().add(0.5, 0, 0.5);
             hologramLocation.add(0, handle.getConfig().HOLOGRAM_HEIGHT, 0);
 
-            hologram = new Hologram(hologramLocation, Utils.serializeLocation(hologramLocation).replace(";", "-"), 0.3);
-            hologram.addPlaceholder(new StaticPlaceholder(string -> string.replace("%max_hits%", String.valueOf(getHandle().getConfig().REQUIRED_INTERACTION_AMOUNT))));
-            hologram.addPlaceholder(new Placeholder((player, string) -> string.replace("%hits%", String.valueOf(health))));
-            hologram.addLines(handle.getConfig().HOLOGRAM_LINES, HologramLine.Type.TEXT);
+            hologram = new Hologram(hologramLocation);
+            HologramPage<String, HologramType<String>> page = hologram.createPage(HologramTypes.TEXT);
+            page.getParameters().withParameter(SpawnedCrate.class, this);
+
+            List<String> transformed = new ArrayList<>();
+            for (String line : handle.getConfig().HOLOGRAM_LINES) {
+                transformed.add(line.replace("%max_hits%", String.valueOf(getHandle().getConfig().REQUIRED_INTERACTION_AMOUNT)));
+            }
+            page.setContent(String.join("<reset><br>", transformed));
+            page.spawn();
         }
     }
 
@@ -274,5 +281,9 @@ public class SpawnedCrate {
 
     public Location getFinishLocation() {
         return finishLocation;
+    }
+
+    public int getHealth() {
+        return this.health;
     }
 }

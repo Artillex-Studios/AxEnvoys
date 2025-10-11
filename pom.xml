@@ -49,10 +49,6 @@
                             <shadedPattern>com.artillexstudios.axenvoy.libs.bstats</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>net.kyori</pattern>
-                            <shadedPattern>com.artillexstudios.axenvoy.libs.kyori</shadedPattern>
-                        </relocation>
-                        <relocation>
                             <pattern>net.byteflux</pattern>
                             <shadedPattern>com.artillexstudios.axenvoy.libs.libby</shadedPattern>
                         </relocation>
@@ -190,7 +186,7 @@
         <dependency>
             <groupId>com.artillexstudios.axapi</groupId>
             <artifactId>axapi</artifactId>
-            <version>1.4.732</version>
+            <version>1.4.803</version>
             <classifier>all</classifier>
         </dependency>
         <dependency>
@@ -209,6 +205,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.9</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.kyori</groupId>
+            <artifactId>adventure-api</artifactId>
+            <version>4.25.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

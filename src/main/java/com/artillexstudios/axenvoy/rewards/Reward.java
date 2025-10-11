@@ -45,7 +45,7 @@ public record Reward(double chance, List<String> commands, List<String> messages
         }
 
         for (Map<Object, Object> item : this.items) {
-            player.getInventory().addItem(new ItemBuilder(item).get());
+            player.getInventory().addItem(ItemBuilder.create(item).get());
         }
 
         for (String sound : sounds) {
@@ -61,7 +61,7 @@ public record Reward(double chance, List<String> commands, List<String> messages
             return false;
         }
 
-        ItemStack requiredStack = new ItemBuilder(requiredItem).get();
+        ItemStack requiredStack = ItemBuilder.create(requiredItem).get();
         return itemStack.isSimilar(requiredStack);
     }
 }

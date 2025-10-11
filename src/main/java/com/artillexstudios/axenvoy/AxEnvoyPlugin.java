@@ -3,6 +3,7 @@ package com.artillexstudios.axenvoy;
 import com.artillexstudios.axapi.AxPlugin;
 import com.artillexstudios.axapi.dependencies.DependencyManagerWrapper;
 import com.artillexstudios.axapi.metrics.AxMetrics;
+import com.artillexstudios.axapi.placeholders.PlaceholderHandler;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axapi.updatechecker.Changelog;
 import com.artillexstudios.axapi.updatechecker.UpdateCheckResult;
@@ -92,6 +93,11 @@ public final class AxEnvoyPlugin extends AxPlugin {
 
         MESSAGES = new Messages("messages.yml");
         reload();
+
+        PlaceholderHandler.register("hits", ctx -> {
+            SpawnedCrate crate = ctx.raw(SpawnedCrate.class);
+            return String.valueOf(crate.getHealth());
+        });
 
         if (Config.UPDATE_CHECKER_ENABLED) {
             UpdateChecker checker = new UpdateChecker(new ModrinthUpdateCheckSource("axenvoys"))
