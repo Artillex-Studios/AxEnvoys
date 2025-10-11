@@ -4,6 +4,8 @@ import com.artillexstudios.axapi.hologram.Hologram;
 import com.artillexstudios.axapi.hologram.HologramType;
 import com.artillexstudios.axapi.hologram.HologramTypes;
 import com.artillexstudios.axapi.hologram.page.HologramPage;
+import com.artillexstudios.axapi.packetentity.meta.entity.DisplayMeta;
+import com.artillexstudios.axapi.packetentity.meta.entity.TextDisplayMeta;
 import com.artillexstudios.axapi.scheduler.ScheduledTask;
 import com.artillexstudios.axapi.scheduler.Scheduler;
 import com.artillexstudios.axenvoy.AxEnvoyPlugin;
@@ -116,6 +118,14 @@ public class SpawnedCrate {
             hologram = new Hologram(hologramLocation);
             HologramPage<String, HologramType<String>> page = hologram.createPage(HologramTypes.TEXT);
             page.getParameters().withParameter(SpawnedCrate.class, this);
+            page.setEntityMetaHandler(m -> {
+                TextDisplayMeta meta = (TextDisplayMeta) m;
+                meta.seeThrough(false);
+                meta.alignment(TextDisplayMeta.Alignment.CENTER);
+                meta.billboardConstrain(DisplayMeta.BillboardConstrain.VERTICAL);
+                meta.backgroundColor(Integer.parseInt("00000000", 16));
+                meta.lineWidth(1000);
+            });
 
             List<String> transformed = new ArrayList<>();
             for (String line : handle.getConfig().HOLOGRAM_LINES) {
