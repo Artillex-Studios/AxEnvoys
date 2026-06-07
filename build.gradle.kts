@@ -41,7 +41,7 @@ dependencies {
         exclude(group = "net.kyori", module = "*")
         exclude(group = "com.jeff_media", module = "*")
     }
-    implementation("com.artillexstudios.axapi:axapi:2.1.0-DEV-3:all")
+    implementation("com.artillexstudios.axapi:axapi:2.1.0-DEV-31:all")
     compileOnly("org.apache.commons:commons-text:1.11.0")
     compileOnly("commons-io:commons-io:2.15.0")
     compileOnly("org.slf4j:slf4j-api:2.0.9")
