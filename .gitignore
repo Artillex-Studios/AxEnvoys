@@ -1,9 +1,10 @@
 # User-specific stuff
 .idea/
-
+.gradle
 *.iml
 *.ipr
 *.iws
+build
 
 # IntelliJ
 out/
