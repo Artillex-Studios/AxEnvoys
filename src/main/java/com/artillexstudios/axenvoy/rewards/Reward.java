@@ -16,9 +16,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-public record Reward(double chance, List<String> commands, List<String> messages, List<Map<Object, Object>> items, Map<Object, Object> requiredItem, List<String> sounds, String name) {
+public record Reward(double chance, List<String> commands, List<String> messages, List<Map<Object, Object>> items, Map<Object, Object> requiredItem, List<String> sounds, List<String> mythicMobs, String name) {
 
     public void execute(@NotNull Player player, @NotNull Envoy envoy) {
+        if (AxEnvoyPlugin.getInstance().isMythicMobs() && this.mythicMobs != null && !this.mythicMobs.isEmpty()) {
+            com.artillexstudios.axenvoy.integrations.mythicmobs.MythicMobsIntegration.spawn(this.mythicMobs, player.getLocation());
+        }
+
         for (String message : this.messages) {
             message = message.replace("%player%", player.getName()).replace("%player_name%", player.getName());
             if (AxEnvoyPlugin.getInstance().isPlaceholderApi()) {

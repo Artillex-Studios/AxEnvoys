@@ -32,6 +32,11 @@ flare:
     type: ball
 
 rewards:
+  - chance: 100.0
+    mythic-mobs:
+      - SkeletonKing # Example MythicMobs ID to spawn on the player
+    messages:
+      - "&cThe Skeleton King has awoken!"
   - chance: 10.0
     messages:
       - "&7Wow!"

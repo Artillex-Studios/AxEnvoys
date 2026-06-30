@@ -53,6 +53,7 @@ public final class AxEnvoyPlugin extends AxPlugin {
     private static Messages MESSAGES;
     private boolean placeholderApi;
     private boolean worldGuard;
+    private boolean mythicMobs;
 
     public static AxEnvoyPlugin getInstance() {
         return instance;
@@ -90,6 +91,11 @@ public final class AxEnvoyPlugin extends AxPlugin {
         if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null) {
             getLogger().info("Enabled WorldGuard hook!");
             this.worldGuard = true;
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("MythicMobs") != null) {
+            getLogger().info("Enabled MythicMobs hook!");
+            this.mythicMobs = true;
         }
 
         MESSAGES = new Messages("messages.yml");
@@ -245,5 +251,9 @@ public final class AxEnvoyPlugin extends AxPlugin {
 
     public boolean isWorldGuard() {
         return worldGuard;
+    }
+
+    public boolean isMythicMobs() {
+        return mythicMobs;
     }
 }

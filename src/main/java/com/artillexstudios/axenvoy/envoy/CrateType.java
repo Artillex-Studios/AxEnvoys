@@ -64,7 +64,7 @@ public class CrateType {
         this.rewards.clear();
 
         for (Map<String, Object> map : list) {
-            this.rewards.add(new Reward(((Number) map.getOrDefault("chance", 0)).doubleValue(), (List<String>) map.getOrDefault("commands", new ArrayList<String>()), (List<String>) map.getOrDefault("messages", new ArrayList<String>()), (List<Map<Object, Object>>) map.getOrDefault("items", new ArrayList<Map<Object, Object>>()), (Map<Object, Object>) map.get("required-item"), (List<String>) map.getOrDefault("sounds", new ArrayList<String>()), (String) map.getOrDefault("name", "---")));
+            this.rewards.add(new Reward(((Number) map.getOrDefault("chance", 0)).doubleValue(), (List<String>) map.getOrDefault("commands", new ArrayList<String>()), (List<String>) map.getOrDefault("messages", new ArrayList<String>()), (List<Map<Object, Object>>) map.getOrDefault("items", new ArrayList<Map<Object, Object>>()), (Map<Object, Object>) map.get("required-item"), (List<String>) map.getOrDefault("sounds", new ArrayList<String>()), (List<String>) map.getOrDefault("mythic-mobs", new ArrayList<String>()), (String) map.getOrDefault("name", "---")));
         }
 
         List<Pair<Reward, Double>> list1 = new ArrayList<>();
